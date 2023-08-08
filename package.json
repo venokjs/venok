@@ -1,0 +1,38 @@
+{
+  "name": "venok",
+  "version": "1.0.0",
+  "description": "",
+  "author": "0x303133",
+  "workspaces": ["packages/*"],
+  "private": true,
+  "main": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/venokjs/venok.git"
+  },
+  "bugs": {
+    "url": "https://github.com/venokjs/venok/issues"
+  },
+  "scripts": {
+    "lint": "eslint --fix"
+  },
+  "keywords": ["venok"],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.1",
+    "uid": "^2.0.2",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.8",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "@typescript-eslint/parser": "^6.2.1",
+    "eslint": "^8.46.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-sonarjs": "^0.20.0",
+    "prettier": "^3.0.1",
+    "typescript": "^5.1.6"
+  }
+}
