@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { expect } from "chai";
 import { Reflector } from "@venok/core/services/reflector.service";
 
