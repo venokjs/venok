@@ -10,7 +10,7 @@ import {
   isString,
   isSymbol,
   isUndefined,
-} from "../../utils/shared.utils";
+} from "@venok/core/utils/shared.utils";
 
 function Foo(a: any) {
   // @ts-ignore
