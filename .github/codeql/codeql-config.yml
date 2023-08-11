@@ -1,0 +1,7 @@
+name: "Venok scanning CodeQL config"
+
+query-filters:
+    - exclude:
+        id: 
+          - cpp/unbounded-write
+          - cpp/path-injection
