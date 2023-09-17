@@ -149,13 +149,6 @@ export const INVALID_CLASS_SCOPE_MESSAGE = (text: TemplateStringsArray, name: st
     name || "This class"
   } is marked as a scoped provider. Request and transient-scoped providers can't be used in combination with "get()" method. Please, use "resolve()" instead.`;
 
-export const UNKNOWN_REQUEST_MAPPING = (metatype: Type) => {
-  const className = metatype.name;
-  return className
-    ? `An invalid controller has been detected. "${className}" does not have the @Controller() decorator but it is being listed in the "controllers" array of some module.`
-    : `An invalid controller has been detected. Perhaps, one of your controllers is missing the @Controller() decorator.`;
-};
-
 export const UNHANDLED_RUNTIME_EXCEPTION = `Unhandled Runtime Exception.`;
 export const INVALID_EXCEPTION_FILTER = `Invalid exception filters (@UseFilters()).`;
 export const MICROSERVICES_PACKAGE_NOT_FOUND_EXCEPTION = `Unable to load @Venok/microservices package. (Please make sure that it's already installed.)`;
