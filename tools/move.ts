@@ -1,7 +1,9 @@
-import {copyFile} from "fs/promises";
-import {join} from "path";
+import { copyFile } from "fs/promises";
+import { join } from "path";
 
-const files = ["package.json", "readme.md"];
+// const files = ["package.json", "readme.md"];
+
+const files = ["package.json"];
 
 const move = async () => {
   const pkg = process.argv[2];
