@@ -31,6 +31,7 @@ export const ENHANCER_TOKEN_TO_SUBTYPE_MAP: Record<
   [APP_FILTER]: "filter",
 } as const;
 
+export const REQUEST = "REQUEST";
 export const GLOBAL_MODULE_METADATA = "__module:global__";
 export const HOST_METADATA = "host";
 export const PATH_METADATA = "path";
