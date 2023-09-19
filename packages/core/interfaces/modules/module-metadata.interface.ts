@@ -18,7 +18,7 @@ export interface ModuleMetadata {
    */
   controllers?: Type<any>[];
   /**
-   * Optional list of providers that will be instantiated by the Nest injector
+   * Optional list of providers that will be instantiated by the Venok injector
    * and that may be shared at least across this module.
    */
   providers?: Provider[];
