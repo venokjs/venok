@@ -1,7 +1,7 @@
 import { InjectorDependency, InjectorDependencyContext } from "@venok/core/injector/injector";
 import { DynamicModule, ForwardReference } from "@venok/core/interfaces/modules";
 import { isNull, isSymbol } from "@venok/core/utils/shared.utils";
-import { Module } from "@venok/core/injector/module";
+import { Module } from "@venok/core/injector/module/module";
 import { Type } from "@venok/core/interfaces";
 
 /**
