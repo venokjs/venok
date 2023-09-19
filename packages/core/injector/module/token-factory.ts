@@ -9,7 +9,7 @@ import { isFunction, isSymbol } from "@venok/core/utils/shared.utils";
 const CLASS_STR = "class ";
 const CLASS_STR_LEN = CLASS_STR.length;
 
-export class ModuleTokenFactory {
+export class TokenFactory {
   private readonly moduleTokenCache = new Map<string, string>();
   private readonly moduleIdsCache = new WeakMap<Type<unknown>, string>();
 

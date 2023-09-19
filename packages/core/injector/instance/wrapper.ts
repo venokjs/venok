@@ -1,5 +1,5 @@
 import { FactoryProvider, InjectionToken, Provider } from "@venok/core/interfaces/modules";
-import { Module } from "@venok/core/injector/module";
+import { Module } from "@venok/core/injector/module/module";
 import { EnhancerSubtype } from "@venok/core/constants";
 import { Scope, Type } from "@venok/core/interfaces";
 import { SettlementSignal } from "@venok/core/injector/settlement-signal";
@@ -59,7 +59,7 @@ export class InstanceWrapper<T = any | undefined> {
   public readonly async?: boolean;
   public readonly host?: Module;
   public readonly subtype?: EnhancerSubtype;
-  public metatype!: Type<T> | Function;
+  public metatype?: Type<T> | Function | null;
   public inject?: FactoryProvider["inject"] | null;
   public forwardRef?: boolean;
   public durable?: boolean;
@@ -98,7 +98,7 @@ export class InstanceWrapper<T = any | undefined> {
   }
 
   get isFactory(): boolean {
-    return this.metatype && !isNull(this.inject);
+    return !!(this.metatype && !isNull(this.inject));
   }
 
   get isTransient(): boolean {
@@ -255,7 +255,7 @@ export class InstanceWrapper<T = any | undefined> {
       isResolved: false,
       isPending: false,
     };
-    if (this.isNewable()) instancePerContext.instance = Object.create(this.metatype.prototype);
+    if (this.isNewable()) instancePerContext.instance = Object.create(this.metatype!.prototype);
 
     this.setInstanceByContextId(contextId, instancePerContext);
     return instancePerContext;
@@ -270,7 +270,7 @@ export class InstanceWrapper<T = any | undefined> {
       isPending: false,
     };
     if (this.isNewable()) {
-      instancePerContext.instance = Object.create(this.metatype.prototype);
+      instancePerContext.instance = Object.create(this.metatype!.prototype);
     }
     this.setInstanceByInquirerId(contextId, inquirerId, instancePerContext);
     return instancePerContext;
@@ -280,7 +280,7 @@ export class InstanceWrapper<T = any | undefined> {
     const host = this.getInstanceByContextId(contextId);
     if (!this.isNewable() || host.isResolved) return;
 
-    return Object.create(this.metatype.prototype);
+    return Object.create(this.metatype!.prototype);
   }
 
   public isInRequestScope(contextId: ContextId, inquirer?: InstanceWrapper | undefined): boolean {

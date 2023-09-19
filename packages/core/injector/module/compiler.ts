@@ -1,7 +1,7 @@
 import { Type } from "@venok/core/interfaces";
 import { DynamicModule } from "@venok/core/interfaces/modules/dynamic-module.interface";
 import { ForwardReference } from "@venok/core/interfaces/modules/forward-reference.interface";
-import { ModuleTokenFactory } from "@venok/core/injector/module-token-factory";
+import { TokenFactory } from "@venok/core/injector/module/token-factory";
 
 export interface ModuleFactory {
   type: Type<any>;
@@ -10,7 +10,7 @@ export interface ModuleFactory {
 }
 
 export class ModuleCompiler {
-  constructor(private readonly moduleTokenFactory = new ModuleTokenFactory()) {}
+  constructor(private readonly moduleTokenFactory = new TokenFactory()) {}
 
   public async compile(metatype: Type<any> | DynamicModule | Promise<DynamicModule>): Promise<ModuleFactory> {
     const { type, dynamicMetadata } = this.extractMetadata(await metatype);
