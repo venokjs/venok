@@ -196,7 +196,7 @@ export class ConsoleLogger implements LoggerService {
   }
 
   protected formatPid(pid: number) {
-    return `[Nest] ${pid}  - `;
+    return `[Venok] ${pid}  - `;
   }
 
   protected formatContext(context: string): string {

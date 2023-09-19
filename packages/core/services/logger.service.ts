@@ -319,7 +319,7 @@ export class Logger implements LoggerService {
     }
     if (isObject(logger)) {
       if (logger instanceof Logger && logger.constructor !== Logger) {
-        const errorMessage = `Using the "extends Logger" instruction is not allowed in Nest v9. Please, use "extends ConsoleLogger" instead.`;
+        const errorMessage = `Using the "extends Logger" instruction is not allowed. Please, use "extends ConsoleLogger" instead.`;
         this.staticInstanceRef.error(errorMessage);
         throw new Error(errorMessage);
       }

@@ -31,7 +31,7 @@ export type ReflectableDecorator<TParam, TTransformed = TParam> = ((opts?: TPara
 };
 
 /**
- * Helper class providing Nest reflection capabilities.
+ * Helper class providing Venok reflection capabilities.
  *
  * @publicApi
  */
