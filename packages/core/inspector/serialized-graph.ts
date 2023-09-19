@@ -4,7 +4,7 @@ import { Entrypoint } from "@venok/core/inspector/interfaces/entrypoint.interfac
 import { Extras, OrphanedEnhancerDefinition } from "@venok/core/inspector/interfaces/extras.interface";
 import { InjectionToken } from "@venok/core/interfaces/modules";
 import { ApplicationConfig } from "@venok/core/application-config";
-import { Ref } from "@venok/core/injector/module/ref";
+import { ModuleRef } from "@venok/core/injector/module/ref";
 import { LazyModuleLoader } from "@venok/core/injector/module/lazy/loader";
 import { ModulesContainer } from "@venok/core/injector/module/container";
 import { Reflector } from "@venok/core/services";
@@ -29,7 +29,7 @@ export class SerializedGraph {
 
   private static readonly INTERNAL_PROVIDERS: Array<InjectionToken> = [
     ApplicationConfig,
-    Ref,
+    ModuleRef,
     // HttpAdapterHost,
     LazyModuleLoader,
     // ExternalContextCreator,

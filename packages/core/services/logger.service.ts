@@ -311,19 +311,19 @@ export class Logger implements LoggerService {
   }
 
   static overrideLogger(logger: LoggerService | LogLevel[] | boolean) {
-    if (Array.isArray(logger)) {
+    if (Array.isArray(logger) && this.staticInstanceRef.setLogLevels) {
       Logger.logLevels = logger;
-      if ("setLogLevels" in this.staticInstanceRef && this.staticInstanceRef.setLogLevels) {
-        return this.staticInstanceRef.setLogLevels(logger);
-      }
+      return this.staticInstanceRef.setLogLevels(logger);
     }
     if (isObject(logger)) {
       if (logger instanceof Logger && logger.constructor !== Logger) {
-        const errorMessage = `Using the "extends Logger" instruction is not allowed. Please, use "extends ConsoleLogger" instead.`;
+        const errorMessage = `Using the "extends Logger" instruction is not allowed in Nest v9. Please, use "extends ConsoleLogger" instead.`;
         this.staticInstanceRef.error(errorMessage);
         throw new Error(errorMessage);
       }
       this.staticInstanceRef = logger as LoggerService;
+    } else {
+      this.staticInstanceRef = undefined as any;
     }
   }
 

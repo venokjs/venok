@@ -1,3 +1,4 @@
+export * from "./definition.interface";
 export * from "./dynamic-module.interface";
 export * from "./forward-reference.interface";
 export * from "./injection-token.interface";

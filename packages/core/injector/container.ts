@@ -40,7 +40,7 @@ export class VenokContainer {
   }
 
   public async addModule(
-    metatype: ModuleMetatype,
+    metatype: ModuleMetatype | undefined,
     scope: ModuleScope,
   ): Promise<
     | {

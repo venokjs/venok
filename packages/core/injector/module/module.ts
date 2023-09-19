@@ -15,7 +15,7 @@ import { EnhancerSubtype, ENTRY_PROVIDER_WATERMARK } from "@venok/core/constants
 import { isFunction, isNull, isObject, isString, isSymbol, isUndefined } from "@venok/core/utils/shared.utils";
 import { UuidFactory } from "@venok/core/helpers/uuid.helper";
 import { randomStringGenerator } from "@venok/core/utils/random-string-generator.util";
-import { Ref, ModuleRefGetOrResolveOpts } from "@venok/core/injector/module/ref";
+import { ModuleRef, ModuleRefGetOrResolveOpts } from "@venok/core/injector/module/ref";
 import { VenokContainer } from "@venok/core/injector/container";
 import { getClassScope } from "@venok/core/injector/helpers/class-scope.helper";
 import { isDurable } from "@venok/core/injector/helpers/is-durable.helper";
@@ -131,11 +131,11 @@ export class Module {
   public addModuleRef() {
     const moduleRef = this.createModuleReferenceType();
     this._providers.set(
-      Ref,
+      ModuleRef,
       new InstanceWrapper({
-        token: Ref,
-        name: Ref.name,
-        metatype: Ref as any,
+        token: ModuleRef,
+        name: ModuleRef.name,
+        metatype: ModuleRef as any,
         isResolved: true,
         instance: new moduleRef(),
         host: this,
@@ -462,10 +462,10 @@ export class Module {
     return [...this._providers].filter(([_, wrapper]) => !wrapper.isAlias);
   }
 
-  public createModuleReferenceType(): Type<Ref> {
+  public createModuleReferenceType(): Type<ModuleRef> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
-    return class extends Ref {
+    return class extends ModuleRef {
       constructor() {
         super(self.container);
       }

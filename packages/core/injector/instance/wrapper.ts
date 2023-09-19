@@ -50,7 +50,7 @@ interface InstanceMetadataStore {
   enhancers?: InstanceWrapper[];
 }
 
-export class InstanceWrapper<T = any | undefined> {
+export class InstanceWrapper<T = any> {
   public readonly isAlias: boolean = false;
   public scope?: Scope = Scope.DEFAULT;
 
@@ -384,7 +384,7 @@ export class InstanceWrapper<T = any | undefined> {
   }
 
   private isDebugMode(): boolean {
-    return !!process.env.NEST_DEBUG;
+    return !!process.env.VENOK_DEBUG;
   }
 
   private generateUuid(): string {

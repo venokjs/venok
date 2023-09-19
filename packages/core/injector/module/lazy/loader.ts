@@ -3,7 +3,7 @@ import { ModuleCompiler } from "@venok/core/injector/module/compiler";
 import { ModulesContainer } from "@venok/core/injector/module/container";
 import { DynamicModule } from "@venok/core/interfaces/modules";
 import { Type } from "@venok/core/interfaces";
-import { Ref } from "@venok/core/injector/module/ref";
+import { ModuleRef } from "@venok/core/injector/module/ref";
 import { LazyModuleLoaderLoadOptions } from "@venok/core/injector/module/lazy/options";
 import { Module } from "@venok/core/injector/module/module";
 import { ModuleOverride } from "@venok/core/interfaces/modules/override.interface";
@@ -22,7 +22,7 @@ export class LazyModuleLoader {
   public async load(
     loaderFn: () => Promise<Type<unknown> | DynamicModule> | Type<unknown> | DynamicModule,
     loadOpts?: LazyModuleLoaderLoadOptions,
-  ): Promise<Ref> {
+  ): Promise<ModuleRef> {
     this.registerLoggerConfiguration(loadOpts);
 
     const moduleClassOrDynamicDefinition = await loaderFn();
@@ -56,8 +56,8 @@ export class LazyModuleLoader {
     return new Map(moduleInstances.map((ref) => [ref.token, ref]));
   }
 
-  private getTargetModuleRef(moduleInstance: Module): Ref {
-    const moduleRefInstanceWrapper = moduleInstance.getProviderByKey(Ref);
+  private getTargetModuleRef(moduleInstance: Module): ModuleRef {
+    const moduleRefInstanceWrapper = moduleInstance.getProviderByKey(ModuleRef);
     return moduleRefInstanceWrapper.instance;
   }
 }

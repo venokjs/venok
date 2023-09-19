@@ -23,7 +23,7 @@ export interface ModuleRefGetOrResolveOpts {
   each?: boolean;
 }
 
-export abstract class Ref extends AbstractInstanceResolver {
+export abstract class ModuleRef extends AbstractInstanceResolver {
   protected readonly injector = new Injector();
   private _instanceLinksHost!: InstanceLinksHost;
 

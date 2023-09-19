@@ -106,7 +106,7 @@ export class GraphInspector {
         sourceModuleName: moduleRef.name,
         durable: wrapper.isDependencyTreeDurable(),
         static: wrapper.isDependencyTreeStatic(),
-        scope: wrapper.scope,
+        scope: wrapper.scope as any,
         transient: wrapper.isTransient,
         exported: moduleRef.exports.has(wrapper.token),
         token: wrapper.token,

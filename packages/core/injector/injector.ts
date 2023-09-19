@@ -150,22 +150,6 @@ export class Injector {
     }
   }
 
-  public async loadMiddleware(
-    wrapper: InstanceWrapper,
-    collection: Map<InjectionToken, InstanceWrapper>,
-    moduleRef: Module,
-    contextId = STATIC_CONTEXT,
-    inquirer?: InstanceWrapper,
-  ) {
-    const { metatype, token } = wrapper;
-    const targetWrapper = collection.get(token) as InstanceWrapper;
-    if (!isUndefined(targetWrapper.instance)) {
-      return;
-    }
-    targetWrapper.instance = Object.create(metatype!.prototype);
-    await this.loadInstance(wrapper, collection, moduleRef, contextId, inquirer || wrapper);
-  }
-
   public async loadInjectable<T = any>(
     wrapper: InstanceWrapper<T>,
     moduleRef: Module,
@@ -202,7 +186,7 @@ export class Injector {
     inject: InjectorDependency[] | null,
     callback: (args: unknown[]) => void | Promise<void>,
     contextId = STATIC_CONTEXT,
-    inquirer: InstanceWrapper,
+    inquirer?: InstanceWrapper,
     parentInquirer?: InstanceWrapper,
   ) {
     let inquirerId = this.getInquirerId(inquirer);
@@ -770,7 +754,7 @@ export class Injector {
   }
 
   private isDebugMode(): boolean {
-    return !!process.env.NEST_DEBUG;
+    return !!process.env.VENOK_DEBUG;
   }
 
   private getContextId(contextId: ContextId, instanceWrapper: InstanceWrapper): ContextId {

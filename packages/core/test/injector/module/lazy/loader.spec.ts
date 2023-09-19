@@ -24,17 +24,17 @@ describe("LazyModuleLoader", () => {
   }
 
   beforeEach(() => {
-    const nestContainer = new VenokContainer();
-    const graphInspector = new GraphInspector(nestContainer);
-    dependenciesScanner = new DependenciesScanner(nestContainer, new MetadataScanner(), graphInspector);
+    const venokContainer = new VenokContainer();
+    const graphInspector = new GraphInspector(venokContainer);
+    dependenciesScanner = new DependenciesScanner(venokContainer, new MetadataScanner(), graphInspector);
 
     const injector = new Injector();
-    instanceLoader = new InstanceLoader(nestContainer, injector, graphInspector, new NoopLogger());
-    modulesContainer = nestContainer.getModules();
+    instanceLoader = new InstanceLoader(venokContainer, injector, graphInspector, new NoopLogger());
+    modulesContainer = venokContainer.getModules();
     lazyModuleLoader = new LazyModuleLoader(
       dependenciesScanner,
       instanceLoader,
-      nestContainer["moduleCompiler"],
+      venokContainer["moduleCompiler"],
       modulesContainer,
     );
   });
