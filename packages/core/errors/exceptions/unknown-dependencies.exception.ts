@@ -1,5 +1,5 @@
 import { InjectorDependencyContext } from "../../injector/injector";
-import { Module } from "../../injector/module";
+import { Module } from "../../injector/module/module";
 import { UNKNOWN_DEPENDENCIES_MESSAGE } from "../messages";
 import { RuntimeException } from "./runtime.exception";
 
