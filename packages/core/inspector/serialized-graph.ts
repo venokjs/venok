@@ -3,7 +3,7 @@ import { Edge } from "@venok/core/inspector/interfaces/edge.interface";
 import { Entrypoint } from "@venok/core/inspector/interfaces/entrypoint.interface";
 import { Extras, OrphanedEnhancerDefinition } from "@venok/core/inspector/interfaces/extras.interface";
 import { InjectionToken } from "@venok/core/interfaces/modules";
-import { ApplicationConfig } from "@venok/core/application-config";
+import { ApplicationConfig } from "@venok/core/application/config";
 import { ModuleRef } from "@venok/core/injector/module/ref";
 import { LazyModuleLoader } from "@venok/core/injector/module/lazy/loader";
 import { ModulesContainer } from "@venok/core/injector/module/container";

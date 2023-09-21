@@ -19,7 +19,7 @@ import { ModuleRef, ModuleRefGetOrResolveOpts } from "@venok/core/injector/modul
 import { VenokContainer } from "@venok/core/injector/container";
 import { getClassScope } from "@venok/core/injector/helpers/class-scope.helper";
 import { isDurable } from "@venok/core/injector/helpers/is-durable.helper";
-import { ApplicationConfig } from "@venok/core/application-config";
+import { ApplicationConfig } from "@venok/core/application/config";
 import { createContextId } from "@venok/core/helpers/context-id-factory.helper";
 
 export class Module {
@@ -27,7 +27,6 @@ export class Module {
   private readonly _imports = new Set<Module>();
   private readonly _providers = new Map<InjectionToken, InstanceWrapper<Injectable>>();
   private readonly _injectables = new Map<InjectionToken, InstanceWrapper<Injectable>>();
-  private readonly _middlewares = new Map<InjectionToken, InstanceWrapper<Injectable>>();
   private readonly _entryProviderKeys = new Set<InjectionToken>();
   private readonly _exports = new Set<InjectionToken>();
 
@@ -78,10 +77,6 @@ export class Module {
 
   get providers(): Map<InjectionToken, InstanceWrapper<Injectable>> {
     return this._providers;
-  }
-
-  get middlewares(): Map<InjectionToken, InstanceWrapper<Injectable>> {
-    return this._middlewares;
   }
 
   get imports(): Set<Module> {
@@ -452,10 +447,6 @@ export class Module {
 
   public getInjectableById<T = any>(id: string): InstanceWrapper<T> | undefined {
     return Array.from(this._injectables.values()).find((item) => item.id === id) as InstanceWrapper<T>;
-  }
-
-  public getMiddlewareById<T = any>(id: string): InstanceWrapper<T> | undefined {
-    return Array.from(this._middlewares.values()).find((item) => item.id === id) as InstanceWrapper<T>;
   }
 
   public getNonAliasProviders(): Array<[InjectionToken, InstanceWrapper<Injectable>]> {
