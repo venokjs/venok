@@ -1,6 +1,10 @@
 import { DynamicModule, Type } from "@venok/core/interfaces";
 import { LoggerService, LogLevel } from "@venok/core/services/logger.service";
 import { ShutdownSignal } from "@venok/core/application/context";
+import { VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface";
+import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
+import { ExceptionFilter } from "@venok/core/interfaces/features/exception-filter.interface";
+import { CanActivate } from "@venok/core/interfaces/features/guards.interface";
 
 export interface GetOrResolveOptions {
   /**
@@ -117,6 +121,36 @@ export interface VenokApplicationContext {
    * @returns {void}
    */
   useLogger(logger: LoggerService | LogLevel[] | false): void;
+
+  /**
+   * Registers exception filters as global filters (will be used within
+   * every route handler)
+   *
+   * @param {...ExceptionFilter} filters
+   */
+  useGlobalFilters(...filters: ExceptionFilter[]): this;
+
+  /**
+   * Registers pipes as global pipes (will be used within every route handler)
+   *
+   * @param {...PipeTransform} pipes
+   */
+  useGlobalPipes(...pipes: PipeTransform<any>[]): this;
+
+  /**
+   * Registers interceptors as global interceptors (will be used within
+   * every route handler)
+   *
+   * @param {...NestInterceptor} interceptors
+   */
+  useGlobalInterceptors(...interceptors: VenokInterceptor[]): this;
+
+  /**
+   * Registers guards as global guards (will be used within every route handler)
+   *
+   * @param {...CanActivate} guards
+   */
+  useGlobalGuards(...guards: CanActivate[]): this;
 
   /**
    * Prints buffered logs and detaches buffer.
