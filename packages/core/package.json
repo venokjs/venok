@@ -16,9 +16,18 @@
   "scripts": {
     "build": "venok build",
     "postbuild": "ts-node ../../tools/move.ts core",
-    "test": "mocha -r ts-node/register test/**/*.spec.ts"
+    "test": "mocha test/**/*.spec.ts"
   },
   "dependencies": {
     "fast-safe-stringify": "^2.1.1"
+  },
+  "mocha": {
+    "require": [
+      "ts-node/register",
+      "tsconfig-paths/register",
+      "../../node_modules/reflect-metadata/Reflect.js",
+      "../../hooks/mocha-init-hook.ts"
+    ],
+    "exit": true
   }
 }
