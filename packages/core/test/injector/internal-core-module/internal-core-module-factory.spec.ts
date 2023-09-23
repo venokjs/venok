@@ -7,6 +7,7 @@ import { InternalCoreModule } from "@venok/core/injector/internal-core-module/in
 import { ClassProvider, FactoryProvider } from "@venok/core/interfaces/modules";
 import { LazyModuleLoader } from "@venok/core/injector/module/lazy/loader";
 import { SerializedGraph } from "@venok/core/inspector/serialized-graph";
+import { ExternalContextCreator } from "@venok/core/context/external/creator";
 
 describe("InternalCoreModuleFactory", () => {
   it("should return the internal core module definition", () => {
@@ -24,7 +25,7 @@ describe("InternalCoreModuleFactory", () => {
       (item) => (item as ClassProvider | FactoryProvider).provide,
     );
     expect(providedInjectables).to.deep.equal([
-      // ExternalContextCreator,
+      ExternalContextCreator,
       ModulesContainer,
       // HttpAdapterHost,
       LazyModuleLoader,
