@@ -9,9 +9,9 @@ import {
   UndefinedForwardRefException,
   UnknownModuleException,
 } from "@venok/core/errors/exceptions";
-import { EnhancerSubtype, GLOBAL_MODULE_METADATA } from "@venok/core/constants";
+import { EnhancerSubtype, GLOBAL_MODULE_METADATA, REQUEST } from "@venok/core/constants";
 import { ContextId } from "@venok/core/injector/instance/wrapper";
-import { ApplicationConfig } from "@venok/core/application-config";
+import { ApplicationConfig } from "@venok/core/application/config";
 import { InitializeOnPreviewAllowlist } from "@venok/core/inspector/initialize-on-preview.allowlist";
 import { DiscoverableMetaHostCollection } from "@venok/core/discovery/discoverable-meta-host-collection";
 import { SerializedGraph } from "@venok/core/inspector/serialized-graph";
@@ -261,13 +261,13 @@ export class VenokContainer {
     return this.moduleTokenFactory;
   }
 
-  // public registerRequestProvider<T = any>(request: T, contextId: ContextId) {
-  //   const wrapper = this.internalCoreModule.getProviderByKey(REQUEST);
-  //   wrapper.setInstanceByContextId(contextId, {
-  //     instance: request,
-  //     isResolved: true,
-  //   });
-  // }
+  public registerRequestProvider<T = any>(request: T, contextId: ContextId) {
+    const wrapper = this.internalCoreModule.getProviderByKey(REQUEST);
+    wrapper.setInstanceByContextId(contextId, {
+      instance: request,
+      isResolved: true,
+    });
+  }
 
   private shouldInitOnPreview(type: Type) {
     return InitializeOnPreviewAllowlist.has(type);

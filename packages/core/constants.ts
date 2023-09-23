@@ -1,3 +1,12 @@
+export const MESSAGES = {
+  APPLICATION_START: `Starting Venok application...`,
+  APPLICATION_READY: `Venok application successfully started`,
+  UNKNOWN_EXCEPTION_MESSAGE: "Internal server error",
+  ERROR_DURING_SHUTDOWN: "Error happened during shutdown",
+};
+
+export const FORBIDDEN_MESSAGE = "Forbidden resource";
+
 export const MODULE_METADATA = {
   IMPORTS: "imports",
   PROVIDERS: "providers",
