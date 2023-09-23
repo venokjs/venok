@@ -43,7 +43,7 @@ export interface ConfigurableModuleBuilderOptions {
 }
 
 /**
- * Factory that lets you create configurable modules and
+ * Factory that lets you create configurable module and
  * provides a way to reduce the majority of dynamic module boilerplate.
  *
  * @publicApi
@@ -108,9 +108,9 @@ export class ConfigurableModuleBuilder<
   }
 
   /**
-   * Dynamic modules must expose public static methods that let you pass in
+   * Dynamic module must expose public static methods that let you pass in
    * configuration parameters (control the module's behavior from the outside).
-   * Some frequently used names that you may have seen in other modules are:
+   * Some frequently used names that you may have seen in other module are:
    * "forRoot", "forFeature", "register", "configure".
    *
    * This method "setClassMethodName" lets you specify the name of the
@@ -130,7 +130,7 @@ export class ConfigurableModuleBuilder<
   }
 
   /**
-   * Asynchronously configured modules (that rely on other modules, i.e. "ConfigModule")
+   * Asynchronously configured module (that rely on other module, i.e. "ConfigModule")
    * let you pass the configuration factory class that will be registered and instantiated as a provider.
    * This provider then will be used to retrieve the module's configuration. To provide the configuration,
    * the corresponding factory method must be implemented.
@@ -153,7 +153,7 @@ export class ConfigurableModuleBuilder<
 
   /**
    * Returns an object consisting of multiple properties that lets you
-   * easily construct dynamic configurable modules. See "ConfigurableModuleHost" interface for more details.
+   * easily construct dynamic configurable module. See "ConfigurableModuleHost" interface for more details.
    */
   build(): ConfigurableModuleHost<ModuleOptions, StaticMethodKey, FactoryClassMethodKey, ExtraModuleDefinitionOptions> {
     this.staticMethodKey ??= DEFAULT_METHOD_KEY as StaticMethodKey;
@@ -172,13 +172,11 @@ export class ConfigurableModuleBuilder<
   }
 
   private constructInjectionTokenString(): string {
-    const moduleNameInSnakeCase =
-      this.options.moduleName ??
-      randomStringGenerator()
-        .trim()
-        .split(/(?=[A-Z])/)
-        .join("_")
-        .toUpperCase();
+    const moduleNameInSnakeCase = (this.options.moduleName ?? randomStringGenerator())
+      .trim()
+      .split(/(?=[A-Z])/)
+      .join("_")
+      .toUpperCase();
     return `${moduleNameInSnakeCase}_MODULE_OPTIONS`;
   }
 
