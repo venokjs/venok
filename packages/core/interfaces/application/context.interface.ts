@@ -141,7 +141,7 @@ export interface VenokApplicationContext {
    * Registers interceptors as global interceptors (will be used within
    * every route handler)
    *
-   * @param {...NestInterceptor} interceptors
+   * @param {...VenokInterceptor} interceptors
    */
   useGlobalInterceptors(...interceptors: VenokInterceptor[]): this;
 
