@@ -91,7 +91,7 @@ export class Reflector {
    * @example
    * `const roles = this.reflector.get<string[]>('roles', context.getHandler());`
    *
-   * @param metadataKey lookup key or decorator for metadata to retrieve
+   * @param metadataKeyOrDecorator lookup key or decorator for metadata to retrieve
    * @param target context (decorated object) to retrieve metadata from
    *
    */

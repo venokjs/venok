@@ -12,7 +12,6 @@ import { isEmpty } from "@venok/core/helpers/shared.helper";
 import { isObservable, lastValueFrom } from "rxjs";
 import { RuntimeException } from "@venok/core/errors/exceptions";
 import { ContextId } from "@venok/core/injector/instance/wrapper";
-import { BaseExceptionFilterContext } from "@venok/core/exceptions/filter-context";
 import { ContextUtils, ParamProperties } from "@venok/core/helpers/context.helper";
 import { ExternalErrorProxy } from "@venok/core/context/external/proxy";
 import { ExternalExceptionFilterContext } from "@venok/core/exceptions/external/filter-context";

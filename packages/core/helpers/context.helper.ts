@@ -66,11 +66,10 @@ export class ContextUtils {
     instance?: object,
     callback?: Function,
   ): (args: unknown[]) => ExecutionContextHost {
-    const contextFactory = (args: unknown[]) => {
+    return (args: unknown[]) => {
       const ctx = new ExecutionContextHost(args, instance && (instance.constructor as Type<unknown>), callback);
       ctx.setType(contextType);
       return ctx;
     };
-    return contextFactory;
   }
 }

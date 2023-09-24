@@ -29,6 +29,7 @@ function callOperator(instances: InstanceWrapper[], signal?: string): Promise<an
  * (providers / controllers).
  *
  * @param module The module which will be initialized
+ * @param signal
  */
 export async function callAppShutdownHook(module: Module, signal?: string): Promise<any> {
   const providers = module.getNonAliasProviders();
