@@ -1,4 +1,4 @@
-import { isUndefined } from "@venok/core/utils/shared.utils";
+import { isUndefined } from "@venok/core/helpers/shared.helper";
 import { PROPERTY_DEPS_METADATA, SELF_DECLARED_DEPS_METADATA } from "@venok/core/constants";
 
 /**

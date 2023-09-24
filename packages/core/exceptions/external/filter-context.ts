@@ -4,7 +4,7 @@ import { BaseExceptionFilterContext } from "@venok/core/exceptions/filter-contex
 import { STATIC_CONTEXT } from "@venok/core/injector/constants";
 import { ExceptionFilterMetadata } from "@venok/core/interfaces/features/exception-filter.interface";
 import { EXCEPTION_FILTERS_METADATA } from "@venok/core/constants";
-import { isEmpty } from "@venok/core/utils/shared.utils";
+import { isEmpty } from "@venok/core/helpers/shared.helper";
 import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 import { ExternalExceptionsHandler } from "@venok/core/exceptions/external/handler";
 

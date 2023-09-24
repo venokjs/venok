@@ -1,7 +1,7 @@
 import { CustomDecorator, SetMetadata } from "@venok/core/decorators/set-metadata.decorator";
 import { uid } from "uid";
 import { Type } from "@venok/core/interfaces";
-import { isEmpty, isObject } from "@venok/core/utils/shared.utils";
+import { isEmpty, isObject } from "@venok/core/helpers/shared.helper";
 
 /**
  * @publicApi

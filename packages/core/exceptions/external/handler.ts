@@ -1,7 +1,7 @@
 import { ExternalExceptionFilter } from "@venok/core/exceptions/external/filter";
 import { ArgumentsHost } from "@venok/core/interfaces/context/arguments-host.interface";
 import { InvalidExceptionFilterException } from "@venok/core/errors/exceptions/invalid-exception-filter.exception";
-import { isEmpty } from "@venok/core/utils/shared.utils";
+import { isEmpty } from "@venok/core/helpers/shared.helper";
 import { ExceptionFilterMetadata } from "@venok/core/interfaces/features/exception-filter.interface";
 import { selectExceptionFilterMetadata } from "@venok/core/exceptions/select-exception-filter-metadata";
 

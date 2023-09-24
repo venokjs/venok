@@ -2,7 +2,7 @@ import { ModulesContainer } from "@venok/core/injector/module/container";
 import { CustomDecorator, SetMetadata } from "@venok/core/decorators/set-metadata.decorator";
 import { Injectable } from "@venok/core/decorators/injectable.decorator";
 import { uid } from "uid";
-import { DiscoverableMetaHostCollection } from "@venok/core/discovery/discoverable-meta-host-collection";
+import { DiscoverableMetaHostCollection } from "@venok/core/discovery/meta-host-collection";
 import { Module } from "@venok/core/injector/module/module";
 import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 import { flatten } from "@venok/core/helpers/flatten.helper";

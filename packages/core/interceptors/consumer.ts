@@ -1,5 +1,5 @@
 import { ContextType } from "@venok/core/interfaces/context/arguments-host.interface";
-import { isEmpty } from "@venok/core/utils/shared.utils";
+import { isEmpty } from "@venok/core/helpers/shared.helper";
 import { defer, mergeAll, Observable, switchMap } from "rxjs";
 import { AsyncResource } from "node:async_hooks";
 import { fromPromise } from "rxjs/internal/observable/innerFrom";

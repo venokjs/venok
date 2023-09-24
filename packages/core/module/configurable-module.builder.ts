@@ -13,7 +13,7 @@ import {
   ConfigurableModuleOptionsFactory,
 } from "@venok/core/interfaces/modules/configurable";
 import { generateOptionsInjectionToken, getInjectionProviders } from "@venok/core/module/helpers";
-import { randomStringGenerator } from "@venok/core/utils/random-string-generator.util";
+import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper";
 
 /**
  * @publicApi

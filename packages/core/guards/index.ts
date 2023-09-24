@@ -1,2 +1,2 @@
-export * from "./guards-consumer";
-export * from "./guards-context-creator";
+export * from "./consumer";
+export * from "./context-creator";

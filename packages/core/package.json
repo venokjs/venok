@@ -19,7 +19,9 @@
     "test": "mocha test/**/*.spec.ts"
   },
   "dependencies": {
-    "fast-safe-stringify": "^2.1.1"
+    "fast-safe-stringify": "^2.1.1",
+    "uid": "^2.0.2",
+    "uuid": "^9.0.1"
   },
   "mocha": {
     "require": [

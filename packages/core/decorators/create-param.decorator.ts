@@ -2,7 +2,7 @@ import { uid } from "uid";
 import { Type } from "@venok/core/interfaces";
 import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
 import { CUSTOM_ROUTE_ARGS_METADATA, ROUTE_ARGS_METADATA } from "@venok/core/constants";
-import { isFunction, isNull } from "@venok/core/utils/shared.utils";
+import { isFunction, isNull } from "@venok/core/helpers/shared.helper";
 
 export type ParamDecoratorEnhancer = ParameterDecorator;
 

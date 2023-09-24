@@ -3,8 +3,8 @@ import stringify from "fast-safe-stringify";
 
 import { Type } from "@venok/core/interfaces";
 import { DynamicModule } from "@venok/core/interfaces/modules";
-import { randomStringGenerator } from "@venok/core/utils/random-string-generator.util";
-import { isFunction, isSymbol } from "@venok/core/utils/shared.utils";
+import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper";
+import { isFunction, isSymbol } from "@venok/core/helpers/shared.helper";
 
 const CLASS_STR = "class ";
 const CLASS_STR_LEN = CLASS_STR.length;

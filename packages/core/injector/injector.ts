@@ -9,7 +9,7 @@ import { STATIC_CONTEXT } from "@venok/core/injector/constants";
 import { Logger, LoggerService } from "@venok/core/services/logger.service";
 import { Module } from "@venok/core/injector/module/module";
 import { CircularDependencyException, RuntimeException } from "@venok/core/errors/exceptions";
-import { isFunction, isNull, isObject, isString, isSymbol, isUndefined } from "@venok/core/utils/shared.utils";
+import { isFunction, isNull, isObject, isString, isSymbol, isUndefined } from "@venok/core/helpers/shared.helper";
 import { Injectable, Type, WithRequired } from "@venok/core/interfaces";
 import { SettlementSignal } from "@venok/core/injector/settlement-signal";
 import {

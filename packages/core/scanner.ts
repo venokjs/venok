@@ -39,7 +39,7 @@ import { UndefinedModuleException } from "@venok/core/errors/exceptions/undefine
 import { InvalidModuleException } from "@venok/core/errors/exceptions/invalid-module.exception";
 import { InvalidClassModuleException } from "@venok/core/errors/exceptions/invalid-class-module.exception";
 import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
-import { isFunction, isNull, isUndefined } from "@venok/core/utils/shared.utils";
+import { isFunction, isNull, isUndefined } from "@venok/core/helpers/shared.helper";
 import { CircularDependencyException } from "@venok/core/errors/exceptions";
 import { UuidFactory } from "@venok/core/helpers/uuid.helper";
 import { getClassScope } from "@venok/core/injector/helpers/class-scope.helper";

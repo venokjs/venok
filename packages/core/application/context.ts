@@ -9,7 +9,7 @@ import { VenokContainer } from "@venok/core/injector/container";
 import { UnknownModuleException } from "@venok/core/errors/exceptions";
 import { createContextId } from "@venok/core/helpers/context-id-factory.helper";
 import { ContextId } from "@venok/core/injector/instance/wrapper";
-import { isEmpty } from "@venok/core/utils/shared.utils";
+import { isEmpty } from "@venok/core/helpers/shared.helper";
 import {
   callAppShutdownHook,
   callBeforeAppShutdownHook,

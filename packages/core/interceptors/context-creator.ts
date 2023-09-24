@@ -2,13 +2,13 @@ import { VenokContainer } from "@venok/core/injector/container";
 import { ContextCreator } from "@venok/core/context/creator";
 import { ApplicationConfig } from "@venok/core/application/config";
 import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { PIPES_METADATA } from "@venok/core/constants";
-import { isEmpty, isFunction } from "@venok/core/utils/shared.utils";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
+import { INTERCEPTORS_METADATA } from "@venok/core/constants";
+import { isEmpty, isFunction } from "@venok/core/helpers/shared.helper";
+import { VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface";
 import { Type } from "@venok/core/interfaces";
+import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 
-export class PipesContextCreator extends ContextCreator {
+export class InterceptorsContextCreator extends ContextCreator {
   private moduleContext!: string;
 
   constructor(
@@ -21,12 +21,12 @@ export class PipesContextCreator extends ContextCreator {
   public create(
     instance: object,
     callback: (...args: unknown[]) => unknown,
-    moduleKey: string,
+    module: string,
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
-  ): PipeTransform[] {
-    this.moduleContext = moduleKey;
-    return this.createContext(instance, callback, PIPES_METADATA, contextId, inquirerId);
+  ): VenokInterceptor[] {
+    this.moduleContext = module;
+    return this.createContext(instance, callback, INTERCEPTORS_METADATA, contextId, inquirerId);
   }
 
   public createConcreteContext<T extends any[], R extends any[]>(
@@ -38,22 +38,22 @@ export class PipesContextCreator extends ContextCreator {
       return [] as any as R;
     }
     return metadata
-      .filter((pipe: any) => pipe && (pipe.name || pipe.transform))
-      .map((pipe) => this.getPipeInstance(pipe, contextId, inquirerId))
-      .filter((pipe) => pipe && pipe.transform && isFunction(pipe.transform)) as R;
+      .filter((interceptor) => interceptor && (interceptor.name || interceptor.intercept))
+      .map((interceptor) => this.getInterceptorInstance(interceptor, contextId, inquirerId))
+      .filter((interceptor: any) => interceptor && isFunction(interceptor.intercept)) as R;
   }
 
-  public getPipeInstance(
-    pipe: Function | PipeTransform,
+  public getInterceptorInstance(
+    metatype: Function | VenokInterceptor,
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
-  ): PipeTransform | null {
-    const isObject = (pipe as PipeTransform).transform;
+  ): VenokInterceptor | null {
+    const isObject = (metatype as VenokInterceptor).intercept;
     // @ts-ignore
     if (isObject) {
-      return pipe as PipeTransform;
+      return metatype as VenokInterceptor;
     }
-    const instanceWrapper = this.getInstanceByMetatype(pipe as Type<unknown>);
+    const instanceWrapper = this.getInstanceByMetatype(metatype as Type<unknown>);
     if (!instanceWrapper) {
       return null;
     }
@@ -80,20 +80,16 @@ export class PipesContextCreator extends ContextCreator {
     if (!this.config) {
       return [] as any as T;
     }
-    const globalPipes = this.config.getGlobalPipes() as T;
+    const globalInterceptors = this.config.getGlobalInterceptors() as T;
     if (contextId === STATIC_CONTEXT && !inquirerId) {
-      return globalPipes;
+      return globalInterceptors;
     }
-    const scopedPipeWrappers = this.config.getGlobalRequestPipes() as InstanceWrapper[];
-    const scopedPipes = scopedPipeWrappers
+    const scopedInterceptorWrappers = this.config.getGlobalRequestInterceptors() as InstanceWrapper[];
+    const scopedInterceptors = scopedInterceptorWrappers
       .map((wrapper) => wrapper.getInstanceByContextId(this.getContextId(contextId, wrapper), inquirerId))
       .filter((host) => !!host)
       .map((host) => host.instance);
 
-    return globalPipes.concat(scopedPipes) as T;
-  }
-
-  public setModuleContext(context: string) {
-    this.moduleContext = context;
+    return globalInterceptors.concat(scopedInterceptors) as T;
   }
 }

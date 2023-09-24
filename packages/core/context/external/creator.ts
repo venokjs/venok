@@ -8,7 +8,7 @@ import { STATIC_CONTEXT } from "@venok/core/injector/constants";
 import { ContextType } from "@venok/core/interfaces/context/arguments-host.interface";
 import { CUSTOM_ROUTE_ARGS_METADATA, FORBIDDEN_MESSAGE } from "@venok/core/constants";
 import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
-import { isEmpty } from "@venok/core/utils/shared.utils";
+import { isEmpty } from "@venok/core/helpers/shared.helper";
 import { isObservable, lastValueFrom } from "rxjs";
 import { RuntimeException } from "@venok/core/errors/exceptions";
 import { ContextId } from "@venok/core/injector/instance/wrapper";

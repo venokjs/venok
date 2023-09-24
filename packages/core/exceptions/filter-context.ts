@@ -1,7 +1,7 @@
 import { VenokContainer } from "@venok/core/injector/container";
 import { ContextCreator } from "@venok/core/context/creator";
 import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { isEmpty, isFunction } from "@venok/core/utils/shared.utils";
+import { isEmpty, isFunction } from "@venok/core/helpers/shared.helper";
 import { Type } from "@venok/core/interfaces";
 import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 import { FILTER_CATCH_EXCEPTIONS } from "@venok/core/constants";

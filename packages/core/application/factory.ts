@@ -11,7 +11,7 @@ import { MetadataScanner } from "@venok/core/metadata-scanner";
 import { DependenciesScanner } from "@venok/core/scanner";
 import { ExceptionsZone } from "@venok/core/exceptions/zone/zone";
 import { MESSAGES } from "@venok/core/constants";
-import { isFunction, isNull } from "@venok/core/utils/shared.utils";
+import { isFunction, isNull } from "@venok/core/helpers/shared.helper";
 import { NoopGraphInspector } from "@venok/core/inspector/noop-graph-inspector";
 import { ApplicationContextOptions } from "@venok/core/interfaces/application/context-options.interface";
 import { rethrow } from "@venok/core/helpers/rethrow.helper";
