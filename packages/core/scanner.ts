@@ -4,7 +4,6 @@ import {
   ExistingProvider,
   FactoryProvider,
   ForwardReference,
-  Injectable,
   InjectionToken,
   ModuleDefinition,
   Provider,
@@ -49,6 +48,7 @@ import { flatten } from "@venok/core/helpers/flatten.helper";
 import { VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface";
 import { CanActivate } from "@venok/core/interfaces/features/guards.interface";
 import { ExceptionFilter } from "@venok/core/interfaces/features/exception-filter.interface";
+import { Injectable } from "@venok/core/interfaces/injectable.interface";
 
 interface ApplicationProviderWrapper {
   moduleKey: string;

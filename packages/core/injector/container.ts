@@ -1,5 +1,5 @@
 import { DynamicModule, Provider } from "@venok/core/interfaces/modules";
-import { Injectable, Type } from "@venok/core/interfaces";
+import { Type } from "@venok/core/interfaces";
 import { Module } from "@venok/core/injector/module/module";
 import { TokenFactory } from "@venok/core/injector/module/token-factory";
 import { ModuleCompiler, ModuleFactory } from "@venok/core/injector/module/compiler";
@@ -16,6 +16,7 @@ import { InitializeOnPreviewAllowlist } from "@venok/core/inspector/initialize-o
 import { DiscoverableMetaHostCollection } from "@venok/core/discovery/meta-host-collection";
 import { SerializedGraph } from "@venok/core/inspector/serialized-graph";
 import { InternalCoreModule } from "@venok/core/injector/internal-core-module/internal-core-module";
+import { Injectable } from "@venok/core/interfaces/injectable.interface";
 
 type ModuleMetatype = Type<any> | DynamicModule | Promise<DynamicModule>;
 type ModuleScope = Type<any>[];
