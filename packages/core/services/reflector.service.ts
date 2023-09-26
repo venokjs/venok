@@ -1,7 +1,7 @@
 import { CustomDecorator, SetMetadata } from "@venok/core/decorators/set-metadata.decorator";
 import { uid } from "uid";
 import { Type } from "@venok/core/interfaces";
-import { isEmpty, isObject } from "@venok/core/utils/shared.utils";
+import { isEmpty, isObject } from "@venok/core/helpers/shared.helper";
 
 /**
  * @publicApi
@@ -91,7 +91,7 @@ export class Reflector {
    * @example
    * `const roles = this.reflector.get<string[]>('roles', context.getHandler());`
    *
-   * @param metadataKey lookup key or decorator for metadata to retrieve
+   * @param metadataKeyOrDecorator lookup key or decorator for metadata to retrieve
    * @param target context (decorated object) to retrieve metadata from
    *
    */

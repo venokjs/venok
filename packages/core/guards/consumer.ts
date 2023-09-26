@@ -1,5 +1,5 @@
 import { ContextType } from "@venok/core/interfaces/context/arguments-host.interface";
-import { isEmpty } from "@venok/core/utils/shared.utils";
+import { isEmpty } from "@venok/core/helpers/shared.helper";
 import { ExecutionContextHost } from "@venok/core/context/execution-host";
 import { lastValueFrom, Observable } from "rxjs";
 import { CanActivate } from "@venok/core/interfaces/features/guards.interface";

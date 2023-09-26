@@ -4,7 +4,6 @@ import {
   ExistingProvider,
   FactoryProvider,
   ForwardReference,
-  Injectable,
   InjectionToken,
   ModuleDefinition,
   Provider,
@@ -39,7 +38,7 @@ import { UndefinedModuleException } from "@venok/core/errors/exceptions/undefine
 import { InvalidModuleException } from "@venok/core/errors/exceptions/invalid-module.exception";
 import { InvalidClassModuleException } from "@venok/core/errors/exceptions/invalid-class-module.exception";
 import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
-import { isFunction, isNull, isUndefined } from "@venok/core/utils/shared.utils";
+import { isFunction, isNull, isUndefined } from "@venok/core/helpers/shared.helper";
 import { CircularDependencyException } from "@venok/core/errors/exceptions";
 import { UuidFactory } from "@venok/core/helpers/uuid.helper";
 import { getClassScope } from "@venok/core/injector/helpers/class-scope.helper";
@@ -49,6 +48,7 @@ import { flatten } from "@venok/core/helpers/flatten.helper";
 import { VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface";
 import { CanActivate } from "@venok/core/interfaces/features/guards.interface";
 import { ExceptionFilter } from "@venok/core/interfaces/features/exception-filter.interface";
+import { Injectable } from "@venok/core/interfaces/injectable.interface";
 
 interface ApplicationProviderWrapper {
   moduleKey: string;

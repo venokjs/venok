@@ -1,2 +1,2 @@
-export * from "./pipes-consumer";
-export * from "./pipes-context-creator";
+export * from "./consumer";
+export * from "./context-creator";

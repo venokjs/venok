@@ -1,4 +1,4 @@
-import { isConstructor, isFunction } from "@venok/core/utils/shared.utils";
+import { isConstructor, isFunction } from "@venok/core/helpers/shared.helper";
 
 export class MetadataScanner {
   private readonly cachedScannedPrototypes: Map<object, string[]> = new Map();

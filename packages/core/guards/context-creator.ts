@@ -1,14 +1,14 @@
 import { VenokContainer } from "@venok/core/injector/container";
-import { ContextCreator } from "@venok/core/context/creator";
 import { ApplicationConfig } from "@venok/core/application/config";
+import { ContextCreator } from "@venok/core/context/creator";
 import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { INTERCEPTORS_METADATA } from "@venok/core/constants";
-import { isEmpty, isFunction } from "@venok/core/utils/shared.utils";
-import { VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface";
+import { CanActivate } from "@venok/core/interfaces/features/guards.interface";
+import { GUARDS_METADATA } from "@venok/core/constants";
+import { isEmpty, isFunction } from "@venok/core/helpers/shared.helper";
 import { Type } from "@venok/core/interfaces";
 import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 
-export class InterceptorsContextCreator extends ContextCreator {
+export class GuardsContextCreator extends ContextCreator {
   private moduleContext!: string;
 
   constructor(
@@ -24,12 +24,12 @@ export class InterceptorsContextCreator extends ContextCreator {
     module: string,
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
-  ): VenokInterceptor[] {
+  ): CanActivate[] {
     this.moduleContext = module;
-    return this.createContext(instance, callback, INTERCEPTORS_METADATA, contextId, inquirerId);
+    return this.createContext(instance, callback, GUARDS_METADATA, contextId, inquirerId);
   }
 
-  public createConcreteContext<T extends any[], R extends any[]>(
+  public createConcreteContext<T extends unknown[], R extends unknown[]>(
     metadata: T,
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
@@ -38,20 +38,21 @@ export class InterceptorsContextCreator extends ContextCreator {
       return [] as any as R;
     }
     return metadata
-      .filter((interceptor) => interceptor && (interceptor.name || interceptor.intercept))
-      .map((interceptor) => this.getInterceptorInstance(interceptor, contextId, inquirerId))
-      .filter((interceptor: any) => interceptor && isFunction(interceptor.intercept)) as R;
+      .filter((guard: any) => guard && (guard.name || guard.canActivate))
+      .map((guard) => this.getGuardInstance(guard as Function, contextId, inquirerId))
+      .filter((guard: any) => guard && isFunction(guard.canActivate)) as R;
   }
 
-  public getInterceptorInstance(
-    metatype: Function | VenokInterceptor,
+  public getGuardInstance(
+    metatype: Function | CanActivate,
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
-  ): VenokInterceptor | null {
-    const isObject = (metatype as VenokInterceptor).intercept;
+  ): CanActivate | null {
+    const isObject = (metatype as CanActivate).canActivate;
+    // Maybe error
     // @ts-ignore
     if (isObject) {
-      return metatype as VenokInterceptor;
+      return metatype as CanActivate;
     }
     const instanceWrapper = this.getInstanceByMetatype(metatype as Type<unknown>);
     if (!instanceWrapper) {
@@ -73,23 +74,24 @@ export class InterceptorsContextCreator extends ContextCreator {
     if (!moduleRef) {
       return;
     }
-    return moduleRef.injectables.get(metatype);
+    const injectables = moduleRef.injectables;
+    return injectables.get(metatype);
   }
 
   public getGlobalMetadata<T extends unknown[]>(contextId = STATIC_CONTEXT, inquirerId?: string): T {
     if (!this.config) {
       return [] as any as T;
     }
-    const globalInterceptors = this.config.getGlobalInterceptors() as T;
+    const globalGuards = this.config.getGlobalGuards() as T;
     if (contextId === STATIC_CONTEXT && !inquirerId) {
-      return globalInterceptors;
+      return globalGuards;
     }
-    const scopedInterceptorWrappers = this.config.getGlobalRequestInterceptors() as InstanceWrapper[];
-    const scopedInterceptors = scopedInterceptorWrappers
+    const scopedGuardWrappers = this.config.getGlobalRequestGuards() as InstanceWrapper[];
+    const scopedGuards = scopedGuardWrappers
       .map((wrapper) => wrapper.getInstanceByContextId(this.getContextId(contextId, wrapper), inquirerId))
       .filter((host) => !!host)
       .map((host) => host.instance);
 
-    return globalInterceptors.concat(scopedInterceptors) as T;
+    return globalGuards.concat(scopedGuards) as T;
   }
 }

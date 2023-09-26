@@ -1,14 +1,14 @@
 import { VenokContainer } from "@venok/core/injector/container";
-import { ApplicationConfig } from "@venok/core/application/config";
 import { ContextCreator } from "@venok/core/context/creator";
+import { ApplicationConfig } from "@venok/core/application/config";
 import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { CanActivate } from "@venok/core/interfaces/features/guards.interface";
-import { GUARDS_METADATA } from "@venok/core/constants";
-import { isEmpty, isFunction } from "@venok/core/utils/shared.utils";
-import { Type } from "@venok/core/interfaces";
+import { PIPES_METADATA } from "@venok/core/constants";
+import { isEmpty, isFunction } from "@venok/core/helpers/shared.helper";
 import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
+import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
+import { Type } from "@venok/core/interfaces";
 
-export class GuardsContextCreator extends ContextCreator {
+export class PipesContextCreator extends ContextCreator {
   private moduleContext!: string;
 
   constructor(
@@ -21,15 +21,15 @@ export class GuardsContextCreator extends ContextCreator {
   public create(
     instance: object,
     callback: (...args: unknown[]) => unknown,
-    module: string,
+    moduleKey: string,
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
-  ): CanActivate[] {
-    this.moduleContext = module;
-    return this.createContext(instance, callback, GUARDS_METADATA, contextId, inquirerId);
+  ): PipeTransform[] {
+    this.moduleContext = moduleKey;
+    return this.createContext(instance, callback, PIPES_METADATA, contextId, inquirerId);
   }
 
-  public createConcreteContext<T extends unknown[], R extends unknown[]>(
+  public createConcreteContext<T extends any[], R extends any[]>(
     metadata: T,
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
@@ -38,23 +38,22 @@ export class GuardsContextCreator extends ContextCreator {
       return [] as any as R;
     }
     return metadata
-      .filter((guard: any) => guard && (guard.name || guard.canActivate))
-      .map((guard) => this.getGuardInstance(guard as Function, contextId, inquirerId))
-      .filter((guard: any) => guard && isFunction(guard.canActivate)) as R;
+      .filter((pipe: any) => pipe && (pipe.name || pipe.transform))
+      .map((pipe) => this.getPipeInstance(pipe, contextId, inquirerId))
+      .filter((pipe) => pipe && pipe.transform && isFunction(pipe.transform)) as R;
   }
 
-  public getGuardInstance(
-    metatype: Function | CanActivate,
+  public getPipeInstance(
+    pipe: Function | PipeTransform,
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
-  ): CanActivate | null {
-    const isObject = (metatype as CanActivate).canActivate;
-    // Maybe error
+  ): PipeTransform | null {
+    const isObject = (pipe as PipeTransform).transform;
     // @ts-ignore
     if (isObject) {
-      return metatype as CanActivate;
+      return pipe as PipeTransform;
     }
-    const instanceWrapper = this.getInstanceByMetatype(metatype as Type<unknown>);
+    const instanceWrapper = this.getInstanceByMetatype(pipe as Type<unknown>);
     if (!instanceWrapper) {
       return null;
     }
@@ -74,24 +73,27 @@ export class GuardsContextCreator extends ContextCreator {
     if (!moduleRef) {
       return;
     }
-    const injectables = moduleRef.injectables;
-    return injectables.get(metatype);
+    return moduleRef.injectables.get(metatype);
   }
 
   public getGlobalMetadata<T extends unknown[]>(contextId = STATIC_CONTEXT, inquirerId?: string): T {
     if (!this.config) {
       return [] as any as T;
     }
-    const globalGuards = this.config.getGlobalGuards() as T;
+    const globalPipes = this.config.getGlobalPipes() as T;
     if (contextId === STATIC_CONTEXT && !inquirerId) {
-      return globalGuards;
+      return globalPipes;
     }
-    const scopedGuardWrappers = this.config.getGlobalRequestGuards() as InstanceWrapper[];
-    const scopedGuards = scopedGuardWrappers
+    const scopedPipeWrappers = this.config.getGlobalRequestPipes() as InstanceWrapper[];
+    const scopedPipes = scopedPipeWrappers
       .map((wrapper) => wrapper.getInstanceByContextId(this.getContextId(contextId, wrapper), inquirerId))
       .filter((host) => !!host)
       .map((host) => host.instance);
 
-    return globalGuards.concat(scopedGuards) as T;
+    return globalPipes.concat(scopedPipes) as T;
+  }
+
+  public setModuleContext(context: string) {
+    this.moduleContext = context;
   }
 }

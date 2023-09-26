@@ -9,18 +9,19 @@ import {
   ValueProvider,
   VenokModule,
 } from "@venok/core/interfaces/modules";
-import { Injectable, Type } from "@venok/core/interfaces";
+import { Type } from "@venok/core/interfaces";
 import { InvalidClassException, RuntimeException, UnknownExportException } from "@venok/core/errors/exceptions";
 import { EnhancerSubtype, ENTRY_PROVIDER_WATERMARK } from "@venok/core/constants";
-import { isFunction, isNull, isObject, isString, isSymbol, isUndefined } from "@venok/core/utils/shared.utils";
+import { isFunction, isNull, isObject, isString, isSymbol, isUndefined } from "@venok/core/helpers/shared.helper";
 import { UuidFactory } from "@venok/core/helpers/uuid.helper";
-import { randomStringGenerator } from "@venok/core/utils/random-string-generator.util";
+import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper";
 import { ModuleRef, ModuleRefGetOrResolveOpts } from "@venok/core/injector/module/ref";
 import { VenokContainer } from "@venok/core/injector/container";
 import { getClassScope } from "@venok/core/injector/helpers/class-scope.helper";
 import { isDurable } from "@venok/core/injector/helpers/is-durable.helper";
 import { ApplicationConfig } from "@venok/core/application/config";
 import { createContextId } from "@venok/core/helpers/context-id-factory.helper";
+import { Injectable } from "@venok/core/interfaces/injectable.interface";
 
 export class Module {
   private readonly _id: string;

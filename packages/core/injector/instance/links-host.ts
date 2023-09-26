@@ -2,9 +2,8 @@ import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 import { InjectionToken } from "@venok/core/interfaces/modules";
 import { UnknownElementException } from "@venok/core/errors/exceptions";
 import { Module } from "@venok/core/injector/module/module";
-import { isFunction } from "@venok/core/utils/shared.utils";
+import { isFunction } from "@venok/core/helpers/shared.helper";
 import { VenokContainer } from "@venok/core/injector/container";
-import { WithRequired } from "@venok/core/interfaces";
 
 type HostCollection = "providers" | "injectables";
 

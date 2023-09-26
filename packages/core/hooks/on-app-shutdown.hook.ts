@@ -1,6 +1,6 @@
 import { getNonTransientInstances, getTransientInstances } from "@venok/core/helpers/transient.helper";
 import { Module } from "@venok/core/injector/module/module";
-import { isFunction, isNull } from "@venok/core/utils/shared.utils";
+import { isFunction, isNull } from "@venok/core/helpers/shared.helper";
 import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 import { InjectionToken } from "@venok/core/interfaces";
 import { OnApplicationShutdown } from "@venok/core/interfaces/hooks";
@@ -29,6 +29,7 @@ function callOperator(instances: InstanceWrapper[], signal?: string): Promise<an
  * (providers / controllers).
  *
  * @param module The module which will be initialized
+ * @param signal
  */
 export async function callAppShutdownHook(module: Module, signal?: string): Promise<any> {
   const providers = module.getNonAliasProviders();

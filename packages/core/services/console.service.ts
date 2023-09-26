@@ -2,7 +2,7 @@ import { isLogLevelEnabled, LoggerService, LogLevel } from "@venok/core/services
 import { Injectable } from "@venok/core/decorators/injectable.decorator";
 import { Optional } from "@venok/core/decorators/optional.decorator";
 import { colors, yellow } from "@venok/core/helpers/color.helper";
-import { isFunction, isPlainObject, isString, isUndefined } from "@venok/core/utils/shared.utils";
+import { isFunction, isPlainObject, isString, isUndefined } from "@venok/core/helpers/shared.helper";
 
 export interface ConsoleLoggerOptions {
   /**

@@ -2,7 +2,7 @@ import { ParamData } from "@venok/core/decorators/create-param.decorator";
 import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
 import { PARAMTYPES_METADATA } from "@venok/core/constants";
 import { ExecutionContextHost } from "@venok/core/context/execution-host";
-import { isFunction } from "@venok/core/utils/shared.utils";
+import { isFunction } from "@venok/core/helpers/shared.helper";
 import { ContextType } from "@venok/core/interfaces/context/arguments-host.interface";
 import { Type } from "@venok/core/interfaces";
 
@@ -66,11 +66,10 @@ export class ContextUtils {
     instance?: object,
     callback?: Function,
   ): (args: unknown[]) => ExecutionContextHost {
-    const contextFactory = (args: unknown[]) => {
+    return (args: unknown[]) => {
       const ctx = new ExecutionContextHost(args, instance && (instance.constructor as Type<unknown>), callback);
       ctx.setType(contextType);
       return ctx;
     };
-    return contextFactory;
   }
 }

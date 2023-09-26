@@ -1,2 +1,2 @@
-export * from "./interceptors-consumer";
-export * from "./interceptors-context-creator";
+export * from "./consumer";
+export * from "./context-creator";
