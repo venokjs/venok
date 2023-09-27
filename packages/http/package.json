@@ -1,0 +1,30 @@
+{
+  "name": "@venok/http",
+  "version": "1.0.0",
+  "description": "",
+  "author": "0x303133",
+  "homepage": "",
+  "main": "index.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/venokjs/venok.git",
+    "directory": "packages/http"
+  },
+  "scripts": {
+    "build": "venok build",
+    "postbuild": "ts-node ../../tools/move.ts core",
+    "test": "mocha test/**/*.spec.ts"
+  },
+  "mocha": {
+    "require": [
+      "ts-node/register",
+      "tsconfig-paths/register",
+      "../../node_modules/reflect-metadata/Reflect.js",
+      "../../hooks/mocha-init-hook.ts"
+    ],
+    "exit": true
+  }
+}
