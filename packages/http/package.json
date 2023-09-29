@@ -15,7 +15,7 @@
   },
   "scripts": {
     "build": "venok build",
-    "postbuild": "ts-node ../../tools/move.ts core",
+    "postbuild": "ts-node ../../tools/move.ts http",
     "test": "mocha test/**/*.spec.ts"
   },
   "mocha": {
