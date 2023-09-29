@@ -26,5 +26,9 @@
       "../../hooks/mocha-init-hook.ts"
     ],
     "exit": true
+  },
+  "devDependencies": {
+    "@types/http-errors": "^2.0.2",
+    "http-errors": "^2.0.0"
   }
 }
