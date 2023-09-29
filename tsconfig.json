@@ -10,16 +10,16 @@
     "strict": true,
     "skipLibCheck": true,
     "paths": {
-      "@venok/common": ["./packages/common"],
-      "@venok/common/*": ["./packages/common/*"],
       "@venok/core": ["./packages/core"],
-      "@venok/core/*": ["./packages/core/*"]
+      "@venok/core/*": ["./packages/core/*"],
+      "@venok/http": ["./packages/http"],
+      "@venok/http/*": ["./packages/http/*"]
     }
   },
   "exclude": ["dist", "node_modules"],
   "references": [
     {
-      "path": "./packages/common"
+      "path": "./packages/http"
     },
     {
       "path": "./packages/core"

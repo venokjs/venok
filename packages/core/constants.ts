@@ -42,8 +42,6 @@ export const ENHANCER_TOKEN_TO_SUBTYPE_MAP: Record<
 
 export const REQUEST = "REQUEST";
 export const GLOBAL_MODULE_METADATA = "__module:global__";
-export const HOST_METADATA = "host";
-export const PATH_METADATA = "path";
 export const PARAMTYPES_METADATA = "design:paramtypes";
 export const SELF_DECLARED_DEPS_METADATA = "self:paramtypes";
 export const OPTIONAL_DEPS_METADATA = "optional:paramtypes";
