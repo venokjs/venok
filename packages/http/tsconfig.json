@@ -3,5 +3,10 @@
     "compilerOptions": {
         "rootDir": "./",
         "outDir": "../../dist/http"
-    }
+    },
+    "references": [
+        {
+            "path": "../packages/core/tsconfig.json"
+        }
+    ]
 }
