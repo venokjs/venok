@@ -2,7 +2,11 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "rootDir": "./",
-        "outDir": "../../dist/http"
+        "outDir": "../../dist/http",
+        "paths": {
+            "@venok/core": ["../core"],
+            "@venok/core/*": ["../core/*"]
+        }
     },
     "references": [
         {
