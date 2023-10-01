@@ -14,7 +14,7 @@ export interface ControllerOptions extends ScopeOptions, VersionOptions {
    * Specifies an optional `route path prefix`.  The prefix is pre-pended to the
    * path specified in any request decorator in the class.
    *
-   * Supported only by HTTP-based applications (does not apply to non-HTTP microservices).
+   * Supported only by HTTP-based application (does not apply to non-HTTP microservices).
    */
   path?: string | string[];
 

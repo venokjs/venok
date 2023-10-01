@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Controller } from "@venok/http/decorators/controller.decorator";
+import { Controller } from "@venok/http/decorators";
 import { CONTROLLER_WATERMARK, VERSION_METADATA } from "@venok/http/constants";
 
 describe("@Controller", () => {
