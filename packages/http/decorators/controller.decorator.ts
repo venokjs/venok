@@ -1,7 +1,7 @@
 import { ScopeOptions } from "@venok/core";
 import { SCOPE_OPTIONS_METADATA } from "@venok/core/constants";
 import { isString, isUndefined } from "@venok/core/helpers/shared.helper";
-import { VersionOptions } from "@venok/http/interfaces/version-options.interface";
+import { VersionOptions } from "../interfaces";
 import { CONTROLLER_WATERMARK, HOST_METADATA, PATH_METADATA, VERSION_METADATA } from "@venok/http/constants";
 
 /**
