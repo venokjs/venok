@@ -1,4 +1,4 @@
-import { VersioningType } from "@venok/http/enums";
+import { VersioningType } from "../../enums";
 
 /**
  * Indicates that this will work for any version passed in the request, or no version.
@@ -21,7 +21,7 @@ export interface VersionOptions {
    * within the controller will only be routed if the request version
    * matches the specified value.
    *
-   * Supported only by HTTP-based applications (does not apply to non-HTTP microservices).
+   * Supported only by HTTP-based application (does not apply to non-HTTP microservices).
    *
    * @see [Versioning](https://docs.nestjs.com/techniques/versioning)
    */
