@@ -1,11 +1,11 @@
-import { ContextType } from "@venok/core/interfaces/context/arguments-host.interface";
+import { ContextType } from "@venok/core/interfaces";
 import { ExecutionContextHost } from "@venok/core/context/execution-host";
-import { ExternalExceptionsHandler } from "@venok/core/exceptions/external/handler";
+import { VenokExceptionsHandler } from "@venok/core/exceptions/handler";
 
-export class ExternalErrorProxy {
+export class VenokProxy {
   public createProxy<TContext extends string = ContextType>(
     targetCallback: (...args: any[]) => any,
-    exceptionsHandler: ExternalExceptionsHandler,
+    exceptionsHandler: VenokExceptionsHandler,
     type?: TContext,
   ) {
     return async (...args: any[]) => {
