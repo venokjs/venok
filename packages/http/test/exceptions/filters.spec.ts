@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import sinon from "sinon";
 import { ApplicationConfig, Catch, UseFilters, VenokContainer } from "@venok/core";
-import { RouterExceptionFilters } from "../../router/router.filter";
+import { RouterExceptionFilters } from "../../router/filter";
 import { NoopHttpAdapter } from "@venok/http/helpers/adapter.helper";
 import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 import { HttpExceptionFilter } from "@venok/http/exceptions/filter";
