@@ -4,7 +4,7 @@ import sinon from "sinon";
 import { All, Controller, Get, Post } from "../../decorators";
 import { RouterExplorer } from "../../explorers/router.explorer";
 import { Injector } from "@venok/core/injector/injector";
-import { RouterExceptionFilters } from "../../router/router.filter";
+import { RouterExceptionFilters } from "../../router/filter";
 import { ApplicationConfig, MetadataScanner, VenokContainer } from "@venok/core";
 import { RoutePathFactory } from "../../factory";
 import { GraphInspector } from "@venok/core/inspector/graph-inspector";
