@@ -1,14 +1,15 @@
 import { VenokContainer } from "@venok/core/injector/container";
 import { ApplicationConfig } from "@venok/core/application/config";
-import { BaseExceptionFilterContext } from "@venok/core/exceptions/filter-context";
+import { ExceptionFilterContextCreator } from "@venok/core/filters/context-creator";
 import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { ExceptionFilterMetadata } from "@venok/core/interfaces/features/exception-filter.interface";
+import { ExceptionFilter, ExceptionFilterMetadata } from "@venok/core/interfaces/features/exception-filter.interface";
 import { EXCEPTION_FILTERS_METADATA } from "@venok/core/constants";
 import { isEmpty } from "@venok/core/helpers/shared.helper";
 import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import { ExternalExceptionsHandler } from "@venok/core/exceptions/external/handler";
+import { VenokExceptionsHandler } from "@venok/core/exceptions/handler";
+import { VenokExceptionFilter } from "@venok/core/filters/filter";
 
-export class ExternalExceptionFilterContext extends BaseExceptionFilterContext {
+export class VenokExceptionFilterContext extends ExceptionFilterContextCreator {
   constructor(
     container: VenokContainer,
     private readonly config?: ApplicationConfig,
@@ -18,14 +19,14 @@ export class ExternalExceptionFilterContext extends BaseExceptionFilterContext {
 
   public create(
     instance: object,
-    callback: () => void,
+    callback: (...args: any) => void,
     module: string,
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
-  ): ExternalExceptionsHandler {
+  ): VenokExceptionsHandler {
     this.moduleContext = module;
 
-    const exceptionHandler = new ExternalExceptionsHandler();
+    const exceptionHandler = new VenokExceptionsHandler(this.getExceptionFilter());
     const filters = this.createContext<ExceptionFilterMetadata[]>(
       instance,
       callback,
@@ -37,6 +38,10 @@ export class ExternalExceptionFilterContext extends BaseExceptionFilterContext {
 
     exceptionHandler.setCustomFilters(filters.reverse());
     return exceptionHandler;
+  }
+
+  public getExceptionFilter(): ExceptionFilter {
+    return new VenokExceptionFilter();
   }
 
   public getGlobalMetadata<T extends any[]>(contextId = STATIC_CONTEXT, inquirerId?: string): T {
