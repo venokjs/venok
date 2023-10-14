@@ -1,13 +1,10 @@
 import { ApplicationConfig, ContextId, MetadataScanner, Type, VenokContainer } from "@venok/core";
-import { HttpExceptionsHandler } from "../exceptions/handler";
 import { RequestMethod, VersioningType } from "../enums";
-import { HttpServer, RouteDefinition, RoutePathMetadata, VersionValue } from "../interfaces";
-import { HttpExecutionContext } from "../context/http.context";
+import { HttpServer, RouteDefinition, RoutePathMetadata, RouterProxyCallback, VersionValue } from "../interfaces";
 import { PathsExplorer } from "./path.explorer";
 import { ContextIdFactory, RouteParamsFactory, RoutePathFactory, RouterMethodFactory } from "../factory";
 import { Logger } from "@venok/core/services/logger.service";
 import { Injector } from "@venok/core/injector/injector";
-import { HttpProxy, RouterProxyCallback } from "../exceptions/proxy";
 import { GraphInspector } from "@venok/core/inspector/graph-inspector";
 import { AbstractHttpAdapter } from "../adapter/adapter";
 import { PipesConsumer, PipesContextCreator } from "@venok/core/pipes";
@@ -16,7 +13,6 @@ import { InterceptorsConsumer, InterceptorsContextCreator } from "@venok/core/in
 import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 import { PATH_METADATA, REQUEST_CONTEXT_ID } from "../constants";
 import { isUndefined } from "@venok/core/helpers/shared.helper";
-import { UnknownRequestMappingException } from "../errors/unknown-request-mapping.exception";
 import { addLeadingSlash, ROUTE_MAPPED_MESSAGE, VERSIONED_ROUTE_MAPPED_MESSAGE } from "../helpers";
 import { Entrypoint } from "@venok/core/inspector/interfaces/entrypoint.interface";
 import { pathToRegexp } from "path-to-regexp";
@@ -24,6 +20,10 @@ import { InternalServerErrorException } from "../errors";
 import { STATIC_CONTEXT } from "@venok/core/injector/constants";
 import { Module } from "@venok/core/injector/module/module";
 import { ExecutionContextHost } from "@venok/core/context/execution-host";
+import { RouterExceptionFiltersContext } from "../filters/context";
+import { ExternalContextCreator, VenokProxy } from "@venok/core/context";
+import { HttpContextCreator } from "../context/context";
+import { VenokExceptionsHandler } from "@venok/core/exceptions/handler";
 
 export interface ExceptionsFilter {
   create(
@@ -32,7 +32,7 @@ export interface ExceptionsFilter {
     module: string,
     contextId?: ContextId,
     inquirerId?: string,
-  ): HttpExceptionsHandler;
+  ): VenokExceptionsHandler;
 }
 
 export type HttpEntrypointMetadata = {
@@ -49,7 +49,7 @@ export type MiddlewareEntrypointMetadata = {
 };
 
 export class RouterExplorer {
-  private readonly executionContextCreator: HttpExecutionContext;
+  private readonly httpContextCreator: HttpContextCreator;
   private readonly pathsExplorer: PathsExplorer;
   private readonly routerMethodFactory = new RouterMethodFactory();
   private readonly logger = new Logger(RouterExplorer.name, {
@@ -61,14 +61,20 @@ export class RouterExplorer {
     metadataScanner: MetadataScanner,
     private readonly container: VenokContainer,
     private readonly injector: Injector,
-    private readonly routerProxy: HttpProxy,
-    private readonly exceptionsFilter: ExceptionsFilter,
+    private readonly routerProxy: VenokProxy,
+    private readonly exceptionsFilter: RouterExceptionFiltersContext,
     config: ApplicationConfig,
     private readonly routePathFactory: RoutePathFactory,
     private readonly graphInspector: GraphInspector,
     private readonly applicationRef: AbstractHttpAdapter,
   ) {
     this.pathsExplorer = new PathsExplorer(metadataScanner);
+
+    this.httpContextCreator = new HttpContextCreator(
+      ExternalContextCreator.fromContainer(container),
+      this.exceptionsFilter,
+      this.applicationRef,
+    );
 
     const routeParamsFactory = new RouteParamsFactory();
     const pipesContextCreator = new PipesContextCreator(container, config);
@@ -77,17 +83,6 @@ export class RouterExplorer {
     const guardsConsumer = new GuardsConsumer();
     const interceptorsContextCreator = new InterceptorsContextCreator(container, config);
     const interceptorsConsumer = new InterceptorsConsumer();
-
-    this.executionContextCreator = new HttpExecutionContext(
-      routeParamsFactory,
-      pipesContextCreator,
-      pipesConsumer,
-      guardsContextCreator,
-      guardsConsumer,
-      interceptorsContextCreator,
-      interceptorsConsumer,
-      applicationRef,
-    );
   }
 
   public explore<T extends HttpServer = any>(
@@ -105,12 +100,10 @@ export class RouterExplorer {
   public extractRouterPath(metatype: Type<Object>): string[] {
     const path = Reflect.getMetadata(PATH_METADATA, metatype);
 
-    if (isUndefined(path)) {
-      return [];
-    }
-    if (Array.isArray(path)) {
-      return path.map((p) => addLeadingSlash(p));
-    }
+    if (isUndefined(path)) return [];
+
+    if (Array.isArray(path)) return path.map((p) => addLeadingSlash(p));
+
     return [addLeadingSlash(path)];
   }
 
@@ -209,9 +202,7 @@ export class RouterExplorer {
   }
 
   private applyHostFilter(host: string | RegExp | Array<string | RegExp>, handler: Function) {
-    if (!host) {
-      return handler;
-    }
+    if (!host) return handler;
 
     const hosts = Array.isArray(host) ? host : [host];
     const hostRegExps = hosts.map((host: string | RegExp) => {
@@ -238,16 +229,13 @@ export class RouterExplorer {
           if (exp.keys.length > 0) {
             exp.keys.forEach((key, i) => (req.hosts[key.name] = match[i + 1]));
           } else if (exp.regexp && match.groups) {
-            for (const groupName in match.groups) {
-              req.hosts[groupName] = match.groups[groupName];
-            }
+            for (const groupName in match.groups) req.hosts[groupName] = match.groups[groupName];
           }
           return handler(req, res, next);
         }
       }
-      if (!next) {
-        throw new InternalServerErrorException(unsupportedFilteringErrorMessage);
-      }
+      if (!next) throw new InternalServerErrorException(unsupportedFilteringErrorMessage);
+
       return next();
     };
   }
@@ -266,7 +254,7 @@ export class RouterExplorer {
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
   ) {
-    const executionContext = this.executionContextCreator.create(
+    return this.httpContextCreator.create(
       instance,
       callback,
       methodName,
@@ -275,8 +263,6 @@ export class RouterExplorer {
       contextId,
       inquirerId,
     );
-    const exceptionFilter = this.exceptionsFilter.create(instance, callback, moduleRef, contextId, inquirerId);
-    return this.routerProxy.createProxy(executionContext as RouterProxyCallback, exceptionFilter);
   }
 
   public createRequestScopedHandler(

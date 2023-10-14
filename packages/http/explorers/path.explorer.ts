@@ -1,10 +1,9 @@
-import { RequestMethod } from "../enums";
-import { VersionValue } from "../interfaces/router/version-options.interface";
 import { MetadataScanner } from "@venok/core";
+import { RouteDefinition, VersionValue } from "../interfaces";
 import { isString, isUndefined } from "@venok/core/helpers/shared.helper";
-import { CONTROLLER_WATERMARK, METHOD_METADATA, PATH_METADATA, VERSION_METADATA } from "../constants";
-import { addLeadingSlash } from "@venok/http/helpers";
-import { RouteDefinition } from "../interfaces/router/definition.interface";
+import { METHOD_METADATA, PATH_METADATA, VERSION_METADATA } from "../constants";
+import { RequestMethod } from "../enums";
+import { addLeadingSlash } from "../helpers";
 
 export class PathsExplorer {
   constructor(private readonly metadataScanner: MetadataScanner) {}
