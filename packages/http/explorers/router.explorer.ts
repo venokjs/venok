@@ -21,7 +21,7 @@ import { STATIC_CONTEXT } from "@venok/core/injector/constants";
 import { Module } from "@venok/core/injector/module/module";
 import { ExecutionContextHost } from "@venok/core/context/execution-host";
 import { RouterExceptionFiltersContext } from "../filters/context";
-import { ExternalContextCreator, VenokProxy } from "@venok/core/context";
+import { VenokContextCreator, VenokProxy } from "@venok/core/context";
 import { HttpContextCreator } from "../context/context";
 import { VenokExceptionsHandler } from "@venok/core/exceptions/handler";
 
@@ -71,7 +71,7 @@ export class RouterExplorer {
     this.pathsExplorer = new PathsExplorer(metadataScanner);
 
     this.httpContextCreator = new HttpContextCreator(
-      ExternalContextCreator.fromContainer(container),
+      VenokContextCreator.fromContainer(container),
       this.exceptionsFilter,
       this.applicationRef,
     );

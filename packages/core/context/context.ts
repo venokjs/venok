@@ -42,7 +42,7 @@ export interface ExternalContextOptions {
   callback?: (result: any | Observable<any>, ...args: any[]) => void;
 }
 
-export class ExternalContextCreator {
+export class VenokContextCreator {
   public readonly contextUtils = new ContextUtils();
   public readonly venokProxy = new VenokProxy();
   // private readonly handlerMetadataStorage = new HandlerMetadataStorage<ExternalHandlerMetadata>();
@@ -59,7 +59,7 @@ export class ExternalContextCreator {
     private readonly filtersContextCreator: VenokExceptionFilterContext,
   ) {}
 
-  static fromContainer(container: VenokContainer): ExternalContextCreator {
+  static fromContainer(container: VenokContainer): VenokContextCreator {
     const guardsContextCreator = new GuardsContextCreator(container, container.applicationConfig);
     const guardsConsumer = new GuardsConsumer();
     const interceptorsContextCreator = new InterceptorsContextCreator(container, container.applicationConfig);
@@ -68,7 +68,7 @@ export class ExternalContextCreator {
     const pipesConsumer = new PipesConsumer();
     const filtersContextCreator = new VenokExceptionFilterContext(container, container.applicationConfig);
 
-    const externalContextCreator = new ExternalContextCreator(
+    const venokContextCreator = new VenokContextCreator(
       guardsContextCreator,
       guardsConsumer,
       interceptorsContextCreator,
@@ -78,8 +78,8 @@ export class ExternalContextCreator {
       pipesConsumer,
       filtersContextCreator,
     );
-    externalContextCreator.container = container;
-    return externalContextCreator;
+    venokContextCreator.container = container;
+    return venokContextCreator;
   }
 
   public create<TParamsMetadata extends ParamsMetadata = ParamsMetadata, TContext extends string = ContextType>(

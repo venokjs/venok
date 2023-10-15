@@ -12,7 +12,7 @@ import {
 } from "../constants";
 import { RequestMethod, RouteParamtypes } from "../enums";
 import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { ExternalContextCreator } from "@venok/core/context";
+import { VenokContextCreator } from "@venok/core/context";
 import { ContextId, ContextType, PipeTransform } from "@venok/core";
 import { ROUTE_ARGS_METADATA } from "@venok/core/constants";
 import { isEmpty, isString } from "@venok/core/helpers/shared.helper";
@@ -69,7 +69,7 @@ export interface IRouteParamsFactory {
 export class HttpContextCreator {
   private readonly responseController: RouterResponseController;
   constructor(
-    private readonly venokContextCreator: ExternalContextCreator,
+    private readonly venokContextCreator: VenokContextCreator,
     private readonly exceptionsFilter: RouterExceptionFiltersContext,
     private readonly applicationRef: HttpServer,
   ) {

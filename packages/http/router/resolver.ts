@@ -15,7 +15,7 @@ import { CONTROLLER_MAPPING_MESSAGE, VERSIONED_CONTROLLER_MAPPING_MESSAGE } from
 import { BadRequestException, NotFoundException } from "../errors";
 import { HttpConfig } from "../application/config";
 import { isNull, isObject, isUndefined } from "@venok/core/helpers/shared.helper";
-import { ExternalContextCreator, VenokProxy } from "@venok/core/context";
+import { VenokContextCreator, VenokProxy } from "@venok/core/context";
 
 export interface Resolver {
   resolve(instance: any, basePath: string): void;
