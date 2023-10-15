@@ -45,9 +45,8 @@ export class RoutesMapper {
       method: routeInfoObject.method,
     };
 
-    if (routeInfoObject.version) {
-      routeInfo.version = routeInfoObject.version;
-    }
+    if (routeInfoObject.version) routeInfo.version = routeInfoObject.version;
+
     return [routeInfo];
   }
 
@@ -72,6 +71,7 @@ export class RoutesMapper {
             path: endpointPath,
             method: item.requestMethod,
           };
+
           const version = item.version ?? controllerVersion;
           if (version && versioningConfig) {
             if (typeof version !== "string" && Array.isArray(version)) {
@@ -111,24 +111,20 @@ export class RoutesMapper {
   }
 
   private getHostModuleOfController(metatype: Type<unknown>): Module | undefined {
-    if (!metatype) {
-      return;
-    }
+    if (!metatype) return;
+
     const modulesContainer = this.container.getModules();
     const moduleRefsSet = targetModulesByContainer.get(modulesContainer);
-    if (!moduleRefsSet) {
-      return;
-    }
+    if (!moduleRefsSet) return;
 
     const modules = Array.from(modulesContainer.values()).filter((moduleRef) => moduleRefsSet.has(moduleRef));
-    // Global change
+
     return modules.find(({ injectables }) => injectables.has(metatype));
   }
 
   private getModulePath(metatype: Type<unknown> | undefined): string | undefined {
-    if (!metatype) {
-      return;
-    }
+    if (!metatype) return;
+
     const modulesContainer = this.container.getModules();
     const modulePath = Reflect.getMetadata(MODULE_PATH + modulesContainer.applicationId, metatype);
     return modulePath ?? Reflect.getMetadata(MODULE_PATH, metatype);
@@ -136,8 +132,6 @@ export class RoutesMapper {
 
   private getVersionMetadata(metatype: Type<unknown> | Function): VersionValue | undefined {
     const versioningConfig = this.httpConfig.getVersioning();
-    if (versioningConfig) {
-      return Reflect.getMetadata(VERSION_METADATA, metatype) ?? versioningConfig.defaultVersion;
-    }
+    if (versioningConfig) return Reflect.getMetadata(VERSION_METADATA, metatype) ?? versioningConfig.defaultVersion;
   }
 }

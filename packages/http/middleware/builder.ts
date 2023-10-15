@@ -4,13 +4,13 @@ import {
   MiddlewareConfiguration,
   MiddlewareConsumer,
   RouteInfo,
-} from "../interfaces/middleware";
-import { HttpServer } from "../interfaces/http/server.interface";
-import { RouteInfoPathExtractor } from "./route-info-path-extractor";
+  HttpServer,
+} from "../interfaces";
+import { RouteInfoPathExtractor } from "./extractor";
 import { Type } from "@venok/core";
 import { flatten } from "@venok/core/helpers/flatten.helper";
 import { filterMiddleware } from "./utils";
-import { stripEndSlash } from "../helpers/path.helper";
+import { stripEndSlash } from "../helpers";
 
 export class MiddlewareBuilder implements MiddlewareConsumer {
   private readonly middlewareCollection = new Set<MiddlewareConfiguration>();
@@ -86,9 +86,8 @@ export class MiddlewareBuilder implements MiddlewareConsumer {
 
       return routes.filter((route) => {
         const isOverlapped = (item: { regex: RegExp } & RouteInfo): boolean => {
-          if (route.method !== item.method) {
-            return false;
-          }
+          if (route.method !== item.method) return false;
+
           const normalizedRoutePath = stripEndSlash(route.path);
           return normalizedRoutePath !== item.path && item.regex.test(normalizedRoutePath);
         };
