@@ -14,10 +14,10 @@ import { GraphInspector } from "@venok/core/inspector/graph-inspector";
 /**
  * @publicApi
  */
-export class CoreModule {
+export class HttpStarter {
   private readonly injector: Injector;
 
-  protected readonly logger = new Logger(CoreModule.name, {
+  protected readonly logger = new Logger(HttpStarter.name, {
     timestamp: true,
   });
   private readonly middlewareModule: MiddlewareModule;
