@@ -4,10 +4,10 @@ import { Inject, Optional } from "@venok/core";
 import { ArgumentsHost } from "@venok/core/interfaces/context/arguments-host.interface";
 import { isObject } from "@venok/core/helpers/shared.helper";
 import { MESSAGES } from "@venok/core/constants";
-import { HttpStatus } from "@venok/http/enums";
-import { HttpServer } from "@venok/http/interfaces/http/server.interface";
-import { HttpAdapterHost } from "@venok/http/adapter/host";
-import { AbstractHttpAdapter } from "@venok/http/adapter/adapter";
+import { HttpStatus } from "../enums";
+import { HttpServer } from "../interfaces";
+import { HttpAdapterHost } from "../adapter/host";
+import { AbstractHttpAdapter } from "../adapter/adapter";
 import { HttpException } from "../errors";
 
 export class HttpExceptionFilter<T = any> implements ExceptionFilter<T> {
@@ -35,11 +35,9 @@ export class HttpExceptionFilter<T = any> implements ExceptionFilter<T> {
         };
 
     const response = host.getArgByIndex(1);
-    if (!applicationRef!.isHeadersSent(response)) {
-      applicationRef!.reply(response, message, exception.getStatus());
-    } else {
-      applicationRef!.end(response);
-    }
+
+    if (!applicationRef!.isHeadersSent(response)) applicationRef!.reply(response, message, exception.getStatus());
+    else applicationRef!.end(response);
   }
 
   public handleUnknownError(exception: T, host: ArgumentsHost, applicationRef: AbstractHttpAdapter | HttpServer) {
@@ -54,15 +52,12 @@ export class HttpExceptionFilter<T = any> implements ExceptionFilter<T> {
         };
 
     const response = host.getArgByIndex(1);
-    if (!applicationRef.isHeadersSent(response)) {
-      applicationRef.reply(response, body, body.statusCode);
-    } else {
-      applicationRef.end(response);
-    }
 
-    if (this.isExceptionObject(exception)) {
-      return HttpExceptionFilter.logger.error(exception.message, exception.stack);
-    }
+    if (!applicationRef.isHeadersSent(response)) applicationRef.reply(response, body, body.statusCode);
+    else applicationRef.end(response);
+
+    if (this.isExceptionObject(exception)) return HttpExceptionFilter.logger.error(exception.message, exception.stack);
+
     return HttpExceptionFilter.logger.error(exception);
   }
 
