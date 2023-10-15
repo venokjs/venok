@@ -20,7 +20,7 @@ export class LazyModuleLoader {
   ) {}
 
   public async load(
-    loaderFn: () => Promise<Type<unknown> | DynamicModule> | Type<unknown> | DynamicModule,
+    loaderFn: () => Promise<Type | DynamicModule> | Type | DynamicModule,
     loadOpts?: LazyModuleLoaderLoadOptions,
   ): Promise<ModuleRef> {
     this.registerLoggerConfiguration(loadOpts);

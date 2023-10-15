@@ -72,7 +72,7 @@ export class Reflector {
    */
   public get<T extends ReflectableDecorator<any>>(
     decorator: T,
-    target: Type<any> | Function,
+    target: Type | Function,
   ): T extends ReflectableDecorator<any, infer R> ? R : unknown;
   /**
    * Retrieve metadata for a specified key for a specified target.
@@ -84,7 +84,7 @@ export class Reflector {
    * @param target context (decorated object) to retrieve metadata from
    *
    */
-  public get<TResult = any, TKey = any>(metadataKey: TKey, target: Type<any> | Function): TResult;
+  public get<TResult = any, TKey = any>(metadataKey: TKey, target: Type | Function): TResult;
   /**
    * Retrieve metadata for a specified key or decorator for a specified target.
    *
@@ -95,7 +95,7 @@ export class Reflector {
    * @param target context (decorated object) to retrieve metadata from
    *
    */
-  public get<TResult = any, TKey = any>(metadataKeyOrDecorator: TKey, target: Type<any> | Function): TResult {
+  public get<TResult = any, TKey = any>(metadataKeyOrDecorator: TKey, target: Type | Function): TResult {
     const metadataKey = (metadataKeyOrDecorator as ReflectableDecorator<unknown>).KEY ?? metadataKeyOrDecorator;
 
     return Reflect.getMetadata(metadataKey, target);
@@ -110,7 +110,7 @@ export class Reflector {
    */
   public getAll<T extends ReflectableDecorator<any>>(
     decorator: T,
-    targets: (Type<any> | Function)[],
+    targets: (Type | Function)[],
   ): T extends ReflectableDecorator<infer R> ? (R extends Array<any> ? R : R[]) : unknown;
   /**
    * Retrieve metadata for a specified key for a specified set of targets.
@@ -119,10 +119,7 @@ export class Reflector {
    * @param targets context (decorated objects) to retrieve metadata from
    *
    */
-  public getAll<TResult extends any[] = any[], TKey = any>(
-    metadataKey: TKey,
-    targets: (Type<any> | Function)[],
-  ): TResult;
+  public getAll<TResult extends any[] = any[], TKey = any>(metadataKey: TKey, targets: (Type | Function)[]): TResult;
   /**
    * Retrieve metadata for a specified key or decorator for a specified set of targets.
    *
@@ -132,7 +129,7 @@ export class Reflector {
    */
   public getAll<TResult extends any[] = any[], TKey = any>(
     metadataKeyOrDecorator: TKey,
-    targets: (Type<any> | Function)[],
+    targets: (Type | Function)[],
   ): TResult {
     return (targets || []).map((target) => this.get(metadataKeyOrDecorator, target)) as TResult;
   }
@@ -146,7 +143,7 @@ export class Reflector {
    */
   public getAllAndMerge<T extends ReflectableDecorator<any>>(
     decorator: T,
-    targets: (Type<any> | Function)[],
+    targets: (Type | Function)[],
   ): T extends ReflectableDecorator<infer R> ? R : unknown;
   /**
    * Retrieve metadata for a specified key for a specified set of targets and merge results.
@@ -157,7 +154,7 @@ export class Reflector {
    */
   public getAllAndMerge<TResult extends any[] | object = any[], TKey = any>(
     metadataKey: TKey,
-    targets: (Type<any> | Function)[],
+    targets: (Type | Function)[],
   ): TResult;
   /**
    * Retrieve metadata for a specified key or decorator for a specified set of targets and merge results.
@@ -168,7 +165,7 @@ export class Reflector {
    */
   public getAllAndMerge<TResult extends any[] | object = any[], TKey = any>(
     metadataKeyOrDecorator: TKey,
-    targets: (Type<any> | Function)[],
+    targets: (Type | Function)[],
   ): TResult {
     const metadataCollection = this.getAll<any[], TKey>(metadataKeyOrDecorator, targets).filter(
       (item) => item !== undefined,
@@ -200,7 +197,7 @@ export class Reflector {
    */
   public getAllAndOverride<T extends ReflectableDecorator<any>>(
     decorator: T,
-    targets: (Type<any> | Function)[],
+    targets: (Type | Function)[],
   ): T extends ReflectableDecorator<infer R> ? R : unknown;
   /**
    * Retrieve metadata for a specified key for a specified set of targets and return a first not undefined value.
@@ -209,7 +206,7 @@ export class Reflector {
    * @param targets context (decorated objects) to retrieve metadata from
    *
    */
-  public getAllAndOverride<TResult = any, TKey = any>(metadataKey: TKey, targets: (Type<any> | Function)[]): TResult;
+  public getAllAndOverride<TResult = any, TKey = any>(metadataKey: TKey, targets: (Type | Function)[]): TResult;
   /**
    * Retrieve metadata for a specified key or decorator for a specified set of targets and return a first not undefined value.
    *
@@ -219,7 +216,7 @@ export class Reflector {
    */
   public getAllAndOverride<TResult = any, TKey = any>(
     metadataKeyOrDecorator: TKey,
-    targets: (Type<any> | Function)[],
+    targets: (Type | Function)[],
   ): TResult | undefined {
     for (const target of targets) {
       const result = this.get(metadataKeyOrDecorator, target);

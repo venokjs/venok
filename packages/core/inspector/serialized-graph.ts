@@ -32,7 +32,7 @@ export class SerializedGraph {
     ModuleRef,
     // HttpAdapterHost,
     LazyModuleLoader,
-    // ExternalContextCreator,
+    // VenokContextCreator,
     ModulesContainer,
     Reflector,
     SerializedGraph,

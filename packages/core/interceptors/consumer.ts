@@ -39,7 +39,7 @@ export class InterceptorsConsumer {
     instance: object,
     callback: (...args: unknown[]) => unknown,
   ): ExecutionContextHost {
-    return new ExecutionContextHost(args, instance.constructor as Type<unknown>, callback);
+    return new ExecutionContextHost(args, instance.constructor as Type, callback);
   }
 
   public transformDeferred(next: () => Promise<any>): Observable<any> {

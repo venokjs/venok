@@ -1,4 +1,4 @@
-import { VersionValue } from "@venok/http/interfaces/version-options.interface";
+import { VersionValue } from "../interfaces";
 import { VERSION_METADATA } from "@venok/http/constants";
 
 /**

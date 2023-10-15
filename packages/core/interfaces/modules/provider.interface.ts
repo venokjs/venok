@@ -5,12 +5,7 @@ import { InjectionToken, OptionalFactoryDependency } from "@venok/core/interface
  *
  * @publicApi
  */
-export type Provider<T = any> =
-  | Type<any>
-  | ClassProvider<T>
-  | ValueProvider<T>
-  | FactoryProvider<T>
-  | ExistingProvider<T>;
+export type Provider<T = any> = Type | ClassProvider<T> | ValueProvider<T> | FactoryProvider<T> | ExistingProvider<T>;
 
 /**
  * Interface defining a *Class* type provider.

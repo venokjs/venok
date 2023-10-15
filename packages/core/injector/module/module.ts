@@ -37,7 +37,7 @@ export class Module {
   private _token!: string;
 
   constructor(
-    private readonly _metatype: Type<any>,
+    private readonly _metatype: Type,
     private readonly container: VenokContainer,
   ) {
     this.addCoreProviders();
@@ -106,7 +106,7 @@ export class Module {
     return module.instance as VenokModule;
   }
 
-  get metatype(): Type<any> {
+  get metatype(): Type {
     return this._metatype;
   }
 
@@ -376,7 +376,7 @@ export class Module {
       const { module: moduleClassRef } = provider;
       return addExportedUnit(moduleClassRef);
     }
-    addExportedUnit(provider as Type<any>);
+    addExportedUnit(provider as Type);
   }
 
   public addCustomExportedProvider(provider: FactoryProvider | ValueProvider | ClassProvider | ExistingProvider) {
@@ -396,7 +396,7 @@ export class Module {
       .map(({ metatype }) => metatype)
       .filter(Boolean);
 
-    if (!imports.includes(token as Type<unknown>)) {
+    if (!imports.includes(token as Type)) {
       const { name } = this.metatype;
       const providerName = isFunction(token) ? (token as Function).name : token;
       throw new UnknownExportException(providerName as string, name);

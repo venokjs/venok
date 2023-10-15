@@ -9,3 +9,4 @@ export const CONTROLLER_WATERMARK = "__controller__";
 export const RENDER_METADATA = "__renderTemplate__";
 export const HTTP_CODE_METADATA = "__httpCode__";
 export const METHOD_METADATA = "method";
+export const REQUEST_CONTEXT_ID = Symbol("REQUEST_CONTEXT_ID");

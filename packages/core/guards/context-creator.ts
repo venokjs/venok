@@ -54,7 +54,7 @@ export class GuardsContextCreator extends ContextCreator {
     if (isObject) {
       return metatype as CanActivate;
     }
-    const instanceWrapper = this.getInstanceByMetatype(metatype as Type<unknown>);
+    const instanceWrapper = this.getInstanceByMetatype(metatype as Type);
     if (!instanceWrapper) {
       return null;
     }
@@ -65,7 +65,7 @@ export class GuardsContextCreator extends ContextCreator {
     return instanceHost && instanceHost.instance;
   }
 
-  public getInstanceByMetatype(metatype: Type<unknown>): InstanceWrapper | undefined {
+  public getInstanceByMetatype(metatype: Type): InstanceWrapper | undefined {
     if (!this.moduleContext) {
       return;
     }

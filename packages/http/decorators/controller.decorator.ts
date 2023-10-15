@@ -1,7 +1,7 @@
 import { ScopeOptions } from "@venok/core";
 import { SCOPE_OPTIONS_METADATA } from "@venok/core/constants";
 import { isString, isUndefined } from "@venok/core/helpers/shared.helper";
-import { VersionOptions } from "@venok/http/interfaces/version-options.interface";
+import { VersionOptions } from "../interfaces";
 import { CONTROLLER_WATERMARK, HOST_METADATA, PATH_METADATA, VERSION_METADATA } from "@venok/http/constants";
 
 /**
@@ -14,7 +14,7 @@ export interface ControllerOptions extends ScopeOptions, VersionOptions {
    * Specifies an optional `route path prefix`.  The prefix is pre-pended to the
    * path specified in any request decorator in the class.
    *
-   * Supported only by HTTP-based applications (does not apply to non-HTTP microservices).
+   * Supported only by HTTP-based application (does not apply to non-HTTP microservices).
    */
   path?: string | string[];
 

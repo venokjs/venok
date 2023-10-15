@@ -18,8 +18,8 @@ import { SerializedGraph } from "@venok/core/inspector/serialized-graph";
 import { InternalCoreModule } from "@venok/core/injector/internal-core-module/internal-core-module";
 import { Injectable } from "@venok/core/interfaces/injectable.interface";
 
-type ModuleMetatype = Type<any> | DynamicModule | Promise<DynamicModule>;
-type ModuleScope = Type<any>[];
+type ModuleMetatype = Type | DynamicModule | Promise<DynamicModule>;
+type ModuleScope = Type[];
 
 export class VenokContainer {
   private readonly globalModules = new Set<Module>();
@@ -133,7 +133,7 @@ export class VenokContainer {
   public async addDynamicMetadata(
     token: string,
     dynamicModuleMetadata: Partial<DynamicModule> | undefined,
-    scope: Type<any>[],
+    scope: Type[],
   ) {
     if (!dynamicModuleMetadata) {
       return;
@@ -144,14 +144,14 @@ export class VenokContainer {
     await this.addDynamicModules(imports, scope);
   }
 
-  public async addDynamicModules(modules: any[] | undefined, scope: Type<any>[]) {
+  public async addDynamicModules(modules: any[] | undefined, scope: Type[]) {
     if (!modules) {
       return;
     }
     await Promise.all(modules.map((module) => this.addModule(module, scope)));
   }
 
-  public isGlobalModule(metatype: Type<any>, dynamicMetadata?: Partial<DynamicModule>): boolean {
+  public isGlobalModule(metatype: Type, dynamicMetadata?: Partial<DynamicModule>): boolean {
     if (dynamicMetadata && dynamicMetadata.global) {
       return true;
     }
@@ -178,7 +178,7 @@ export class VenokContainer {
     return this.internalCoreModule;
   }
 
-  public async addImport(relatedModule: Type<any> | DynamicModule, token: string) {
+  public async addImport(relatedModule: Type | DynamicModule, token: string) {
     if (!this.modules.has(token)) {
       return;
     }
@@ -212,7 +212,7 @@ export class VenokContainer {
     return moduleRef.addInjectable(injectable, enhancerSubtype, host);
   }
 
-  public addExportedProvider(provider: Type<any>, token: string) {
+  public addExportedProvider(provider: Type, token: string) {
     if (!this.modules.has(token)) {
       throw new UnknownModuleException();
     }
