@@ -7,7 +7,7 @@ export class ExecutionContextHost implements ExecutionContext {
 
   constructor(
     private readonly args: any[],
-    private readonly constructorRef: Type<any> = null as any,
+    private readonly constructorRef: Type = null as any,
     private readonly handler: Function = null as any,
   ) {}
 

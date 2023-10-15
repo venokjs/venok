@@ -53,7 +53,7 @@ export class PipesContextCreator extends ContextCreator {
     if (isObject) {
       return pipe as PipeTransform;
     }
-    const instanceWrapper = this.getInstanceByMetatype(pipe as Type<unknown>);
+    const instanceWrapper = this.getInstanceByMetatype(pipe as Type);
     if (!instanceWrapper) {
       return null;
     }
@@ -64,7 +64,7 @@ export class PipesContextCreator extends ContextCreator {
     return instanceHost && instanceHost.instance;
   }
 
-  public getInstanceByMetatype(metatype: Type<unknown>): InstanceWrapper | undefined {
+  public getInstanceByMetatype(metatype: Type): InstanceWrapper | undefined {
     if (!this.moduleContext) {
       return;
     }

@@ -19,7 +19,7 @@ export class RoutesMapper {
     this.pathsExplorer = new PathsExplorer(new MetadataScanner());
   }
 
-  public mapRouteToRouteInfo(controllerOrRoute: Type<any> | RouteInfo | string): RouteInfo[] {
+  public mapRouteToRouteInfo(controllerOrRoute: Type | RouteInfo | string): RouteInfo[] {
     if (isString(controllerOrRoute)) return this.getRouteInfoFromPath(controllerOrRoute);
 
     const routePathOrPaths = this.getRoutePath(controllerOrRoute);
@@ -50,7 +50,7 @@ export class RoutesMapper {
     return [routeInfo];
   }
 
-  private getRouteInfoFromController(controller: Type<any>, routePath: string | string[]): RouteInfo[] {
+  private getRouteInfoFromController(controller: Type, routePath: string | string[]): RouteInfo[] {
     const controllerPaths = this.pathsExplorer.scanForPaths(Object.create(controller), controller.prototype);
     const controllerVersion = this.getVersionMetadata(controller);
     const versioningConfig = this.httpConfig.getVersioning();
@@ -106,11 +106,11 @@ export class RoutesMapper {
     return prefix === "/" ? "" : prefix;
   }
 
-  private getRoutePath(route: Type<any> | RouteInfo): string | undefined {
+  private getRoutePath(route: Type | RouteInfo): string | undefined {
     return Reflect.getMetadata(PATH_METADATA, route);
   }
 
-  private getHostModuleOfController(metatype: Type<unknown>): Module | undefined {
+  private getHostModuleOfController(metatype: Type): Module | undefined {
     if (!metatype) return;
 
     const modulesContainer = this.container.getModules();
@@ -122,7 +122,7 @@ export class RoutesMapper {
     return modules.find(({ injectables }) => injectables.has(metatype));
   }
 
-  private getModulePath(metatype: Type<unknown> | undefined): string | undefined {
+  private getModulePath(metatype: Type | undefined): string | undefined {
     if (!metatype) return;
 
     const modulesContainer = this.container.getModules();
@@ -130,7 +130,7 @@ export class RoutesMapper {
     return modulePath ?? Reflect.getMetadata(MODULE_PATH, metatype);
   }
 
-  private getVersionMetadata(metatype: Type<unknown> | Function): VersionValue | undefined {
+  private getVersionMetadata(metatype: Type | Function): VersionValue | undefined {
     const versioningConfig = this.httpConfig.getVersioning();
     if (versioningConfig) return Reflect.getMetadata(VERSION_METADATA, metatype) ?? versioningConfig.defaultVersion;
   }

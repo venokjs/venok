@@ -21,7 +21,7 @@ export class MiddlewareBuilder implements MiddlewareConsumer {
     private readonly routeInfoPathExtractor: RouteInfoPathExtractor,
   ) {}
 
-  public apply(...middleware: Array<Type<any> | Function | any>): MiddlewareConfigProxy {
+  public apply(...middleware: Array<Type | Function | any>): MiddlewareConfigProxy {
     return new MiddlewareBuilder.ConfigProxy(this, flatten(middleware), this.routeInfoPathExtractor);
   }
 
@@ -38,7 +38,7 @@ export class MiddlewareBuilder implements MiddlewareConsumer {
 
     constructor(
       private readonly builder: MiddlewareBuilder,
-      private readonly middleware: Array<Type<any> | Function | any>,
+      private readonly middleware: Array<Type | Function | any>,
       private routeInfoPathExtractor: RouteInfoPathExtractor,
     ) {}
 
@@ -54,7 +54,7 @@ export class MiddlewareBuilder implements MiddlewareConsumer {
       return this;
     }
 
-    public forRoutes(...routes: Array<string | Type<any> | RouteInfo>): MiddlewareConsumer {
+    public forRoutes(...routes: Array<string | Type | RouteInfo>): MiddlewareConsumer {
       const { middlewareCollection } = this.builder;
 
       const flattedRoutes = this.getRoutesFlatList(routes);
@@ -67,7 +67,7 @@ export class MiddlewareBuilder implements MiddlewareConsumer {
       return this.builder;
     }
 
-    private getRoutesFlatList(routes: Array<string | Type<any> | RouteInfo>): RouteInfo[] {
+    private getRoutesFlatList(routes: Array<string | Type | RouteInfo>): RouteInfo[] {
       const { routesMapper } = this.builder;
 
       return flatten(routes.map((route) => routesMapper.mapRouteToRouteInfo(route)));

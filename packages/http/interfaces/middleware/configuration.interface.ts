@@ -10,5 +10,5 @@ export interface RouteInfo {
 
 export interface MiddlewareConfiguration<T = any> {
   middleware: T;
-  forRoutes: (Type<any> | string | RouteInfo)[];
+  forRoutes: (Type | string | RouteInfo)[];
 }

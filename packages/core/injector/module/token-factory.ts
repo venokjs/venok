@@ -11,9 +11,9 @@ const CLASS_STR_LEN = CLASS_STR.length;
 
 export class TokenFactory {
   private readonly moduleTokenCache = new Map<string, string>();
-  private readonly moduleIdsCache = new WeakMap<Type<unknown>, string>();
+  private readonly moduleIdsCache = new WeakMap<Type, string>();
 
-  public create(metatype: Type<unknown>, dynamicModuleMetadata?: Partial<DynamicModule> | undefined): string {
+  public create(metatype: Type, dynamicModuleMetadata?: Partial<DynamicModule> | undefined): string {
     const moduleId = this.getModuleId(metatype);
 
     if (!dynamicModuleMetadata) return this.getStaticModuleToken(moduleId, this.getModuleName(metatype));
@@ -44,7 +44,7 @@ export class TokenFactory {
     return opaqueToken ? stringify(opaqueToken, this.replacer) : "";
   }
 
-  public getModuleId(metatype: Type<unknown>): string {
+  public getModuleId(metatype: Type): string {
     let moduleId = this.moduleIdsCache.get(metatype);
     if (moduleId) return moduleId;
 
@@ -53,7 +53,7 @@ export class TokenFactory {
     return moduleId;
   }
 
-  public getModuleName(metatype: Type<any>): string {
+  public getModuleName(metatype: Type): string {
     return metatype.name;
   }
 

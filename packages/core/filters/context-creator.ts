@@ -38,7 +38,7 @@ export class ExceptionFilterContextCreator extends ContextCreator {
   ): ExceptionFilter | null {
     if ("catch" in filter) return filter as ExceptionFilter;
 
-    const instanceWrapper = this.getInstanceByMetatype(filter as Type<unknown>);
+    const instanceWrapper = this.getInstanceByMetatype(filter as Type);
     if (!instanceWrapper) return null;
 
     const instanceHost = instanceWrapper.getInstanceByContextId(
@@ -49,7 +49,7 @@ export class ExceptionFilterContextCreator extends ContextCreator {
     return instanceHost && instanceHost.instance;
   }
 
-  public getInstanceByMetatype(metatype: Type<unknown>): InstanceWrapper | undefined {
+  public getInstanceByMetatype(metatype: Type): InstanceWrapper | undefined {
     if (!this.moduleContext) return;
 
     const collection = this.container.getModules();
@@ -59,7 +59,7 @@ export class ExceptionFilterContextCreator extends ContextCreator {
     return moduleRef.injectables.get(metatype);
   }
 
-  public reflectCatchExceptions(instance: ExceptionFilter): Type<any>[] {
+  public reflectCatchExceptions(instance: ExceptionFilter): Type[] {
     const prototype = Object.getPrototypeOf(instance);
     return Reflect.getMetadata(FILTER_CATCH_EXCEPTIONS, prototype.constructor) || [];
   }

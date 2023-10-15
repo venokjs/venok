@@ -90,7 +90,7 @@ Potential solutions:
 };
 
 export const UNDEFINED_FORWARDREF_MESSAGE = (
-  scope: Type<any>[],
+  scope: Type[],
 ) => `Venok cannot create the module instance. Often, this is because of a circular dependency between modules. Use forwardRef() to avoid it.
 
 Scope [${stringifyScope(scope)}]

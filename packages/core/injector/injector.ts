@@ -243,7 +243,7 @@ export class Injector {
   }
 
   public getClassDependencies<T>(wrapper: InstanceWrapper<T>): [InjectorDependency[], number[]] {
-    const ctorRef = wrapper.metatype as Type<any>;
+    const ctorRef = wrapper.metatype as Type;
     return [this.reflectConstructorParams(ctorRef), this.reflectOptionalParams(ctorRef)];
   }
 
@@ -290,7 +290,7 @@ export class Injector {
 
   public async resolveSingleParam<T>(
     wrapper: InstanceWrapper<T>,
-    param: Type<any> | string | symbol | any,
+    param: Type | string | symbol | any,
     dependencyContext: InjectorDependencyContext,
     moduleRef: Module,
     contextId = STATIC_CONTEXT,
@@ -315,7 +315,7 @@ export class Injector {
     );
   }
 
-  public resolveParamToken<T>(wrapper: InstanceWrapper<T>, param: Type<any> | string | symbol | any) {
+  public resolveParamToken<T>(wrapper: InstanceWrapper<T>, param: Type | string | symbol | any) {
     if (!param.forwardRef) {
       return param;
     }
@@ -511,7 +511,7 @@ export class Injector {
     if (metadata && contextId !== STATIC_CONTEXT) {
       return this.loadPropertiesMetadata(metadata, contextId, inquirer);
     }
-    const properties = this.reflectProperties(wrapper.metatype as Type<any>);
+    const properties = this.reflectProperties(wrapper.metatype as Type);
     const instances = await Promise.all(
       properties.map(async (item: PropertyDependency) => {
         try {
@@ -604,8 +604,8 @@ export class Injector {
 
     if (isNull(inject) && isInContext) {
       instanceHost.instance = wrapper.forwardRef
-        ? Object.assign(instanceHost.instance, new (metatype as Type<any>)(...instances))
-        : new (metatype as Type<any>)(...instances);
+        ? Object.assign(instanceHost.instance, new (metatype as Type)(...instances))
+        : new (metatype as Type)(...instances);
     } else if (isInContext) {
       const factoryReturnValue = (targetMetatype.metatype as any as Function)(...instances);
       instanceHost.instance = await factoryReturnValue;

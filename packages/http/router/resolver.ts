@@ -88,7 +88,7 @@ export class RoutesResolver implements Resolver {
       if (!Reflect.hasMetadata(CONTROLLER_WATERMARK, metatype)) return;
 
       const host = this.getHostMetadata(metatype as Function | Type);
-      const routerPaths = this.routerExplorer.extractRouterPath(metatype as Type<any>);
+      const routerPaths = this.routerExplorer.extractRouterPath(metatype as Type);
       const controllerVersion = this.getVersionMetadata(metatype as Function | Type);
       const controllerName = metatype!.name;
 
@@ -158,17 +158,17 @@ export class RoutesResolver implements Resolver {
     }
   }
 
-  private getModulePathMetadata(metatype: Type<unknown>): string | undefined {
+  private getModulePathMetadata(metatype: Type): string | undefined {
     const modulesContainer = this.container.getModules();
     const modulePath = Reflect.getMetadata(MODULE_PATH + modulesContainer.applicationId, metatype);
     return modulePath ?? Reflect.getMetadata(MODULE_PATH, metatype);
   }
 
-  private getHostMetadata(metatype: Type<unknown> | Function): string | string[] | undefined {
+  private getHostMetadata(metatype: Type | Function): string | string[] | undefined {
     return Reflect.getMetadata(HOST_METADATA, metatype);
   }
 
-  private getVersionMetadata(metatype: Type<unknown> | Function): VersionValue | undefined {
+  private getVersionMetadata(metatype: Type | Function): VersionValue | undefined {
     const versioningConfig = this.httpConfig.getVersioning();
     if (versioningConfig) return Reflect.getMetadata(VERSION_METADATA, metatype) ?? versioningConfig.defaultVersion;
   }

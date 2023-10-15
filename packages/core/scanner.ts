@@ -59,8 +59,8 @@ interface ApplicationProviderWrapper {
 
 interface ModulesScanParameters {
   moduleDefinition: ModuleDefinition;
-  scope?: Type<unknown>[];
-  ctxRegistry?: (ForwardReference | DynamicModule | Type<unknown>)[];
+  scope?: Type[];
+  ctxRegistry?: (ForwardReference | DynamicModule | Type)[];
   overrides?: ModuleOverride[];
   lazy?: boolean;
 }
@@ -75,7 +75,7 @@ export class DependenciesScanner {
     private readonly applicationConfig = new ApplicationConfig(),
   ) {}
 
-  public async scan(module: Type<any>, options?: { overrides?: ModuleOverride[] }) {
+  public async scan(module: Type, options?: { overrides?: ModuleOverride[] }) {
     await this.registerCoreModule(options?.overrides);
     await this.scanForModules({
       moduleDefinition: module,
@@ -107,8 +107,8 @@ export class DependenciesScanner {
     if (this.isForwardReference(moduleDefinition)) {
       moduleDefinition = (moduleDefinition as ForwardReference).forwardRef();
     }
-    const modules = !this.isDynamicModule(moduleDefinition as Type<any> | DynamicModule)
-      ? this.reflectMetadata(MODULE_METADATA.IMPORTS, moduleDefinition as Type<any>)
+    const modules = !this.isDynamicModule(moduleDefinition as Type | DynamicModule)
+      ? this.reflectMetadata(MODULE_METADATA.IMPORTS, moduleDefinition as Type)
       : [
           ...this.reflectMetadata(MODULE_METADATA.IMPORTS, (moduleDefinition as DynamicModule).module),
           ...((moduleDefinition as DynamicModule).imports || []),
@@ -148,7 +148,7 @@ export class DependenciesScanner {
 
   public async insertModule(
     moduleDefinition: any,
-    scope: Type<unknown>[],
+    scope: Type[],
   ): Promise<
     | {
         moduleRef: Module;
@@ -173,7 +173,7 @@ export class DependenciesScanner {
     }
   }
 
-  public async reflectImports(module: Type<unknown>, token: string, context: string) {
+  public async reflectImports(module: Type, token: string, context: string) {
     const modules = [
       ...this.reflectMetadata(MODULE_METADATA.IMPORTS, module),
       ...(this.container.getDynamicMetadataByToken(token, MODULE_METADATA.IMPORTS as "imports") as any[]),
@@ -183,7 +183,7 @@ export class DependenciesScanner {
     }
   }
 
-  public reflectProviders(module: Type<any>, token: string) {
+  public reflectProviders(module: Type, token: string) {
     const providers = [
       ...this.reflectMetadata(MODULE_METADATA.PROVIDERS, module),
       ...(this.container.getDynamicMetadataByToken(token, MODULE_METADATA.PROVIDERS as "providers") as any[]),
@@ -205,7 +205,7 @@ export class DependenciesScanner {
     this.reflectParamInjectables(cls, token, ROUTE_ARGS_METADATA);
   }
 
-  public reflectExports(module: Type<unknown>, token: string) {
+  public reflectExports(module: Type, token: string) {
     const exports = [
       ...this.reflectMetadata(MODULE_METADATA.EXPORTS, module),
       ...(this.container.getDynamicMetadataByToken(token, MODULE_METADATA.EXPORTS as "exports") as any[]),
@@ -337,7 +337,7 @@ export class DependenciesScanner {
   public insertProvider(provider: Provider, token: string) {
     const isCustomProvider = this.isCustomProvider(provider);
     if (!isCustomProvider) {
-      return this.container.addProvider(provider as Type<any>, token);
+      return this.container.addProvider(provider as Type, token);
     }
     const applyProvidersMap = this.getApplyProvidersMap();
     const providersKeys = Object.keys(applyProvidersMap);
@@ -414,7 +414,7 @@ export class DependenciesScanner {
   private insertOrOverrideModule(
     moduleDefinition: ModuleDefinition,
     overrides: ModuleOverride[],
-    scope: Type<unknown>[],
+    scope: Type[],
   ): Promise<
     | {
         moduleRef: Module;
@@ -446,7 +446,7 @@ export class DependenciesScanner {
   private async overrideModule(
     moduleToOverride: ModuleDefinition,
     newModule: ModuleDefinition,
-    scope: Type<unknown>[],
+    scope: Type[],
   ): Promise<
     | {
         moduleRef: Module;
@@ -461,7 +461,7 @@ export class DependenciesScanner {
     );
   }
 
-  public reflectMetadata<T = any>(metadataKey: string, metatype: Type<any>): T[] {
+  public reflectMetadata<T = any>(metadataKey: string, metatype: Type): T[] {
     return Reflect.getMetadata(metadataKey, metatype) || [];
   }
 
@@ -543,7 +543,7 @@ export class DependenciesScanner {
     };
   }
 
-  public isDynamicModule(module: Type<any> | DynamicModule): module is DynamicModule {
+  public isDynamicModule(module: Type | DynamicModule): module is DynamicModule {
     return module && !!(module as DynamicModule).module;
   }
 
@@ -551,7 +551,7 @@ export class DependenciesScanner {
    * @param metatype
    * @returns `true` if `metatype` is annotated with the `@Injectable()` decorator.
    */
-  private isInjectable(metatype: Type<any>): boolean {
+  private isInjectable(metatype: Type): boolean {
     return !!Reflect.getMetadata(INJECTABLE_WATERMARK, metatype);
   }
 
@@ -559,7 +559,7 @@ export class DependenciesScanner {
    * @param metatype
    * @returns `true` if `metatype` is annotated with the `@Catch()` decorator.
    */
-  private isExceptionFilter(metatype: Type<any>): boolean {
+  private isExceptionFilter(metatype: Type): boolean {
     return !!Reflect.getMetadata(CATCH_WATERMARK, metatype);
   }
 

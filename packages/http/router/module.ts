@@ -34,8 +34,8 @@ export class RouterModule {
     };
   }
 
-  private deepCloneRoutes(routes: Routes | Type<any>[]): Routes | Array<Type<any>> {
-    return routes.map((routeOrType: Type<any> | RouteTree) => {
+  private deepCloneRoutes(routes: Routes | Type[]): Routes | Array<Type<any>> {
+    return routes.map((routeOrType: Type | RouteTree) => {
       if (typeof routeOrType === "function") return routeOrType;
 
       if (routeOrType.children) {
@@ -57,11 +57,11 @@ export class RouterModule {
     });
   }
 
-  private registerModulePathMetadata(moduleCtor: Type<unknown>, modulePath: string) {
+  private registerModulePathMetadata(moduleCtor: Type, modulePath: string) {
     Reflect.defineMetadata(MODULE_PATH + this.modulesContainer.applicationId, modulePath, moduleCtor);
   }
 
-  private updateTargetModulesCache(moduleCtor: Type<unknown>) {
+  private updateTargetModulesCache(moduleCtor: Type) {
     let moduleClassSet: WeakSet<ModuleClass>;
     if (targetModulesByContainer.has(this.modulesContainer)) {
       moduleClassSet = targetModulesByContainer.get(this.modulesContainer) as WeakSet<ModuleClass>;

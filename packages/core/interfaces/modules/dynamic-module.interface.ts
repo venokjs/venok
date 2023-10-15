@@ -10,7 +10,7 @@ export interface DynamicModule extends ModuleMetadata {
   /**
    * A module reference
    */
-  module: Type<any>;
+  module: Type;
 
   /**
    * When "true", makes a module global-scoped.
