@@ -1,31 +1,9 @@
-import { Global, Module, Provider } from "@venok/core";
-import { HttpApplication } from "./application";
-import { HTTP_APP_OPTIONS } from "../constants";
-import { HttpCoreAppService } from "./app.service";
+import { HttpConfigurableModuleClass } from "./http.module-defenition";
+import { Module } from "@venok/core";
 import { DiscoveryModule } from "@venok/core/discovery/module";
-import { HttpServer } from "../interfaces";
+import { HttpCoreService } from "./http.service";
 
-export interface HttpAppOptions {
-  port: number;
-  callback?: (app: HttpApplication) => void;
-  adapter: HttpServer;
-}
-
-@Global()
 @Module({
-  providers: [DiscoveryModule],
+  providers: [DiscoveryModule, HttpCoreService],
 })
-export class HttpModule {
-  static forRoot(options: HttpAppOptions): any {
-    const OptionsProvider: Provider = {
-      provide: HTTP_APP_OPTIONS,
-      useValue: options,
-    };
-
-    return {
-      module: HttpModule,
-      providers: [OptionsProvider, HttpCoreAppService],
-      exports: [HttpModule],
-    };
-  }
-}
+export class HttpModule extends HttpConfigurableModuleClass {}
