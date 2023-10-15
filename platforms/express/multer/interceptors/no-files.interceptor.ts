@@ -1,4 +1,4 @@
-import * as multer from "multer";
+import multer from "multer";
 import { Observable } from "rxjs";
 import { CallHandler, ExecutionContext, Inject, mixin, Optional, Type, VenokInterceptor } from "@venok/core";
 import { MulterOptions } from "../interfaces/multer-options.interface";

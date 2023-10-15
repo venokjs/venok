@@ -1,13 +1,13 @@
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import { MULTER_MODULE_OPTIONS } from '../../../multer/files.constants';
-import { MulterModule } from '../../../multer/multer.module';
+import { expect } from "chai";
+import sinon from "sinon";
+import { MULTER_MODULE_OPTIONS } from "../../../multer/files.constants";
+import { MulterModule } from "../../../multer";
 
-describe('MulterModule', () => {
-  describe('register', () => {
-    it('should provide an options', () => {
+describe("MulterModule", () => {
+  describe("register", () => {
+    it("should provide an options", () => {
       const options = {
-        test: 'test',
+        test: "test",
       };
       const dynamicModule = MulterModule.register(options as any);
 
@@ -21,9 +21,9 @@ describe('MulterModule', () => {
     });
   });
 
-  describe('register async', () => {
-    describe('when useFactory', () => {
-      it('should provide an options', () => {
+  describe("register async", () => {
+    describe("when useFactory", () => {
+      it("should provide an options", () => {
         const options: any = {};
         const asyncOptions = {
           useFactory: () => options,
@@ -41,8 +41,8 @@ describe('MulterModule', () => {
       });
     });
 
-    describe('when useExisting', () => {
-      it('should provide an options', () => {
+    describe("when useExisting", () => {
+      it("should provide an options", () => {
         const asyncOptions = {
           useExisting: Object,
         };
@@ -54,8 +54,8 @@ describe('MulterModule', () => {
       });
     });
 
-    describe('when useClass', () => {
-      it('should provide an options', () => {
+    describe("when useClass", () => {
+      it("should provide an options", () => {
         const asyncOptions = {
           useClass: Object,
         };
@@ -73,9 +73,7 @@ describe('MulterModule', () => {
         const optionsFactory = {
           createMulterOptions: sinon.spy(),
         };
-        await ((dynamicModule.providers[0] as any).useFactory as any)(
-          optionsFactory,
-        );
+        await ((dynamicModule.providers![0] as any).useFactory as any)(optionsFactory);
         expect(optionsFactory.createMulterOptions.called).to.be.true;
       });
     });
