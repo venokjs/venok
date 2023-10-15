@@ -1,6 +1,6 @@
-import { RequestMethod } from "../../enums";
-import { RouterProxyCallback } from "../../exceptions/proxy";
 import { VersionValue } from "./version-options.interface";
+import { RequestMethod } from "../../enums";
+import { RouterProxyCallback } from "./callback-paramtypes.interface";
 
 export interface RouteDefinition {
   path: string[];

@@ -32,7 +32,7 @@ describe("RouteParamsFactory", () => {
       files: "files",
     };
     describe("when key is", () => {
-      const args = [null, { res, req, next }];
+      const args = [null, [req, res, next]];
       describe(`RouteParamtypes.NEXT`, () => {
         it("should return next object", () => {
           expect((factory as any).exchangeKeyForValue(RouteParamtypes.NEXT, ...args)).to.be.eql(next);

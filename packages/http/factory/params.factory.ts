@@ -1,12 +1,13 @@
-import { IRouteParamsFactory } from "../context/http.context";
 import { RouteParamtypes } from "../enums";
+import { IRouteParamsFactory } from "../context/context";
 
 export class RouteParamsFactory implements IRouteParamsFactory {
   public exchangeKeyForValue<TRequest extends Record<string, any> = any, TResponse = any, TResult = any>(
     key: RouteParamtypes | string,
     data: string | object | any,
-    { req, res, next }: { req: TRequest; res: TResponse; next: Function },
+    args: [TRequest, TResponse, Function],
   ): TResult {
+    const [req, res, next] = args;
     switch (key) {
       case RouteParamtypes.NEXT:
         return next as any;

@@ -1,18 +1,18 @@
 import { expect } from "chai";
 import { of } from "rxjs";
 import sinon from "sinon";
-import { ExternalContextCreator } from "@venok/core/context/external/creator";
+import { VenokContextCreator } from "@venok/core/context/context";
 import { GuardsConsumer, GuardsContextCreator } from "@venok/core/guards";
 import { PipesConsumer, PipesContextCreator } from "@venok/core/pipes";
 import { VenokContainer } from "@venok/core/injector/container";
 import { InterceptorsConsumer, InterceptorsContextCreator } from "@venok/core/interceptors";
 import { ModulesContainer } from "@venok/core/injector/module/container";
-import { ExternalExceptionFilterContext } from "@venok/core/exceptions/external/filter-context";
+import { VenokExceptionFilterContext } from "@venok/core/filters/context";
 import { Module } from "@venok/core/injector/module/module";
 import { RuntimeException } from "@venok/core/errors/exceptions";
 
-describe("ExternalContextCreator", () => {
-  let contextCreator: ExternalContextCreator;
+describe("VenokContextCreator", () => {
+  let contextCreator: VenokContextCreator;
   let callback: any;
   let bindSpy: sinon.SinonSpy;
   let applySpy: sinon.SinonSpy;
@@ -32,7 +32,7 @@ describe("ExternalContextCreator", () => {
     pipesConsumer = new PipesConsumer();
     guardsContextCreator = new GuardsContextCreator(new VenokContainer());
     sinon.stub(guardsContextCreator, "create").returns([{}] as any);
-    contextCreator = new ExternalContextCreator(
+    contextCreator = new VenokContextCreator(
       guardsContextCreator,
       guardsConsumer,
       new InterceptorsContextCreator(new VenokContainer()),
@@ -40,7 +40,7 @@ describe("ExternalContextCreator", () => {
       new ModulesContainer(),
       new PipesContextCreator(new VenokContainer()),
       pipesConsumer,
-      new ExternalExceptionFilterContext(new VenokContainer()),
+      new VenokExceptionFilterContext(new VenokContainer()),
     );
   });
   describe("create", () => {

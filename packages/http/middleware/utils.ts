@@ -23,7 +23,7 @@ export const mapToExcludeRoute = (routes: (string | RouteInfo)[]): ExcludeRouteM
   });
 };
 
-export const filterMiddleware = <T extends Function | Type<any> = any>(
+export const filterMiddleware = <T extends Function | Type = any>(
   middleware: T[],
   routes: RouteInfo[],
   httpAdapter: HttpServer,
@@ -41,7 +41,7 @@ export const mapToClass = <T extends Function | Type<any>>(
     if (excludedRoutes.length <= 0) {
       return middleware;
     }
-    const MiddlewareHost = class extends (middleware as Type<any>) {
+    const MiddlewareHost = class extends (middleware as Type) {
       use(...params: unknown[]) {
         const [req, _, next] = params as [Record<string, any>, any, Function];
         const isExcluded = isMiddlewareRouteExcluded(req, excludedRoutes, httpAdapter);
@@ -67,7 +67,7 @@ export const mapToClass = <T extends Function | Type<any>>(
   );
 };
 
-export function isMiddlewareClass(middleware: any): middleware is Type<any> {
+export function isMiddlewareClass(middleware: any): middleware is Type {
   const middlewareStr = middleware.toString();
   if (middlewareStr.substring(0, 5) === "class") {
     return true;
@@ -78,7 +78,7 @@ export function isMiddlewareClass(middleware: any): middleware is Type<any> {
   );
 }
 
-export function assignToken(metatype: Type<any>, token = uid(21)): Type<any> {
+export function assignToken(metatype: Type, token = uid(21)): Type {
   Object.defineProperty(metatype, "name", { value: token });
   return metatype;
 }

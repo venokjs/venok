@@ -1,12 +1,8 @@
-import { RoutePathFactory } from "../factory/path.factory";
-import { ExcludeRouteMetadata } from "../interfaces/http/exclude-route.interface";
-import { VersioningOptions, VersionValue } from "../interfaces/router/version-options.interface";
-import { ApplicationConfig } from "@venok/core";
-import { addLeadingSlash, stripEndSlash } from "../helpers/path.helper";
-import { RouteInfo } from "../interfaces/middleware";
-import { isRouteExcluded } from "../helpers/exclude-route.helper";
-import { VersioningType } from "../enums";
+import { RoutePathFactory } from "../factory";
+import { ExcludeRouteMetadata, RouteInfo, VersioningOptions, VersionValue } from "../interfaces";
 import { HttpConfig } from "../application/config";
+import { addLeadingSlash, isRouteExcluded, stripEndSlash } from "../helpers";
+import { VersioningType } from "../enums";
 
 export class RouteInfoPathExtractor {
   private routePathFactory: RoutePathFactory;
@@ -37,9 +33,7 @@ export class RouteInfoPathExtractor {
   }
 
   public extractPathFrom(route: RouteInfo): string {
-    if (this.isAWildcard(route.path) && !route.version) {
-      return addLeadingSlash(route.path);
-    }
+    if (this.isAWildcard(route.path) && !route.version) return addLeadingSlash(route.path);
 
     return this.extractNonWildcardPathFrom(route);
   }

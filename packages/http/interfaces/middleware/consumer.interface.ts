@@ -13,5 +13,5 @@ export interface MiddlewareConsumer {
    *
    * @returns {MiddlewareConfigProxy}
    */
-  apply(...middleware: (Type<any> | Function)[]): MiddlewareConfigProxy;
+  apply(...middleware: (Type | Function)[]): MiddlewareConfigProxy;
 }

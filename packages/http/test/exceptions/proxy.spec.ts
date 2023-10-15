@@ -1,20 +1,21 @@
 import { expect } from "chai";
 import sinon from "sinon";
 import { NoopHttpAdapter } from "@venok/http/helpers/adapter.helper";
-import { HttpProxy } from "@venok/http/exceptions/proxy";
-import { HttpExceptionsHandler } from "@venok/http/exceptions/handler";
 import { ExecutionContextHost } from "@venok/core/context/execution-host";
 import { HttpException } from "../../errors";
+import { HttpExceptionFilter } from "../../filters/filter";
+import { VenokProxy } from "@venok/core/context";
+import { VenokExceptionsHandler } from "@venok/core/exceptions/handler";
 
 describe("RouterProxy", () => {
-  let routerProxy: HttpProxy;
-  let handler: HttpExceptionsHandler;
+  let routerProxy: VenokProxy;
+  let handler: VenokExceptionsHandler;
   const httpException = new HttpException("test", 500);
   let nextStub: sinon.SinonStub;
   beforeEach(() => {
-    handler = new HttpExceptionsHandler(new NoopHttpAdapter({}));
+    handler = new VenokExceptionsHandler(new HttpExceptionFilter(new NoopHttpAdapter({})));
     nextStub = sinon.stub(handler, "next");
-    routerProxy = new HttpProxy();
+    routerProxy = new VenokProxy();
   });
 
   describe("createProxy", () => {
@@ -49,7 +50,7 @@ describe("RouterProxy", () => {
 
   describe("createExceptionLayerProxy", () => {
     it("should method return thunk", () => {
-      const proxy = routerProxy.createExceptionLayerProxy(() => {}, handler);
+      const proxy = routerProxy.createProxy(() => {}, handler);
       expect(typeof proxy === "function").to.be.true;
     });
 

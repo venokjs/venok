@@ -19,7 +19,7 @@ export class RoutesMapper {
     this.pathsExplorer = new PathsExplorer(new MetadataScanner());
   }
 
-  public mapRouteToRouteInfo(controllerOrRoute: Type<any> | RouteInfo | string): RouteInfo[] {
+  public mapRouteToRouteInfo(controllerOrRoute: Type | RouteInfo | string): RouteInfo[] {
     if (isString(controllerOrRoute)) return this.getRouteInfoFromPath(controllerOrRoute);
 
     const routePathOrPaths = this.getRoutePath(controllerOrRoute);
@@ -45,13 +45,12 @@ export class RoutesMapper {
       method: routeInfoObject.method,
     };
 
-    if (routeInfoObject.version) {
-      routeInfo.version = routeInfoObject.version;
-    }
+    if (routeInfoObject.version) routeInfo.version = routeInfoObject.version;
+
     return [routeInfo];
   }
 
-  private getRouteInfoFromController(controller: Type<any>, routePath: string | string[]): RouteInfo[] {
+  private getRouteInfoFromController(controller: Type, routePath: string | string[]): RouteInfo[] {
     const controllerPaths = this.pathsExplorer.scanForPaths(Object.create(controller), controller.prototype);
     const controllerVersion = this.getVersionMetadata(controller);
     const versioningConfig = this.httpConfig.getVersioning();
@@ -72,6 +71,7 @@ export class RoutesMapper {
             path: endpointPath,
             method: item.requestMethod,
           };
+
           const version = item.version ?? controllerVersion;
           if (version && versioningConfig) {
             if (typeof version !== "string" && Array.isArray(version)) {
@@ -106,38 +106,32 @@ export class RoutesMapper {
     return prefix === "/" ? "" : prefix;
   }
 
-  private getRoutePath(route: Type<any> | RouteInfo): string | undefined {
+  private getRoutePath(route: Type | RouteInfo): string | undefined {
     return Reflect.getMetadata(PATH_METADATA, route);
   }
 
-  private getHostModuleOfController(metatype: Type<unknown>): Module | undefined {
-    if (!metatype) {
-      return;
-    }
+  private getHostModuleOfController(metatype: Type): Module | undefined {
+    if (!metatype) return;
+
     const modulesContainer = this.container.getModules();
     const moduleRefsSet = targetModulesByContainer.get(modulesContainer);
-    if (!moduleRefsSet) {
-      return;
-    }
+    if (!moduleRefsSet) return;
 
     const modules = Array.from(modulesContainer.values()).filter((moduleRef) => moduleRefsSet.has(moduleRef));
-    // Global change
+
     return modules.find(({ injectables }) => injectables.has(metatype));
   }
 
-  private getModulePath(metatype: Type<unknown> | undefined): string | undefined {
-    if (!metatype) {
-      return;
-    }
+  private getModulePath(metatype: Type | undefined): string | undefined {
+    if (!metatype) return;
+
     const modulesContainer = this.container.getModules();
     const modulePath = Reflect.getMetadata(MODULE_PATH + modulesContainer.applicationId, metatype);
     return modulePath ?? Reflect.getMetadata(MODULE_PATH, metatype);
   }
 
-  private getVersionMetadata(metatype: Type<unknown> | Function): VersionValue | undefined {
+  private getVersionMetadata(metatype: Type | Function): VersionValue | undefined {
     const versioningConfig = this.httpConfig.getVersioning();
-    if (versioningConfig) {
-      return Reflect.getMetadata(VERSION_METADATA, metatype) ?? versioningConfig.defaultVersion;
-    }
+    if (versioningConfig) return Reflect.getMetadata(VERSION_METADATA, metatype) ?? versioningConfig.defaultVersion;
   }
 }

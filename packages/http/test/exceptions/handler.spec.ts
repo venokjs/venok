@@ -2,24 +2,24 @@ import { expect } from "chai";
 import createHttpError from "http-errors";
 import sinon from "sinon";
 import { AbstractHttpAdapter } from "@venok/http/adapter/adapter";
-import { HttpExceptionsHandler } from "@venok/http/exceptions/handler";
 import { NoopHttpAdapter } from "@venok/http/helpers/adapter.helper";
 import { ExecutionContextHost } from "@venok/core/context/execution-host";
 import { InvalidExceptionFilterException } from "@venok/core/errors/exceptions/invalid-exception-filter.exception";
-
 import { isNull, isObject } from "@venok/core/helpers/shared.helper";
 import { HttpException } from "../../errors";
+import { HttpExceptionFilter } from "../../filters/filter";
+import { VenokExceptionsHandler } from "@venok/core/exceptions/handler";
 
-describe("HttpExceptionsHandler", () => {
+describe("VenokExceptionsHandler", () => {
   let adapter: AbstractHttpAdapter;
-  let handler: HttpExceptionsHandler;
+  let handler: VenokExceptionsHandler;
   let statusStub: sinon.SinonStub;
   let jsonStub: sinon.SinonStub;
   let response: any;
 
   beforeEach(() => {
     adapter = new NoopHttpAdapter({});
-    handler = new HttpExceptionsHandler(adapter);
+    handler = new VenokExceptionsHandler(new HttpExceptionFilter(adapter));
     statusStub = sinon.stub();
     jsonStub = sinon.stub();
 
@@ -34,12 +34,10 @@ describe("HttpExceptionsHandler", () => {
   describe("next", () => {
     beforeEach(() => {
       sinon.stub(adapter, "reply").callsFake((responseRef: any, body: any, statusCode?: number) => {
-        if (statusCode) {
-          responseRef.status(statusCode);
-        }
-        if (isNull(body)) {
-          return responseRef.send();
-        }
+        if (statusCode) responseRef.status(statusCode);
+
+        if (isNull(body)) return responseRef.send();
+
         return isObject(body) ? responseRef.json(body) : responseRef.send(String(body));
       });
     });

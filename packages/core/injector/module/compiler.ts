@@ -4,7 +4,7 @@ import { ForwardReference } from "@venok/core/interfaces/modules/forward-referen
 import { TokenFactory } from "@venok/core/injector/module/token-factory";
 
 export interface ModuleFactory {
-  type: Type<any>;
+  type: Type;
   token: string;
   dynamicMetadata?: Partial<DynamicModule>;
 }
@@ -12,14 +12,14 @@ export interface ModuleFactory {
 export class ModuleCompiler {
   constructor(private readonly moduleTokenFactory = new TokenFactory()) {}
 
-  public async compile(metatype: Type<any> | DynamicModule | Promise<DynamicModule>): Promise<ModuleFactory> {
+  public async compile(metatype: Type | DynamicModule | Promise<DynamicModule>): Promise<ModuleFactory> {
     const { type, dynamicMetadata } = this.extractMetadata(await metatype);
     const token = this.moduleTokenFactory.create(type, dynamicMetadata);
     return { type, dynamicMetadata, token };
   }
 
-  public extractMetadata(metatype: Type<any> | ForwardReference | DynamicModule): {
-    type: Type<any>;
+  public extractMetadata(metatype: Type | ForwardReference | DynamicModule): {
+    type: Type;
     dynamicMetadata?: Partial<DynamicModule> | undefined;
   } {
     if (!this.isDynamicModule(metatype)) {
@@ -31,7 +31,7 @@ export class ModuleCompiler {
     return { type, dynamicMetadata };
   }
 
-  public isDynamicModule(module: Type<any> | DynamicModule | ForwardReference): module is DynamicModule {
+  public isDynamicModule(module: Type | DynamicModule | ForwardReference): module is DynamicModule {
     return !!(module as DynamicModule).module;
   }
 }

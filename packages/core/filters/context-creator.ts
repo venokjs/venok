@@ -7,7 +7,7 @@ import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 import { FILTER_CATCH_EXCEPTIONS } from "@venok/core/constants";
 import { ExceptionFilter } from "@venok/core/interfaces/features/exception-filter.interface";
 
-export class BaseExceptionFilterContext extends ContextCreator {
+export class ExceptionFilterContextCreator extends ContextCreator {
   protected moduleContext!: string;
 
   constructor(private readonly container: VenokContainer) {
@@ -19,9 +19,8 @@ export class BaseExceptionFilterContext extends ContextCreator {
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
   ): R {
-    if (isEmpty(metadata)) {
-      return [] as any as R;
-    }
+    if (isEmpty(metadata)) return [] as any as R;
+
     return metadata
       .filter((instance) => instance && (isFunction(instance.catch) || instance.name))
       .map((filter) => this.getFilterInstance(filter, contextId, inquirerId))
@@ -37,35 +36,30 @@ export class BaseExceptionFilterContext extends ContextCreator {
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
   ): ExceptionFilter | null {
-    const isObject = (filter as ExceptionFilter).catch;
-    // @ts-ignore
-    if (isObject) {
-      return filter as ExceptionFilter;
-    }
-    const instanceWrapper = this.getInstanceByMetatype(filter as Type<unknown>);
-    if (!instanceWrapper) {
-      return null;
-    }
+    if ("catch" in filter) return filter as ExceptionFilter;
+
+    const instanceWrapper = this.getInstanceByMetatype(filter as Type);
+    if (!instanceWrapper) return null;
+
     const instanceHost = instanceWrapper.getInstanceByContextId(
       this.getContextId(contextId, instanceWrapper),
       inquirerId,
     );
+
     return instanceHost && instanceHost.instance;
   }
 
-  public getInstanceByMetatype(metatype: Type<unknown>): InstanceWrapper | undefined {
-    if (!this.moduleContext) {
-      return;
-    }
+  public getInstanceByMetatype(metatype: Type): InstanceWrapper | undefined {
+    if (!this.moduleContext) return;
+
     const collection = this.container.getModules();
     const moduleRef = collection.get(this.moduleContext);
-    if (!moduleRef) {
-      return;
-    }
+    if (!moduleRef) return;
+
     return moduleRef.injectables.get(metatype);
   }
 
-  public reflectCatchExceptions(instance: ExceptionFilter): Type<any>[] {
+  public reflectCatchExceptions(instance: ExceptionFilter): Type[] {
     const prototype = Object.getPrototypeOf(instance);
     return Reflect.getMetadata(FILTER_CATCH_EXCEPTIONS, prototype.constructor) || [];
   }

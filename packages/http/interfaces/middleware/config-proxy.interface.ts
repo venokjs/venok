@@ -21,5 +21,5 @@ export interface MiddlewareConfigProxy {
    * @param {(string | Type | RouteInfo)[]} routes
    * @returns {MiddlewareConsumer}
    */
-  forRoutes(...routes: (string | Type<any> | RouteInfo)[]): MiddlewareConsumer;
+  forRoutes(...routes: (string | Type | RouteInfo)[]): MiddlewareConsumer;
 }

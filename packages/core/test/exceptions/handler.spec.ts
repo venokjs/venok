@@ -1,13 +1,14 @@
 import { expect } from "chai";
 import { of } from "rxjs";
 import sinon from "sinon";
-import { ExternalExceptionsHandler } from "@venok/core/exceptions/external/handler";
+import { VenokExceptionsHandler } from "@venok/core/exceptions/handler";
+import { VenokExceptionFilter } from "@venok/core/filters/filter";
 
-describe("ExternalExceptionsHandler", () => {
-  let handler: ExternalExceptionsHandler;
+describe("VenokExceptionsHandler", () => {
+  let handler: VenokExceptionsHandler;
 
   beforeEach(() => {
-    handler = new ExternalExceptionsHandler();
+    handler = new VenokExceptionsHandler(new VenokExceptionFilter());
   });
 
   describe("next", () => {
@@ -41,7 +42,7 @@ describe("ExternalExceptionsHandler", () => {
   describe("invokeCustomFilters", () => {
     describe("when filters array is empty", () => {
       it("should return identity", () => {
-        expect(handler.invokeCustomFilters(null, null as any)).to.be.null;
+        expect(handler.invokeCustomFilters(null, null as any)).to.be.false;
       });
     });
     describe("when filters array is not empty", () => {
@@ -80,7 +81,7 @@ describe("ExternalExceptionsHandler", () => {
           expect(funcSpy.notCalled).to.be.true;
         });
         it("should return null", () => {
-          expect(handler.invokeCustomFilters(new TestException(), null as any)).to.be.null;
+          expect(handler.invokeCustomFilters(new TestException(), null as any)).to.be.false;
         });
       });
     });

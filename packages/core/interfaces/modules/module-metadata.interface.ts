@@ -11,7 +11,7 @@ export interface ModuleMetadata {
    * Optional list of imported modules that export the providers which are
    * required in this module.
    */
-  imports?: Array<Type<any> | DynamicModule | Promise<DynamicModule> | ForwardReference>;
+  imports?: Array<Type | DynamicModule | Promise<DynamicModule> | ForwardReference>;
   /**
    * Optional list of providers that will be instantiated by the Venok injector
    * and that may be shared at least across this module.

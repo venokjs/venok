@@ -1,3 +1,5 @@
+import { isObservable, lastValueFrom, Observable } from "rxjs";
+
 import { ParamData } from "@venok/core/decorators/create-param.decorator";
 import { GuardsConsumer, GuardsContextCreator } from "@venok/core/guards";
 import { InterceptorsConsumer, InterceptorsContextCreator } from "@venok/core/interceptors";
@@ -9,13 +11,11 @@ import { ContextType } from "@venok/core/interfaces/context/arguments-host.inter
 import { CUSTOM_ROUTE_ARGS_METADATA, FORBIDDEN_MESSAGE } from "@venok/core/constants";
 import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
 import { isEmpty } from "@venok/core/helpers/shared.helper";
-import { isObservable, lastValueFrom } from "rxjs";
 import { RuntimeException } from "@venok/core/errors/exceptions";
 import { ContextId } from "@venok/core/injector/instance/wrapper";
 import { ContextUtils, ParamProperties } from "@venok/core/helpers/context.helper";
-import { ExternalErrorProxy } from "@venok/core/context/external/proxy";
-import { ExternalExceptionFilterContext } from "@venok/core/exceptions/external/filter-context";
-// import { HandlerMetadataStorage } from "@venok/core/context/handler-metadata-storage";
+import { VenokProxy } from "@venok/core/context/proxy";
+import { VenokExceptionFilterContext } from "@venok/core/filters/context";
 
 export interface ParamsFactory {
   exchangeKeyForValue(type: number, data: ParamData, args: any): any;
@@ -39,11 +39,12 @@ export interface ExternalContextOptions {
   guards?: boolean;
   interceptors?: boolean;
   filters?: boolean;
+  callback?: (result: any | Observable<any>, ...args: any[]) => void;
 }
 
-export class ExternalContextCreator {
-  private readonly contextUtils = new ContextUtils();
-  private readonly externalErrorProxy = new ExternalErrorProxy();
+export class VenokContextCreator {
+  public readonly contextUtils = new ContextUtils();
+  public readonly venokProxy = new VenokProxy();
   // private readonly handlerMetadataStorage = new HandlerMetadataStorage<ExternalHandlerMetadata>();
   private container!: VenokContainer;
 
@@ -55,19 +56,19 @@ export class ExternalContextCreator {
     private readonly modulesContainer: ModulesContainer,
     private readonly pipesContextCreator: PipesContextCreator,
     private readonly pipesConsumer: PipesConsumer,
-    private readonly filtersContextCreator: ExternalExceptionFilterContext,
+    private readonly filtersContextCreator: VenokExceptionFilterContext,
   ) {}
 
-  static fromContainer(container: VenokContainer): ExternalContextCreator {
+  static fromContainer(container: VenokContainer): VenokContextCreator {
     const guardsContextCreator = new GuardsContextCreator(container, container.applicationConfig);
     const guardsConsumer = new GuardsConsumer();
     const interceptorsContextCreator = new InterceptorsContextCreator(container, container.applicationConfig);
     const interceptorsConsumer = new InterceptorsConsumer();
     const pipesContextCreator = new PipesContextCreator(container, container.applicationConfig);
     const pipesConsumer = new PipesConsumer();
-    const filtersContextCreator = new ExternalExceptionFilterContext(container, container.applicationConfig);
+    const filtersContextCreator = new VenokExceptionFilterContext(container, container.applicationConfig);
 
-    const externalContextCreator = new ExternalContextCreator(
+    const venokContextCreator = new VenokContextCreator(
       guardsContextCreator,
       guardsConsumer,
       interceptorsContextCreator,
@@ -77,8 +78,8 @@ export class ExternalContextCreator {
       pipesConsumer,
       filtersContextCreator,
     );
-    externalContextCreator.container = container;
-    return externalContextCreator;
+    venokContextCreator.container = container;
+    return venokContextCreator;
   }
 
   public create<TParamsMetadata extends ParamsMetadata = ParamsMetadata, TContext extends string = ContextType>(
@@ -93,8 +94,9 @@ export class ExternalContextCreator {
       interceptors: true,
       guards: true,
       filters: true,
+      callback: () => {},
     },
-    contextType: TContext = "http" as TContext,
+    contextType: TContext = "native" as TContext,
   ) {
     const module = this.getContextModuleKey(instance.constructor);
     const { argsLength, paramtypes, getParamsMetadata } = this.getMetadata<TParamsMetadata, TContext>(
@@ -138,9 +140,11 @@ export class ExternalContextCreator {
         handler(initialArgs, ...args),
         contextType,
       );
-      return this.transformToResult(result);
+      const done = await this.transformToResult(result);
+      if (options.callback) options.callback(done, ...args);
+      return done;
     };
-    return options.filters ? this.externalErrorProxy.createProxy(target, exceptionFilter, contextType) : target;
+    return options.filters ? this.venokProxy.createProxy(target, exceptionFilter, contextType) : target;
   }
 
   public getMetadata<TMetadata, TContext extends string = ContextType>(
@@ -180,19 +184,17 @@ export class ExternalContextCreator {
 
   public getContextModuleKey(moduleCtor: Function | undefined): string {
     const emptyModuleKey = "";
-    if (!moduleCtor) {
-      return emptyModuleKey;
-    }
+    if (!moduleCtor) return emptyModuleKey;
+
     const moduleContainerEntries = this.modulesContainer.entries();
     for (const [key, moduleRef] of moduleContainerEntries) {
-      if (moduleRef.hasProvider(moduleCtor)) {
-        return key;
-      }
+      // REFACTOR
+      if (moduleRef.hasProvider && moduleRef.hasProvider(moduleCtor)) return key;
     }
     return emptyModuleKey;
   }
 
-  public exchangeKeysForValues<TMetadata = any>(
+  public exchangeKeysForValues<TMetadata extends Record<string | symbol, any>>(
     keys: string[],
     metadata: TMetadata,
     moduleContext: string,
@@ -204,15 +206,11 @@ export class ExternalContextCreator {
     this.pipesContextCreator.setModuleContext(moduleContext);
 
     return keys.map((key) => {
-      // Maybe Error
-      // @ts-ignore
       const { index, data, pipes: pipesCollection } = metadata[key];
       const pipes = this.pipesContextCreator.createConcreteContext(pipesCollection, contextId, inquirerId);
       const type = this.contextUtils.mapParamType(key);
 
       if (key.includes(CUSTOM_ROUTE_ARGS_METADATA)) {
-        // Maybe Error
-        // @ts-ignore
         const { factory } = metadata[key];
         const customExtractValue = this.contextUtils.getCustomFactory(factory, data, contextFactory);
         return { index, extractValue: customExtractValue, type, data, pipes };
@@ -245,10 +243,9 @@ export class ExternalContextCreator {
     return isEmpty(pipes) ? value : this.pipesConsumer.apply(value, { metatype, type, data }, pipes);
   }
 
-  public async transformToResult(resultOrDeferred: any) {
-    if (isObservable(resultOrDeferred)) {
-      return lastValueFrom(resultOrDeferred);
-    }
+  public async transformToResult(resultOrDeferred: Observable<any> | any) {
+    if (isObservable(resultOrDeferred)) return lastValueFrom(resultOrDeferred);
+
     return resultOrDeferred;
   }
 
@@ -266,9 +263,7 @@ export class ExternalContextCreator {
         callback,
         contextType,
       );
-      if (!canActivate) {
-        throw new RuntimeException(FORBIDDEN_MESSAGE);
-      }
+      if (!canActivate) throw new RuntimeException(FORBIDDEN_MESSAGE);
     };
     return guards.length ? canActivateFn : null;
   }

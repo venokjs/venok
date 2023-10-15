@@ -1,18 +1,17 @@
 import { Injector } from "@venok/core/injector/injector";
-import { RouterExceptionFilters } from "../router/filter";
+import { RouterExceptionFiltersContext } from "../filters/context";
 import { Logger } from "@venok/core/services/logger.service";
 import { RoutesMapper } from "./routes-mapper";
 import { MiddlewareResolver } from "./resolver";
-import { HttpServer } from "../interfaces/http/server.interface";
+import { HttpServer } from "../interfaces";
 import { GraphInspector } from "@venok/core/inspector/graph-inspector";
-import { RouteInfoPathExtractor } from "./route-info-path-extractor";
+import { RouteInfoPathExtractor } from "./extractor";
 import { MiddlewareContainer } from "./container";
 import { ApplicationConfig, ContextId, InjectionToken, Type, VenokContainer } from "@venok/core";
-import { HttpProxy, RouterProxyCallback } from "../exceptions/proxy";
 import { ApplicationContextOptions } from "@venok/core/interfaces/application/context-options.interface";
 import { MiddlewareBuilder } from "./builder";
 import { Module } from "@venok/core/injector/module/module";
-import { MiddlewareConfiguration, RouteInfo, VenokMiddleware } from "../interfaces/middleware";
+import { MiddlewareConfiguration, RouteInfo, VenokMiddleware } from "../interfaces";
 import { isUndefined } from "@venok/core/helpers/shared.helper";
 import { RuntimeException } from "@venok/core/errors/exceptions";
 import { Entrypoint } from "@venok/core/inspector/interfaces/entrypoint.interface";
@@ -21,20 +20,22 @@ import { RequestMethod } from "../enums";
 import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 import { ExecutionContextHost } from "@venok/core/context/execution-host";
 import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { isRequestMethodAll } from "../helpers/exclude-route.helper";
-import { ContextIdFactory } from "../factory/context-id.factory";
+import { isRequestMethodAll } from "../helpers";
+import { ContextIdFactory } from "../factory";
 import { REQUEST_CONTEXT_ID } from "../constants";
 import { HttpConfig } from "../application/config";
 import { InvalidMiddlewareException } from "../errors/invalid-middleware.exception";
-import { VenokHttpModule } from "../interfaces/http/module.inteface";
+import { VenokHttpModule } from "../interfaces";
+import { VenokProxy } from "@venok/core/context";
+import { RouterProxyCallback } from "../interfaces";
 
 export class MiddlewareModule<TAppOptions extends ApplicationContextOptions = ApplicationContextOptions> {
-  private readonly routerProxy = new HttpProxy();
+  private readonly routerProxy = new VenokProxy();
   private readonly exceptionFiltersCache = new WeakMap();
   private readonly logger = new Logger(Module.name);
 
   private injector!: Injector;
-  private routerExceptionFilter!: RouterExceptionFilters;
+  private routerExceptionFilter!: RouterExceptionFiltersContext;
   private routesMapper!: RoutesMapper;
   private resolver!: MiddlewareResolver;
   private container!: VenokContainer;
@@ -56,7 +57,7 @@ export class MiddlewareModule<TAppOptions extends ApplicationContextOptions = Ap
     this.appOptions = options;
 
     const appRef = httpConfig.getHttpAdapterRef();
-    this.routerExceptionFilter = new RouterExceptionFilters(container, applicationConfig, httpConfig, appRef);
+    this.routerExceptionFilter = new RouterExceptionFiltersContext(container, applicationConfig, appRef);
     this.routesMapper = new RoutesMapper(container, httpConfig);
     this.resolver = new MiddlewareResolver(middlewareContainer, injector);
     this.routeInfoPathExtractor = new RouteInfoPathExtractor(httpConfig);
@@ -80,25 +81,22 @@ export class MiddlewareModule<TAppOptions extends ApplicationContextOptions = Ap
 
   public async loadConfiguration(middlewareContainer: MiddlewareContainer, moduleRef: Module, moduleKey: string) {
     const { instance } = moduleRef;
-    if (!(instance as VenokHttpModule).configure) {
-      return;
-    }
+    if (!(instance as VenokHttpModule).configure) return;
+
     const middlewareBuilder = new MiddlewareBuilder(this.routesMapper, this.httpAdapter, this.routeInfoPathExtractor);
     try {
       await (instance as VenokHttpModule).configure(middlewareBuilder);
     } catch (err) {
-      if (!this.appOptions.preview) {
-        throw err;
-      }
+      if (!this.appOptions.preview) throw err;
+
       const warningMessage =
         `Warning! "${moduleRef.name}" module exposes a "configure" method that throws an exception in the preview mode` +
         ` (possibly due to missing dependencies). Note: you can ignore this message, just be aware that some of those conditional middlewares will not be reflected in your graph.`;
       this.logger.warn(warningMessage);
     }
 
-    if (!(middlewareBuilder instanceof MiddlewareBuilder)) {
-      return;
-    }
+    if (!(middlewareBuilder instanceof MiddlewareBuilder)) return;
+
     const config = middlewareBuilder.build();
     middlewareContainer.insertConfig(config, moduleKey);
   }
@@ -150,12 +148,10 @@ export class MiddlewareModule<TAppOptions extends ApplicationContextOptions = Ap
     for (const metatype of middlewareCollection) {
       const collection = middlewareContainer.getMiddlewareCollection(moduleKey);
       const instanceWrapper = collection.get(metatype);
-      if (isUndefined(instanceWrapper)) {
-        throw new RuntimeException();
-      }
-      if (instanceWrapper.isTransient) {
-        return;
-      }
+      if (isUndefined(instanceWrapper)) throw new RuntimeException();
+
+      if (instanceWrapper.isTransient) return;
+
       this.graphInspector.insertClassNode(moduleRef, instanceWrapper, "middleware");
       const middlewareDefinition: Entrypoint<MiddlewareEntrypointMetadata> = {
         type: "middleware",
@@ -183,9 +179,8 @@ export class MiddlewareModule<TAppOptions extends ApplicationContextOptions = Ap
     collection: Map<InjectionToken, InstanceWrapper>,
   ) {
     const { instance, metatype } = wrapper as { instance: VenokMiddleware; metatype: Function | Type };
-    if (isUndefined(instance?.use)) {
-      throw new InvalidMiddlewareException(metatype.name);
-    }
+    if (isUndefined(instance?.use)) throw new InvalidMiddlewareException(metatype.name);
+
     const isStatic = wrapper.isDependencyTreeStatic();
     if (isStatic) {
       const proxy = await this.createProxy(instance);

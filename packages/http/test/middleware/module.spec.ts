@@ -7,10 +7,10 @@ import { GraphInspector } from "@venok/core/inspector/graph-inspector";
 import { Controller, RequestMapping } from "../../decorators";
 import { RequestMethod } from "../../enums";
 import { ApplicationConfig, Injectable, VenokContainer } from "@venok/core";
-import { RouterExceptionFilters } from "../../router/filter";
+import { RouterExceptionFiltersContext } from "../../filters/context";
 import { HttpConfig } from "../../application/config";
 import { NoopHttpAdapter } from "../../helpers";
-import { RouteInfoPathExtractor } from "../../middleware/route-info-path-extractor";
+import { RouteInfoPathExtractor } from "../../middleware/extractor";
 import { Module } from "@venok/core/injector/module/module";
 import { VenokMiddleware } from "../../interfaces";
 import { MiddlewareContainer } from "../../middleware/container";
@@ -48,17 +48,15 @@ describe("MiddlewareModule", () => {
     const httpConfig = new HttpConfig();
     graphInspector = new GraphInspector(container);
     middlewareModule = new MiddlewareModule();
-    middlewareModule["routerExceptionFilter"] = new RouterExceptionFilters(
+    middlewareModule["routerExceptionFilter"] = new RouterExceptionFiltersContext(
       new VenokContainer(),
       appConfig,
-      httpConfig,
       new NoopHttpAdapter({}),
     );
     middlewareModule["routeInfoPathExtractor"] = new RouteInfoPathExtractor(httpConfig);
-    middlewareModule["routerExceptionFilter"] = new RouterExceptionFilters(
+    middlewareModule["routerExceptionFilter"] = new RouterExceptionFiltersContext(
       container,
       appConfig,
-      httpConfig,
       new NoopHttpAdapter({}),
     );
     middlewareModule["graphInspector"] = graphInspector;
