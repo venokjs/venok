@@ -10,7 +10,7 @@ import { InstanceLoader } from "@venok/core/injector/instance/loader";
 import { InternalCoreModule } from "@venok/core/injector/internal-core-module/internal-core-module";
 import { ModulesContainer } from "@venok/core/injector/module/container";
 import { SerializedGraph } from "@venok/core/inspector/serialized-graph";
-import { ExternalContextCreator } from "@venok/core/context/external/creator";
+import { ExternalContextCreator } from "@venok/core/context/context";
 
 export class InternalCoreModuleFactory {
   static create(
@@ -30,6 +30,10 @@ export class InternalCoreModuleFactory {
     };
 
     return InternalCoreModule.register([
+      {
+        provide: VenokContainer,
+        useValue: container,
+      },
       {
         provide: ExternalContextCreator,
         useValue: ExternalContextCreator.fromContainer(container),
