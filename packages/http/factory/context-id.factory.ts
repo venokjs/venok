@@ -20,7 +20,7 @@ export interface ContextIdResolver {
 export interface ContextIdStrategy<T = any> {
   /**
    * Allows to attach a parent context id to the existing child context id.
-   * This lets you construct durable DI sub-trees that can be shared between contexts.
+   * This lets you construct durable DI subtrees that can be shared between contexts.
    * @param contextId auto-generated child context id
    * @param request request object
    */
@@ -40,26 +40,22 @@ export class ContextIdFactory {
   /**
    * Generates a random identifier to track asynchronous execution context.
    * @param request request object
+   * @param propsToInspect
    */
   public static getByRequest<T extends Record<any, any> = any>(
     request: T,
     propsToInspect: string[] = ["raw"],
   ): ContextId {
-    if (!request) {
-      return ContextIdFactory.create();
-    }
-    if (request[REQUEST_CONTEXT_ID as any]) {
-      return request[REQUEST_CONTEXT_ID as any];
-    }
-    for (const key of propsToInspect) {
-      if (request[key]?.[REQUEST_CONTEXT_ID]) {
-        return request[key][REQUEST_CONTEXT_ID];
-      }
-    }
-    if (!this.strategy) {
-      return ContextIdFactory.create();
-    }
+    if (!request) return ContextIdFactory.create();
+
+    if (request[REQUEST_CONTEXT_ID as any]) return request[REQUEST_CONTEXT_ID as any];
+
+    for (const key of propsToInspect) if (request[key]?.[REQUEST_CONTEXT_ID]) return request[key][REQUEST_CONTEXT_ID];
+
+    if (!this.strategy) return ContextIdFactory.create();
+
     const contextId = createContextId();
+
     const resolverObjectOrFunction = this.strategy.attach(contextId, request);
     if (this.isContextIdResolverWithPayload(resolverObjectOrFunction)) {
       contextId.getParent = resolverObjectOrFunction.resolve;
