@@ -1,9 +1,9 @@
 import { DynamicModule, Inject, Module, ModulesContainer, Type } from "@venok/core";
 import { Module as ModuleClass } from "@venok/core/injector/module/module";
-import { normalizePath } from "../helpers/path.helper";
+import { normalizePath } from "../helpers";
 import { MODULE_PATH } from "@venok/core/constants";
-import { Routes, RouteTree } from "../interfaces/http/routes.interface";
-import { flattenRoutePaths } from "../helpers/flatten-routes.helper";
+import { Routes, RouteTree } from "../interfaces";
+import { flattenRoutePaths } from "../helpers";
 
 export const ROUTES = Symbol("ROUTES");
 
@@ -36,9 +36,8 @@ export class RouterModule {
 
   private deepCloneRoutes(routes: Routes | Type<any>[]): Routes | Array<Type<any>> {
     return routes.map((routeOrType: Type<any> | RouteTree) => {
-      if (typeof routeOrType === "function") {
-        return routeOrType;
-      }
+      if (typeof routeOrType === "function") return routeOrType;
+
       if (routeOrType.children) {
         return {
           ...routeOrType,
@@ -71,9 +70,8 @@ export class RouterModule {
       targetModulesByContainer.set(this.modulesContainer, moduleClassSet);
     }
     const moduleRef = Array.from(this.modulesContainer.values()).find((item) => item?.metatype === moduleCtor);
-    if (!moduleRef) {
-      return;
-    }
+    if (!moduleRef) return;
+
     moduleClassSet.add(moduleRef);
   }
 }

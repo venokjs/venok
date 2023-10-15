@@ -1,21 +1,21 @@
 import { Logger } from "@venok/core/services/logger.service";
-import { RoutePathFactory } from "../factory/path.factory";
-import { RouterExceptionFilters } from "./filter";
+import { RoutePathFactory } from "../factory";
+import { RouterExceptionFiltersContext } from "../filters/context";
 import { RouterExplorer } from "../explorers/router.explorer";
 import { ApplicationConfig, MetadataScanner, Type, VenokContainer } from "@venok/core";
 import { Injector } from "@venok/core/injector/injector";
 import { GraphInspector } from "@venok/core/inspector/graph-inspector";
-import { HttpProxy } from "../exceptions/proxy";
-import { HttpServer } from "../interfaces/http/server.interface";
+import { HttpServer } from "../interfaces";
 import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import { RoutePathMetadata } from "../interfaces/http/path-metadata.interface";
+import { RoutePathMetadata } from "../interfaces";
 import { CONTROLLER_WATERMARK, HOST_METADATA, VERSION_METADATA } from "../constants";
-import { VersionValue } from "../interfaces/router/version-options.interface";
+import { VersionValue } from "../interfaces";
 import { MODULE_PATH } from "@venok/core/constants";
-import { CONTROLLER_MAPPING_MESSAGE, VERSIONED_CONTROLLER_MAPPING_MESSAGE } from "../helpers/messages.helper";
+import { CONTROLLER_MAPPING_MESSAGE, VERSIONED_CONTROLLER_MAPPING_MESSAGE } from "../helpers";
 import { BadRequestException, NotFoundException } from "../errors";
 import { HttpConfig } from "../application/config";
 import { isNull, isObject, isUndefined } from "@venok/core/helpers/shared.helper";
+import { ExternalContextCreator, VenokProxy } from "@venok/core/context";
 
 export interface Resolver {
   resolve(instance: any, basePath: string): void;
@@ -27,9 +27,9 @@ export class RoutesResolver implements Resolver {
   private readonly logger = new Logger(RoutesResolver.name, {
     timestamp: true,
   });
-  private readonly routerProxy = new HttpProxy();
+  private readonly routerProxy = new VenokProxy();
   private readonly routePathFactory: RoutePathFactory;
-  private readonly routerExceptionsFilter: RouterExceptionFilters;
+  private readonly routerExceptionsFilter: RouterExceptionFiltersContext;
   private readonly routerExplorer: RouterExplorer;
 
   constructor(
@@ -40,7 +40,7 @@ export class RoutesResolver implements Resolver {
     graphInspector: GraphInspector,
   ) {
     const httpAdapterRef = httpConfig.getHttpAdapterRef();
-    this.routerExceptionsFilter = new RouterExceptionFilters(container, applicationConfig, httpConfig, httpAdapterRef);
+    this.routerExceptionsFilter = new RouterExceptionFiltersContext(container, applicationConfig, httpAdapterRef);
     this.routePathFactory = new RoutePathFactory(this.httpConfig);
 
     const metadataScanner = new MetadataScanner();
@@ -86,8 +86,6 @@ export class RoutesResolver implements Resolver {
       if (isUndefined(metatype) || isNull(metatype)) return;
 
       if (!Reflect.hasMetadata(CONTROLLER_WATERMARK, metatype)) return;
-
-      console.log(metatype, "METATYPE", Reflect.getMetadataKeys(metatype), Reflect.getMetadata("path", metatype));
 
       const host = this.getHostMetadata(metatype as Function | Type);
       const routerPaths = this.routerExplorer.extractRouterPath(metatype as Type<any>);
@@ -142,7 +140,8 @@ export class RoutesResolver implements Resolver {
       throw this.mapExternalException(err);
     };
     const handler = this.routerExceptionsFilter.create({}, callback as any, undefined as any);
-    const proxy = this.routerProxy.createExceptionLayerProxy(callback, handler);
+    // REFACTOR
+    const proxy = this.routerProxy.createProxy(callback, handler);
     const applicationRef = this.httpConfig.getHttpAdapterRef();
     if ("setErrorHandler" in applicationRef) applicationRef.setErrorHandler(proxy, this.httpConfig.getGlobalPrefix());
   }
@@ -171,8 +170,6 @@ export class RoutesResolver implements Resolver {
 
   private getVersionMetadata(metatype: Type<unknown> | Function): VersionValue | undefined {
     const versioningConfig = this.httpConfig.getVersioning();
-    if (versioningConfig) {
-      return Reflect.getMetadata(VERSION_METADATA, metatype) ?? versioningConfig.defaultVersion;
-    }
+    if (versioningConfig) return Reflect.getMetadata(VERSION_METADATA, metatype) ?? versioningConfig.defaultVersion;
   }
 }
