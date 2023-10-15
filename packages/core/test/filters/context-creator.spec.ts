@@ -1,17 +1,17 @@
 import { expect } from "chai";
 import * as sinon from "sinon";
-import { BaseExceptionFilterContext } from "@venok/core/exceptions/filter-context";
+import { ExceptionFilterContextCreator } from "@venok/core/filters/context-creator";
 import { VenokContainer } from "@venok/core/injector/container";
 
 export class Filter {}
 
-describe("BaseExceptionFilterContext", () => {
-  let filter: BaseExceptionFilterContext;
+describe("ExceptionFilterContextCreator", () => {
+  let filter: ExceptionFilterContextCreator;
   let container: VenokContainer;
 
   beforeEach(() => {
     container = new VenokContainer();
-    filter = new BaseExceptionFilterContext(container);
+    filter = new ExceptionFilterContextCreator(container);
   });
 
   describe("getFilterInstance", () => {
