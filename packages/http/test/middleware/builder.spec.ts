@@ -4,7 +4,7 @@ import { MiddlewareBuilder } from "../../middleware";
 import { RequestMethod, VersioningType } from "../../enums";
 import { RoutesMapper } from "../../middleware/routes-mapper";
 import { NoopHttpAdapter } from "../../helpers";
-import { RouteInfoPathExtractor } from "../../middleware/route-info-path-extractor";
+import { RouteInfoPathExtractor } from "../../middleware/extractor";
 import { MiddlewareConfigProxy } from "../../interfaces";
 import { Controller, Delete, Get, Head, Options, Patch, Post, Put, Version } from "../../decorators";
 import { HttpConfig } from "../../application/config";

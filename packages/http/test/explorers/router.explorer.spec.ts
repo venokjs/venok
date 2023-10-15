@@ -4,14 +4,13 @@ import sinon from "sinon";
 import { All, Controller, Get, Post } from "../../decorators";
 import { RouterExplorer } from "../../explorers/router.explorer";
 import { Injector } from "@venok/core/injector/injector";
-import { RouterExceptionFilters } from "../../router/filter";
+import { RouterExceptionFiltersContext } from "../../filters/context";
 import { ApplicationConfig, MetadataScanner, VenokContainer } from "@venok/core";
 import { RoutePathFactory } from "../../factory";
 import { GraphInspector } from "@venok/core/inspector/graph-inspector";
 import { HttpConfig } from "../../application/config";
 import { RequestMethod, VersioningType } from "../../enums";
 import { RoutePathMetadata, VersioningOptions, VersionValue } from "../../interfaces";
-import { UnknownRequestMappingException } from "../../errors/unknown-request-mapping.exception";
 import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 import { ExecutionContextHost } from "@venok/core/context/execution-host";
 import { NoopHttpAdapter } from "../../helpers";
@@ -51,7 +50,7 @@ describe("RouterExplorer", () => {
 
   let routerBuilder: RouterExplorer;
   let injector: Injector;
-  let exceptionsFilter: RouterExceptionFilters;
+  let exceptionsFilter: RouterExceptionFiltersContext;
   let applicationConfig: ApplicationConfig;
   let httpConfig: HttpConfig;
   let routePathFactory: RoutePathFactory;
@@ -65,7 +64,7 @@ describe("RouterExplorer", () => {
     injector = new Injector();
     routePathFactory = new RoutePathFactory(httpConfig);
     graphInspector = new GraphInspector(container);
-    exceptionsFilter = new RouterExceptionFilters(container, applicationConfig, httpConfig, null as any);
+    exceptionsFilter = new RouterExceptionFiltersContext(container, applicationConfig, null as any);
     routerBuilder = new RouterExplorer(
       new MetadataScanner(),
       container,

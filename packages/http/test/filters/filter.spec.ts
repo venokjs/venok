@@ -1,15 +1,15 @@
 import { expect } from "chai";
 import sinon from "sinon";
 import { ApplicationConfig, Catch, UseFilters, VenokContainer } from "@venok/core";
-import { RouterExceptionFilters } from "../../router/filter";
-import { NoopHttpAdapter } from "@venok/http/helpers/adapter.helper";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import { HttpExceptionFilter } from "@venok/http/exceptions/filter";
+import { RouterExceptionFiltersContext } from "../../filters/context";
 import { HttpConfig } from "../../application/config";
+import { NoopHttpAdapter } from "../../helpers";
+import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 
-describe("RouterExceptionFilters", () => {
+describe("RouterExceptionFiltersContext", () => {
   let applicationConfig: ApplicationConfig;
-  let exceptionFilter: RouterExceptionFilters;
+  let httpConfig: HttpConfig;
+  let exceptionFilter: RouterExceptionFiltersContext;
 
   class CustomException {}
   @Catch(CustomException)
@@ -19,10 +19,10 @@ describe("RouterExceptionFilters", () => {
 
   beforeEach(() => {
     applicationConfig = new ApplicationConfig();
-    exceptionFilter = new RouterExceptionFilters(
+    httpConfig = new HttpConfig();
+    exceptionFilter = new RouterExceptionFiltersContext(
       new VenokContainer(),
       applicationConfig,
-      new HttpConfig(),
       new NoopHttpAdapter({}),
     );
   });
@@ -38,7 +38,7 @@ describe("RouterExceptionFilters", () => {
       });
     });
     describe("when filters metadata is not empty", () => {
-      @UseFilters(new HttpExceptionFilter())
+      @UseFilters(new ExceptionFilter())
       class WithMetadata {}
 
       it("should return ExceptionHandler object with exception filters", () => {

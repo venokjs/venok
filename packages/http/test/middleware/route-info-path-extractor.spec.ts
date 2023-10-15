@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { RouteInfoPathExtractor } from "../../middleware/route-info-path-extractor";
+import { RouteInfoPathExtractor } from "../../middleware/extractor";
 import { RequestMethod, VersioningType } from "../../enums";
 import { mapToExcludeRoute } from "../../middleware/utils";
 import { HttpConfig } from "../../application/config";
