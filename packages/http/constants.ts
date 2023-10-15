@@ -10,4 +10,3 @@ export const RENDER_METADATA = "__renderTemplate__";
 export const HTTP_CODE_METADATA = "__httpCode__";
 export const METHOD_METADATA = "method";
 export const REQUEST_CONTEXT_ID = Symbol("REQUEST_CONTEXT_ID");
-export const HTTP_APP_OPTIONS = "HTTP_APP_OPTIONS";
