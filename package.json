@@ -4,7 +4,8 @@
   "description": "",
   "author": "0x303133",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "platforms/*"
   ],
   "private": true,
   "main": "",
@@ -50,5 +51,14 @@
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
+  },
+  "changelog": {
+    "labels": {
+      "type: refactor \uD83D\uDE38": "Refactors",
+      "type: fix \uD83D\uDE40": "Bug fixes",
+      "type: feature \uD83D\uDE3B": "Features",
+      "type: docs \uD83D\uDCC4": "Docs",
+      "dependencies": "Dependencies"
+    }
   }
 }
