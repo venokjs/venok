@@ -4,7 +4,7 @@ import { IncomingMessage } from "http";
 import { AdditionalHeaders, SseStream, WritableHeaderStream } from "../helpers";
 import { isObject } from "@venok/core/helpers/shared.helper";
 import { Logger } from "@venok/core/services/logger.service";
-import { HttpServer } from "../interfaces/http/server.interface";
+import { HttpServer } from "../interfaces";
 import { HttpStatus, RequestMethod } from "../enums";
 
 export interface CustomHeader {

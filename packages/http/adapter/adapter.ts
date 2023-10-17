@@ -101,7 +101,7 @@ export abstract class AbstractHttpAdapter<TServer = any, TRequest = any, TRespon
     return this.instance as T;
   }
 
-  abstract close(): this;
+  abstract close(): this | Promise<this>;
   abstract initHttpServer(options: VenokApplicationOptions): this;
   abstract useStaticAssets(...args: any[]): this;
   abstract setViewEngine(engine: string): this;

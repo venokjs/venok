@@ -1,4 +1,4 @@
-import { Readable } from "stream";
+import { Readable } from "node:stream";
 import { types } from "util";
 import { StreamableFileOptions, StreamableHandlerResponse } from "./interfaces";
 import { HttpStatus } from "../enums";
