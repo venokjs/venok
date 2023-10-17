@@ -1,5 +1,5 @@
 import { IncomingMessage, OutgoingHttpHeaders } from "http";
-import { Transform } from "stream";
+import { Transform } from "node:stream";
 import { isObject } from "@venok/core/helpers/shared.helper";
 import { MessageEvent } from "@venok/http/interfaces/http/message-event.interface";
 
