@@ -4,7 +4,8 @@
   "description": "",
   "author": "0x303133",
   "homepage": "",
-  "main": "index.ts",
+  "main": "index.js",
+  "types": "./index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -33,6 +34,11 @@
     "@types/path-to-regexp": "^1.7.0",
     "eventsource": "^2.0.2",
     "http-errors": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@venok/core": "^1.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.1"
   },
   "dependencies": {
     "path-to-regexp": "^6.2.1"
