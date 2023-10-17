@@ -4,7 +4,8 @@
   "description": "",
   "author": "0x303133",
   "homepage": "",
-  "main": "index.ts",
+  "main": "index.js",
+  "types": "./index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -22,6 +23,10 @@
     "fast-safe-stringify": "^2.1.1",
     "uid": "^2.0.2",
     "uuid": "^9.0.1"
+  },
+  "peerDependencies": {
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.1"
   },
   "mocha": {
     "require": [
