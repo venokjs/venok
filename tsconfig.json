@@ -13,7 +13,9 @@
       "@venok/core": ["./packages/core"],
       "@venok/core/*": ["./packages/core/*"],
       "@venok/http": ["./packages/http"],
-      "@venok/http/*": ["./packages/http/*"]
+      "@venok/http/*": ["./packages/http/*"],
+      "@venok/express": ["./platforms/express"],
+      "@venok/express/*": ["./platforms/express/*"]
     }
   },
   "exclude": ["dist", "node_modules"],
@@ -23,6 +25,9 @@
     },
     {
       "path": "./packages/core"
-    }
+    },
+//    {
+//      "path": "./platforms/express"
+//    }
   ]
 }
