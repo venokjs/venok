@@ -1,4 +1,4 @@
-export type ContextType = "native";
+export type ContextType = "native" | string;
 
 /**
  * Provides methods for retrieving the arguments being passed to a handler.
