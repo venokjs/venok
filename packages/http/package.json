@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@types/eventsource": "^1.1.12",
-    "@types/http-errors": "^2.0.2",
+    "@types/http-errors": "^2.0.3",
     "@types/path-to-regexp": "^1.7.0",
     "eventsource": "^2.0.2",
     "http-errors": "^2.0.0"
