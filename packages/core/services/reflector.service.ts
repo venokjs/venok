@@ -1,7 +1,8 @@
-import { CustomDecorator, SetMetadata } from "@venok/core/decorators/set-metadata.decorator";
+import { CustomDecorator, DecoratorsType, SetMetadata } from "@venok/core/decorators/set-metadata.decorator";
 import { uid } from "uid";
 import { Type } from "@venok/core/interfaces";
 import { isEmpty, isObject } from "@venok/core/helpers/shared.helper";
+import { Logger } from "@venok/core/services/logger.service";
 
 /**
  * @publicApi
@@ -12,6 +13,12 @@ export interface CreateDecoratorOptions<TParam = any, TTransformed = TParam> {
    * @default uid(21)
    */
   key?: string;
+
+  /**
+   * The decorator type (class or method)
+   * @default class & method
+   */
+  type?: DecoratorsType;
 
   /**
    * The transform function to apply to the metadata value.
@@ -36,6 +43,10 @@ export type ReflectableDecorator<TParam, TTransformed = TParam> = ((opts?: TPara
  * @publicApi
  */
 export class Reflector {
+  private static readonly logger = new Logger(Reflector.name, {
+    timestamp: true,
+  });
+
   /**
    * Creates a decorator that can be used to decorate classes and methods with metadata.
    * Can be used as a strongly-typed alternative to `@SetMetadata`.
@@ -53,11 +64,24 @@ export class Reflector {
     const decoratorFn =
       (metadataValue: TParam) => (target: object | Function, key: string | symbol, descriptor?: any) => {
         const value = options.transform ? options.transform(metadataValue) : metadataValue;
-        SetMetadata(metadataKey, value ?? {})(target, key, descriptor);
+        if (Array.isArray(value) && Array.isArray(value[0])) {
+          const allMetadata = value.filter(Reflector.checkMetadata);
+          for (const [metaKey, metaValue] of allMetadata) {
+            SetMetadata(metaKey, metaValue ?? undefined, options.type)(target, key, descriptor);
+          }
+        } else SetMetadata(metadataKey, value ?? undefined, options.type)(target, key, descriptor);
       };
 
     decoratorFn.KEY = metadataKey;
     return decoratorFn as ReflectableDecorator<TParam, TTransformed>;
+  }
+
+  private static checkMetadata(item: [string, any] | any): boolean {
+    if (!Array.isArray(item)) {
+      Reflector.logger.warn(`For apply metadata you need to provide key and value. Metadata: ${item}`);
+      return false;
+    }
+    return true;
   }
 
   /**
