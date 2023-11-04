@@ -1,7 +1,13 @@
-import { CustomDecorator, SetMetadata } from "@venok/core/decorators/set-metadata.decorator";
+import { CustomDecorator, DecoratorsType, SetMetadata } from "@venok/core/decorators/set-metadata.decorator";
 import { uid } from "uid";
 import { Type } from "@venok/core/interfaces";
 import { isEmpty, isObject } from "@venok/core/helpers/shared.helper";
+import { Logger } from "@venok/core/services/logger.service";
+
+interface TransformedWithAdditional<T> {
+  value?: T;
+  additional?: Record<any, any>;
+}
 
 /**
  * @publicApi
@@ -14,14 +20,35 @@ export interface CreateDecoratorOptions<TParam = any, TTransformed = TParam> {
   key?: string;
 
   /**
+   * The decorator type (class or method)
+   * @default class & method
+   */
+  type?: DecoratorsType;
+
+  /**
    * The transform function to apply to the metadata value.
    * @default value => value
    */
   transform?: (value: TParam) => TTransformed;
 }
 
-type CreateDecoratorWithTransformOptions<TParam, TTransformed = TParam> = CreateDecoratorOptions<TParam, TTransformed> &
-  Required<Pick<CreateDecoratorOptions<TParam, TTransformed>, "transform">>;
+interface CreateDecoratorWithTransformOptions<TParam = any, TTransformed = TParam>
+  extends CreateDecoratorOptions<TParam, TTransformed> {
+  /**
+   * The transform function to apply to the metadata value.
+   * @default value => value
+   */
+  transform: (value: TParam) => TTransformed;
+}
+
+interface CreateDecoratorWithAdditionalMetadataOptions<TParam = any, TTransformed = TParam>
+  extends Omit<CreateDecoratorOptions<TParam, TTransformed>, "transform"> {
+  /**
+   * The transform function to apply to the metadata value.
+   * @default value => value
+   */
+  transform: (value: TParam) => TransformedWithAdditional<TTransformed>;
+}
 
 /**
  * @publicApi
@@ -36,6 +63,10 @@ export type ReflectableDecorator<TParam, TTransformed = TParam> = ((opts?: TPara
  * @publicApi
  */
 export class Reflector {
+  private static readonly logger = new Logger(Reflector.name, {
+    timestamp: true,
+  });
+
   /**
    * Creates a decorator that can be used to decorate classes and methods with metadata.
    * Can be used as a strongly-typed alternative to `@SetMetadata`.
@@ -46,14 +77,42 @@ export class Reflector {
   static createDecorator<TParam, TTransformed>(
     options: CreateDecoratorWithTransformOptions<TParam, TTransformed>,
   ): ReflectableDecorator<TParam, TTransformed>;
-  static createDecorator<TParam, TTransformed = TParam>(
+  public static createDecorator<TParam, TTransformed = TParam>(
     options: CreateDecoratorOptions<TParam, TTransformed> = {},
   ): ReflectableDecorator<TParam, TTransformed> {
     const metadataKey = options.key ?? uid(21);
     const decoratorFn =
       (metadataValue: TParam) => (target: object | Function, key: string | symbol, descriptor?: any) => {
         const value = options.transform ? options.transform(metadataValue) : metadataValue;
-        SetMetadata(metadataKey, value ?? {})(target, key, descriptor);
+        return SetMetadata(metadataKey, value ?? undefined, options.type)(target, key, descriptor);
+      };
+
+    decoratorFn.KEY = metadataKey;
+    return decoratorFn as ReflectableDecorator<TParam, TTransformed>;
+  }
+
+  /**
+   * Creates a decorator with additional metadata that can be
+   * used `(for internal use, like @Controller in Http etc.)`
+   * to decorate classes and methods with metadata.
+   * @param options Decorator options.
+   * @returns A decorator function.
+   */
+  public static createDecoratorWithAdditionalMetadata<TParam, TTransformed = TParam>(
+    options: CreateDecoratorWithAdditionalMetadataOptions<TParam, TTransformed>,
+  ): ReflectableDecorator<TParam, TTransformed> {
+    const metadataKey = options.key ?? uid(21);
+    const decoratorFn =
+      (metadataValue: TParam) => (target: object | Function, key: string | symbol, descriptor?: any) => {
+        const value = options.transform(metadataValue);
+
+        if ("additional" in value && value.additional) {
+          for (const [additionalKey, additionalValue] of Object.entries(value.additional)) {
+            SetMetadata(additionalKey, additionalValue ?? undefined, options.type)(target, key, descriptor);
+          }
+        }
+
+        return SetMetadata(metadataKey, value.value ?? undefined, options.type)(target, key, descriptor);
       };
 
     decoratorFn.KEY = metadataKey;

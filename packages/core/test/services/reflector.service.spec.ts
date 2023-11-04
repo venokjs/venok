@@ -6,6 +6,19 @@ const transformDecorator = Reflector.createDecorator<string[], number>({
   transform: (value) => value.length,
 });
 
+const additionalDecorator = Reflector.createDecoratorWithAdditionalMetadata({
+  transform: (options) => {
+    return {
+      value: true,
+      additional: {
+        a: "1",
+        b: "2",
+        c: "3",
+      },
+    };
+  },
+});
+
 describe("Reflector", () => {
   let reflector: Reflector;
 
@@ -13,6 +26,9 @@ describe("Reflector", () => {
 
   @transformDecorator(["a", "b", "c"])
   class TestTransform {}
+
+  @additionalDecorator()
+  class TestAdditional {}
 
   beforeEach(() => {
     reflector = new Reflector();
@@ -56,6 +72,14 @@ describe("Reflector", () => {
 
       // @ts-expect-error 'value' is not assignable to type 'number'
       reflectedValue = [];
+    });
+
+    it("should reflect additional metadata by decorator", () => {
+      let isAdditionalDecorator = reflector.get(additionalDecorator, TestAdditional);
+      const additionalMetadataA = reflector.get("a", TestAdditional);
+
+      expect(isAdditionalDecorator).to.be.eql(true);
+      expect(additionalMetadataA).to.be.eql("1");
     });
 
     it("should require transform option when second generic type is provided", () => {
