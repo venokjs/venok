@@ -12,17 +12,14 @@
     "paths": {
       "@venok/core": ["./packages/core"],
       "@venok/core/*": ["./packages/core/*"],
-      "@venok/http": ["./packages/http"],
-      "@venok/http/*": ["./packages/http/*"],
+      "@venok/http": ["./network/http"],
+      "@venok/http/*": ["./network/http/*"],
       "@venok/express": ["./platforms/express"],
       "@venok/express/*": ["./platforms/express/*"]
     }
   },
   "exclude": ["dist", "node_modules"],
   "references": [
-    {
-      "path": "./packages/http"
-    },
     {
       "path": "./packages/core"
     },

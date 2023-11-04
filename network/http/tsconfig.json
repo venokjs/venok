@@ -2,14 +2,11 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "rootDir": "./",
-        "outDir": "../../dist/express",
+        "outDir": "../../dist/http"
     },
     "references": [
         {
             "path": "../../packages/core/tsconfig.json"
-        },
-        {
-            "path": "../../network/http/tsconfig.json"
         }
     ]
 }
