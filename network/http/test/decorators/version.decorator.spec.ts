@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Version } from "@venok/http/decorators";
-import { VERSION_METADATA } from "@venok/http/constants";
+import { Version } from "../../decorators";
+import { VERSION_METADATA } from "../../constants";
 
 describe("@Version", () => {
   const version = "1";

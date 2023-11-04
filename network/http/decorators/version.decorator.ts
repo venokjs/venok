@@ -1,5 +1,5 @@
 import { VersionValue } from "../interfaces";
-import { VERSION_METADATA } from "@venok/http/constants";
+import { VERSION_METADATA } from "../constants";
 
 /**
  * Sets the version of the endpoint to the passed version

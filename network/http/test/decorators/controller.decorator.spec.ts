@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Controller } from "@venok/http/decorators";
-import { CONTROLLER_WATERMARK, VERSION_METADATA } from "@venok/http/constants";
+import { Controller } from "../../decorators";
+import { CONTROLLER_WATERMARK, VERSION_METADATA } from "../../constants";
 
 describe("@Controller", () => {
   const reflectedPath = "test";
