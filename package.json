@@ -5,6 +5,7 @@
   "author": "0x303133",
   "workspaces": [
     "packages/*",
+    "network/*",
     "platforms/*"
   ],
   "private": true,
