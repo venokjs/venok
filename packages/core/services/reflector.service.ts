@@ -5,7 +5,7 @@ import { isEmpty, isObject } from "@venok/core/helpers/shared.helper";
 import { Logger } from "@venok/core/services/logger.service";
 
 interface TransformedWithAdditional<T> {
-  value: T;
+  value?: T;
   additional?: Record<any, any>;
 }
 
