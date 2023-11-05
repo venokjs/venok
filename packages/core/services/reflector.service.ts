@@ -84,7 +84,7 @@ export class Reflector {
     const decoratorFn =
       (metadataValue: TParam) => (target: object | Function, key: string | symbol, descriptor?: any) => {
         const value = options.transform ? options.transform(metadataValue) : metadataValue;
-        return SetMetadata(metadataKey, value ?? undefined, options.type)(target, key, descriptor);
+        SetMetadata(metadataKey, value ?? undefined, options.type)(target, key, descriptor);
       };
 
     decoratorFn.KEY = metadataKey;
@@ -112,7 +112,7 @@ export class Reflector {
           }
         }
 
-        return SetMetadata(metadataKey, value.value ?? undefined, options.type)(target, key, descriptor);
+        SetMetadata(metadataKey, value.value ?? undefined, options.type)(target, key, descriptor);
       };
 
     decoratorFn.KEY = metadataKey;

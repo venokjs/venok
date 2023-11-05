@@ -62,7 +62,8 @@ export const SetMetadata: SetMetadata = <K = string, V = any>(
   type: DecoratorsType | undefined = undefined,
 ): CustomDecorator<K> => {
   const decoratorFactory = (target: object | Function, key?: any, descriptor?: any) => {
-    if (!type) return defineMetadata(metadataKey, metadataValue, descriptor ? descriptor.value : target);
+    if (!type)
+      return defineMetadata(metadataKey, metadataValue, descriptor && descriptor.value ? descriptor.value : target);
 
     return defineMetadata(metadataKey, metadataValue, type === "method" ? descriptor.value : target);
   };
