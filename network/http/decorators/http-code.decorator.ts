@@ -1,4 +1,5 @@
 import { HTTP_CODE_METADATA } from "../constants";
+import { Reflector } from "@venok/core";
 
 /**
  * Request method Decorator. Defines the HTTP response status code.  Overrides
@@ -8,9 +9,8 @@ import { HTTP_CODE_METADATA } from "../constants";
  *
  * @publicApi
  */
-export function HttpCode(statusCode: number): MethodDecorator {
-  return (target: object, key: string | symbol, descriptor: TypedPropertyDescriptor<any>) => {
-    Reflect.defineMetadata(HTTP_CODE_METADATA, statusCode, descriptor.value);
-    return descriptor;
-  };
-}
+export const HttpCode = Reflector.createDecorator<number>({
+  type: "method",
+  key: HTTP_CODE_METADATA,
+  transform: (statusCode) => statusCode,
+});

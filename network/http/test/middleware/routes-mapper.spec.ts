@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Controller, Get, RequestMapping, Version } from "../../decorators";
+import { Controller, Get, HttpCode, RequestMapping, Version } from "../../decorators";
 import { RequestMethod, VersioningType } from "../../enums";
 import { RoutesMapper } from "../../middleware/routes-mapper";
 import { VenokContainer } from "@venok/core";
@@ -44,6 +44,8 @@ describe("RoutesMapper", () => {
     expect(mapper.mapRouteToRouteInfo(config.forRoutes[1])).to.deep.equal([
       { path: "/versioned", version: "1", method: RequestMethod.GET },
     ]);
+
+    console.log(mapper.mapRouteToRouteInfo(config.forRoutes[2]));
 
     expect(mapper.mapRouteToRouteInfo(config.forRoutes[2])).to.deep.equal([
       { path: "/test/test", method: RequestMethod.GET },

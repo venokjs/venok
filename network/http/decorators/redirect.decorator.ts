@@ -1,13 +1,15 @@
 import { REDIRECT_METADATA } from "../constants";
+import { Reflector } from "@venok/core";
 
 /**
  * Redirects request to the specified URL.
  *
  * @publicApi
  */
-export function Redirect(url = "", statusCode?: number): MethodDecorator {
-  return (target: object, key: string | symbol, descriptor: TypedPropertyDescriptor<any>) => {
-    Reflect.defineMetadata(REDIRECT_METADATA, { statusCode, url }, descriptor.value);
-    return descriptor;
-  };
-}
+const internalRedirect = Reflector.createDecorator<{ url: string; statusCode?: number }>({
+  type: "method",
+  key: REDIRECT_METADATA,
+  transform: (options) => options,
+});
+
+export const Redirect = (url: string, statusCode?: number) => internalRedirect({ url, statusCode });
