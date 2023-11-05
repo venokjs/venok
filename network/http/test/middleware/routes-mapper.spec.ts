@@ -45,8 +45,6 @@ describe("RoutesMapper", () => {
       { path: "/versioned", version: "1", method: RequestMethod.GET },
     ]);
 
-    console.log(mapper.mapRouteToRouteInfo(config.forRoutes[2]));
-
     expect(mapper.mapRouteToRouteInfo(config.forRoutes[2])).to.deep.equal([
       { path: "/test/test", method: RequestMethod.GET },
       { path: "/test/another", method: RequestMethod.DELETE },
