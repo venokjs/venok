@@ -1,5 +1,6 @@
 import { METHOD_METADATA, PATH_METADATA } from "../constants";
 import { RequestMethod } from "../enums";
+import { Reflector } from "@venok/core";
 
 export interface RequestMappingMetadata {
   path?: string | string[];
@@ -11,17 +12,21 @@ const defaultMetadata = {
   [METHOD_METADATA]: RequestMethod.GET,
 };
 
-export const RequestMapping = (metadata: RequestMappingMetadata = defaultMetadata): MethodDecorator => {
-  const pathMetadata = metadata[PATH_METADATA];
-  const path = pathMetadata && pathMetadata.length ? pathMetadata : "/";
-  const requestMethod = metadata[METHOD_METADATA] || RequestMethod.GET;
+export const RequestMapping = Reflector.createDecoratorWithAdditionalMetadata<RequestMappingMetadata, undefined>({
+  type: "method",
+  transform: (metadata = defaultMetadata) => {
+    const pathMetadata = metadata[PATH_METADATA];
+    const path = pathMetadata && pathMetadata.length ? pathMetadata : "/";
+    const requestMethod = metadata[METHOD_METADATA] || RequestMethod.GET;
 
-  return (target: object, key: string | symbol, descriptor: TypedPropertyDescriptor<any>) => {
-    Reflect.defineMetadata(PATH_METADATA, path, descriptor.value);
-    Reflect.defineMetadata(METHOD_METADATA, requestMethod, descriptor.value);
-    return descriptor;
-  };
-};
+    return {
+      additional: {
+        [PATH_METADATA]: path,
+        [METHOD_METADATA]: requestMethod,
+      },
+    };
+  },
+});
 
 const createMappingDecorator =
   (method: RequestMethod) =>

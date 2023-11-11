@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { Controller } from "../../decorators";
 import { CONTROLLER_WATERMARK, VERSION_METADATA } from "../../constants";
+import { Reflector } from "@venok/core";
 
 describe("@Controller", () => {
   const reflectedPath = "test";
@@ -40,6 +41,12 @@ describe("@Controller", () => {
 
   it(`should enhance component with "${CONTROLLER_WATERMARK}" metadata`, () => {
     const controllerWatermark = Reflect.getMetadata(CONTROLLER_WATERMARK, EmptyDecorator);
+
+    expect(controllerWatermark).to.be.true;
+  });
+
+  it(`should enhance component with "${CONTROLLER_WATERMARK}" metadata by Reflector`, () => {
+    const controllerWatermark = new Reflector().get(Controller, EmptyDecorator);
 
     expect(controllerWatermark).to.be.true;
   });

@@ -35,6 +35,7 @@ describe("MiddlewareBuilder", () => {
         beforeEach(() => {
           configProxy = builder.apply([]);
         });
+
         @Controller("path")
         class Test {
           @Get("route")
@@ -44,6 +45,7 @@ describe("MiddlewareBuilder", () => {
           @Get("versioned")
           public getAllVersioned() {}
         }
+
         const route = { path: "/test", method: RequestMethod.GET };
 
         it("should store configuration passed as argument", () => {

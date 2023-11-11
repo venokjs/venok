@@ -1,4 +1,5 @@
 import { RENDER_METADATA } from "../constants";
+import { Reflector } from "@venok/core";
 
 /**
  * Route handler method Decorator. Defines a template to be rendered by the controller.
@@ -9,9 +10,8 @@ import { RENDER_METADATA } from "../constants";
  *
  * @publicApi
  */
-export function Render(template: string): MethodDecorator {
-  return (target: object, key: string | symbol, descriptor: TypedPropertyDescriptor<any>) => {
-    Reflect.defineMetadata(RENDER_METADATA, template, descriptor.value);
-    return descriptor;
-  };
-}
+export const Render = Reflector.createDecorator<string>({
+  type: "method",
+  key: RENDER_METADATA,
+  transform: (template) => template,
+});

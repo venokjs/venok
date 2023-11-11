@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Controller, Get, RequestMapping, Version } from "../../decorators";
+import { Controller, Get, HttpCode, RequestMapping, Version } from "../../decorators";
 import { RequestMethod, VersioningType } from "../../enums";
 import { RoutesMapper } from "../../middleware/routes-mapper";
 import { VenokContainer } from "@venok/core";
