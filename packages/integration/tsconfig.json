@@ -1,0 +1,12 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "rootDir": "./",
+        "outDir": "../../dist/integration"
+    },
+    "references": [
+        {
+            "path": "../core/tsconfig.json"
+        }
+    ]
+}
