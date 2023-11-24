@@ -12,6 +12,8 @@
     "paths": {
       "@venok/core": ["./packages/core"],
       "@venok/core/*": ["./packages/core/*"],
+      "@venok/integration": ["./packages/integration"],
+      "@venok/integration/*": ["./packages/integration/*"],
       "@venok/http": ["./network/http"],
       "@venok/http/*": ["./network/http/*"],
       "@venok/express": ["./platforms/express"],
