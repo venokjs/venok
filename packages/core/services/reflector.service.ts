@@ -67,6 +67,8 @@ export class Reflector {
     timestamp: true,
   });
 
+  static reflector = new Reflector();
+
   /**
    * Creates a decorator that can be used to decorate classes and methods with metadata.
    * Can be used as a strongly-typed alternative to `@SetMetadata`.
