@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { ConfigurableModuleBuilder } from "@venok/core/module";
 import { Provider } from "@venok/core/interfaces";
+import { ConfigurableModuleBuilder } from "@venok/integration/configurable";
 
 describe("ConfigurableModuleBuilder", () => {
   describe("setExtras", () => {

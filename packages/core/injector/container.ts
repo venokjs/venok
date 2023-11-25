@@ -9,14 +9,15 @@ import {
   UndefinedForwardRefException,
   UnknownModuleException,
 } from "@venok/core/errors/exceptions";
-import { EnhancerSubtype, GLOBAL_MODULE_METADATA, REQUEST } from "@venok/core/constants";
+import { EnhancerSubtype, GLOBAL_MODULE_METADATA, REQUEST, REQUEST_CONTEXT_ID } from "@venok/core/constants";
 import { ContextId } from "@venok/core/injector/instance/wrapper";
 import { ApplicationConfig } from "@venok/core/application/config";
 import { InitializeOnPreviewAllowlist } from "@venok/core/inspector/initialize-on-preview.allowlist";
-import { DiscoverableMetaHostCollection } from "@venok/core/discovery/meta-host-collection";
 import { SerializedGraph } from "@venok/core/inspector/serialized-graph";
 import { InternalCoreModule } from "@venok/core/injector/internal-core-module/internal-core-module";
 import { Injectable } from "@venok/core/interfaces/injectable.interface";
+import { MetaHostStorage } from "@venok/core/storage/meta-host.storage";
+import { ContextIdFactory } from "@venok/core/context/context-id.factory";
 
 type ModuleMetatype = Type | DynamicModule | Promise<DynamicModule>;
 type ModuleScope = Type[];
@@ -199,7 +200,7 @@ export class VenokContainer {
     const providerKey = moduleRef.addProvider(provider, enhancerSubtype);
     const providerRef = moduleRef.getProviderByKey(providerKey);
 
-    DiscoverableMetaHostCollection.inspectProvider(this.modules, providerRef);
+    MetaHostStorage.inspectProvider(this.modules, providerRef);
 
     return providerKey as Function;
   }
@@ -260,6 +261,22 @@ export class VenokContainer {
 
   public getModuleTokenFactory(): TokenFactory {
     return this.moduleTokenFactory;
+  }
+
+  public getContextId<T extends Record<any, unknown> = any>(request: T, isTreeDurable: boolean): ContextId {
+    const contextId = ContextIdFactory.getByRequest(request);
+    if (!request[REQUEST_CONTEXT_ID as any]) {
+      Object.defineProperty(request, REQUEST_CONTEXT_ID, {
+        value: contextId,
+        enumerable: false,
+        writable: false,
+        configurable: false,
+      });
+
+      const requestProviderValue = isTreeDurable ? contextId.payload : request;
+      this.registerRequestProvider(requestProviderValue, contextId);
+    }
+    return contextId;
   }
 
   public registerRequestProvider<T = any>(request: T, contextId: ContextId) {

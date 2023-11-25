@@ -16,12 +16,14 @@ import { ContextId } from "@venok/core/injector/instance/wrapper";
 import { ContextUtils, ParamProperties } from "@venok/core/helpers/context.helper";
 import { VenokProxy } from "@venok/core/context/proxy";
 import { VenokExceptionFilterContext } from "@venok/core/filters/context";
+import { VenokContextCreatorInterface } from "@venok/core";
 
 export interface ParamsFactory {
   exchangeKeyForValue(type: number, data: ParamData, args: any): any;
 }
 
 export type ParamsMetadata = Record<number, ParamMetadata>;
+
 export interface ParamMetadata {
   index: number;
   data?: ParamData;
@@ -42,11 +44,11 @@ export interface ExternalContextOptions {
   callback?: (result: any | Observable<any>, ...args: any[]) => void;
 }
 
-export class VenokContextCreator {
+export class VenokContextCreator implements VenokContextCreatorInterface {
   public readonly contextUtils = new ContextUtils();
   public readonly venokProxy = new VenokProxy();
   // private readonly handlerMetadataStorage = new HandlerMetadataStorage<ExternalHandlerMetadata>();
-  private container!: VenokContainer;
+  public container!: VenokContainer;
 
   constructor(
     private readonly guardsContextCreator: GuardsContextCreator,
@@ -141,7 +143,7 @@ export class VenokContextCreator {
         contextType,
       );
       const done = await this.transformToResult(result);
-      if (options.callback) options.callback(done, ...args);
+      if (options.callback) await options.callback(done, ...args);
       return done;
     };
     return options.filters ? this.venokProxy.createProxy(target, exceptionFilter, contextType) : target;
@@ -201,7 +203,7 @@ export class VenokContextCreator {
     paramsFactory: ParamsFactory,
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
-    contextFactory = this.contextUtils.getContextFactory("http"),
+    contextFactory = this.contextUtils.getContextFactory("native"),
   ): ParamProperties[] {
     this.pipesContextCreator.setModuleContext(moduleContext);
 

@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Provider } from "@venok/core/interfaces";
-import { getInjectionProviders } from "@venok/core/module/helpers";
+import { Provider } from "@venok/core";
+import { getInjectionProviders } from "@venok/integration/configurable/helpers";
 
 describe("getInjectionProviders", () => {
   it("should take only required providers", () => {

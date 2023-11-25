@@ -1,8 +1,7 @@
-import { Type } from "@venok/core/interfaces";
-import { ModulesContainer } from "@venok/core/injector/module/container";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
+import { Type } from "@venok/core";
+import { InstanceWrapper, ModulesContainer } from "@venok/core/injector";
 
-export class DiscoverableMetaHostCollection {
+export class MetaHostStorage {
   /**
    * A map of class references to metadata keys.
    */
@@ -26,7 +25,7 @@ export class DiscoverableMetaHostCollection {
   /**
    * Inspects a provider instance wrapper and adds it to the collection of providers
    * if it has a metadata key.
-   * @param hostContainerRef A reference to the module's container.
+   * @param hostContainerRef A reference to the modules' container.
    * @param instanceWrapper A provider instance wrapper.
    * @returns void
    */
@@ -50,8 +49,8 @@ export class DiscoverableMetaHostCollection {
   }
 
   public static getProvidersByMetaKey(hostContainerRef: ModulesContainer, metaKey: string): Set<InstanceWrapper> {
-    const wrappersByMetaKey = this.providersByMetaKey.get(hostContainerRef) as Map<string, Set<InstanceWrapper<any>>>;
-    return wrappersByMetaKey.get(metaKey) as Set<InstanceWrapper<any>>;
+    const wrappersByMetaKey = this.providersByMetaKey.get(hostContainerRef);
+    return wrappersByMetaKey?.get(metaKey) ?? new Set<InstanceWrapper>();
   }
 
   private static inspectInstanceWrapper(
@@ -59,14 +58,13 @@ export class DiscoverableMetaHostCollection {
     instanceWrapper: InstanceWrapper,
     wrapperByMetaKeyMap: WeakMap<ModulesContainer, Map<string, Set<InstanceWrapper>>>,
   ) {
-    const metaKey = DiscoverableMetaHostCollection.getMetaKeyByInstanceWrapper(instanceWrapper);
-    if (!metaKey) {
-      return;
-    }
+    const metaKey = MetaHostStorage.getMetaKeyByInstanceWrapper(instanceWrapper);
+
+    if (!metaKey) return;
 
     let collection: Map<string, Set<InstanceWrapper>>;
     if (wrapperByMetaKeyMap.has(hostContainerRef)) {
-      collection = wrapperByMetaKeyMap.get(hostContainerRef) as Map<string, Set<InstanceWrapper<any>>>;
+      collection = wrapperByMetaKeyMap.get(hostContainerRef) as Map<string, Set<InstanceWrapper>>;
     } else {
       collection = new Map<string, Set<InstanceWrapper>>();
       wrapperByMetaKeyMap.set(hostContainerRef, collection);
@@ -74,7 +72,7 @@ export class DiscoverableMetaHostCollection {
     this.insertByMetaKey(metaKey, instanceWrapper, collection);
   }
 
-  private static getMetaKeyByInstanceWrapper(instanceWrapper: InstanceWrapper<any>) {
+  private static getMetaKeyByInstanceWrapper(instanceWrapper: InstanceWrapper) {
     return this.metaHostLinks.get(
       // NOTE: Regarding the ternary statement below,
       // - The condition `!wrapper.metatype` is needed because when we use `useValue`
