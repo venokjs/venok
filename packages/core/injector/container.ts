@@ -37,7 +37,7 @@ export class VenokContainer {
     return this._serializedGraph;
   }
 
-  get applicationConfig(): ApplicationConfig | undefined {
+  get applicationConfig(): ApplicationConfig {
     return this._applicationConfig;
   }
 
