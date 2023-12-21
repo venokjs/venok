@@ -73,7 +73,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
   }
 
   constructor(
-    protected readonly container: VenokContainer,
+    public readonly container: VenokContainer,
     protected readonly config: ApplicationConfig,
     protected readonly appOptions: TOptions = {} as TOptions,
     private contextModule: Module = null as any,
