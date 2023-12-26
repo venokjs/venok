@@ -1,18 +1,10 @@
-import { CustomDecorator, DecoratorsType, SetMetadata } from "@venok/core/decorators/set-metadata.decorator";
 import { uid } from "uid";
+
+import { DecoratorsType, SetMetadata } from "@venok/core/decorators";
+import { isEmpty, isObject } from "@venok/core/helpers";
 import { Type } from "@venok/core/interfaces";
-import { isEmpty, isObject } from "@venok/core/helpers/shared.helper";
-import { Logger } from "@venok/core/services/logger.service";
 
-interface TransformedWithAdditional<T> {
-  value?: T;
-  additional?: Record<any, any>;
-}
-
-/**
- * @publicApi
- */
-export interface CreateDecoratorOptions<TParam = any, TTransformed = TParam> {
+interface DecoratorOptions<Options = any, Transformed = Options> {
   /**
    * The key for the metadata.
    * @default uid(21)
@@ -20,42 +12,50 @@ export interface CreateDecoratorOptions<TParam = any, TTransformed = TParam> {
   key?: string;
 
   /**
+   * The transform function to apply to the metadata value.
+   * @default value => value
+   */
+  transform?: (value: Options) => Transformed;
+}
+
+interface ClassDecoratorOptions<Options = any, Transformed = Options> extends DecoratorOptions<Options, Transformed> {
+  type: "class";
+}
+
+interface MethodDecoratorOptions<Options = any, Transformed = Options> extends DecoratorOptions<Options, Transformed> {
+  type: "method";
+}
+
+interface CreateDecoratorOptions<Options = any, Transformed = Options> extends DecoratorOptions<Options, Transformed> {
+  /**
    * The decorator type (class or method)
    * @default class & method
    */
   type?: DecoratorsType;
-
-  /**
-   * The transform function to apply to the metadata value.
-   * @default value => value
-   */
-  transform?: (value: TParam) => TTransformed;
 }
 
-interface CreateDecoratorWithTransformOptions<TParam = any, TTransformed = TParam>
-  extends CreateDecoratorOptions<TParam, TTransformed> {
-  /**
-   * The transform function to apply to the metadata value.
-   * @default value => value
-   */
-  transform: (value: TParam) => TTransformed;
-}
+type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
-interface CreateDecoratorWithAdditionalMetadataOptions<TParam = any, TTransformed = TParam>
-  extends Omit<CreateDecoratorOptions<TParam, TTransformed>, "transform"> {
-  /**
-   * The transform function to apply to the metadata value.
-   * @default value => value
-   */
-  transform: (value: TParam) => TransformedWithAdditional<TTransformed>;
-}
+type WithTransform<T extends DecoratorOptions> = WithRequired<T, "transform">;
 
-/**
- * @publicApi
- */
-export type ReflectableDecorator<TParam, TTransformed = TParam> = ((opts?: TParam) => CustomDecorator) & {
+export type ReflectableDecorator<Options, Transformed = Options> = ((
+  opts?: Options,
+) => ClassDecorator & MethodDecorator) & {
   KEY: string;
 };
+
+export type ReflectableClassDecorator<Options, Transformed = Options> = ((opts?: Options) => ClassDecorator) & {
+  KEY: string;
+};
+
+export type ReflectableMethodDecorator<Options, Transformed = Options> = ((opts?: Options) => MethodDecorator) & {
+  KEY: string;
+};
+
+export type ReflectableDecorators<Options, Transformed = any> =
+  | ReflectableDecorator<Options, Transformed>
+  | ReflectableClassDecorator<Options, Transformed>
+  | ReflectableMethodDecorator<Options, Transformed>;
 
 /**
  * Helper class providing Venok reflection capabilities.
@@ -63,10 +63,6 @@ export type ReflectableDecorator<TParam, TTransformed = TParam> = ((opts?: TPara
  * @publicApi
  */
 export class Reflector {
-  private static readonly logger = new Logger(Reflector.name, {
-    timestamp: true,
-  });
-
   static reflector = new Reflector();
 
   /**
@@ -75,50 +71,68 @@ export class Reflector {
    * @param options Decorator options.
    * @returns A decorator function.
    */
-  static createDecorator<TParam>(options?: CreateDecoratorOptions<TParam>): ReflectableDecorator<TParam>;
-  static createDecorator<TParam, TTransformed>(
-    options: CreateDecoratorWithTransformOptions<TParam, TTransformed>,
-  ): ReflectableDecorator<TParam, TTransformed>;
-  public static createDecorator<TParam, TTransformed = TParam>(
-    options: CreateDecoratorOptions<TParam, TTransformed> = {},
-  ): ReflectableDecorator<TParam, TTransformed> {
+  public static createDecorator<Options>(options?: DecoratorOptions<Options>): ReflectableDecorator<Options>;
+  public static createDecorator<Options>(options?: ClassDecoratorOptions<Options>): ReflectableClassDecorator<Options>;
+  public static createDecorator<Options>(
+    options?: MethodDecoratorOptions<Options>,
+  ): ReflectableMethodDecorator<Options>;
+  public static createDecorator<Options, Transformed = Options>(
+    options: WithTransform<DecoratorOptions<Options, Transformed>>,
+  ): ReflectableDecorator<Options, Transformed>;
+  public static createDecorator<Options, Transformed = Options>(
+    options: WithTransform<ClassDecoratorOptions<Options, Transformed>>,
+  ): ReflectableClassDecorator<Options, Transformed>;
+  public static createDecorator<Options, Transformed = Options>(
+    options: WithTransform<MethodDecoratorOptions<Options, Transformed>>,
+  ): ReflectableMethodDecorator<Options, Transformed>;
+  public static createDecorator<Options, Transformed = Options>(
+    options: CreateDecoratorOptions<Options, Transformed> = {},
+  ): ReflectableDecorators<Options, Transformed> {
     const metadataKey = options.key ?? uid(21);
     const decoratorFn =
-      (metadataValue: TParam) => (target: object | Function, key: string | symbol, descriptor?: any) => {
+      (metadataValue: Options) => (target: object | Function, key: string | symbol, descriptor?: any) => {
         const value = options.transform ? options.transform(metadataValue) : metadataValue;
         SetMetadata(metadataKey, value ?? undefined, options.type)(target, key, descriptor);
       };
 
     decoratorFn.KEY = metadataKey;
-    return decoratorFn as ReflectableDecorator<TParam, TTransformed>;
+
+    return decoratorFn as ReflectableDecorators<Options, Transformed>;
   }
 
   /**
    * Creates a decorator with additional metadata that can be
-   * used `(for internal use, like @Controller in Http etc.)`
+   * used `(for internal use, like @Sse in Http etc.)`
    * to decorate classes and methods with metadata.
    * @param options Decorator options.
    * @returns A decorator function.
    */
-  public static createDecoratorWithAdditionalMetadata<TParam, TTransformed = TParam>(
-    options: CreateDecoratorWithAdditionalMetadataOptions<TParam, TTransformed>,
-  ): ReflectableDecorator<TParam, TTransformed> {
+  public static createMetadataDecorator<Options, Transformed extends Record<any, any>>(
+    options: WithTransform<DecoratorOptions<Options, Transformed>>,
+  ): ReflectableDecorator<Options, Transformed>;
+  public static createMetadataDecorator<Options, Transformed extends Record<any, any>>(
+    options: WithTransform<ClassDecoratorOptions<Options, Transformed>>,
+  ): ReflectableClassDecorator<Options, Transformed>;
+  public static createMetadataDecorator<Options, Transformed extends Record<any, any>>(
+    options: WithTransform<MethodDecoratorOptions<Options, Transformed>>,
+  ): ReflectableMethodDecorator<Options, Transformed>;
+  public static createMetadataDecorator<Options, Transformed extends Record<any, any>>(
+    options: WithTransform<CreateDecoratorOptions<Options, Transformed>>,
+  ): ReflectableDecorators<Options, Transformed> {
     const metadataKey = options.key ?? uid(21);
     const decoratorFn =
-      (metadataValue: TParam) => (target: object | Function, key: string | symbol, descriptor?: any) => {
+      (metadataValue: Options) => (target: object | Function, key: string | symbol, descriptor?: any) => {
         const value = options.transform(metadataValue);
 
-        if ("additional" in value && value.additional) {
-          for (const [additionalKey, additionalValue] of Object.entries(value.additional)) {
-            SetMetadata(additionalKey, additionalValue ?? undefined, options.type)(target, key, descriptor);
-          }
+        for (const [additionalKey, additionalValue] of Object.entries(value)) {
+          SetMetadata(additionalKey, additionalValue ?? undefined, options.type)(target, key, descriptor);
         }
 
-        SetMetadata(metadataKey, value.value ?? undefined, options.type)(target, key, descriptor);
+        SetMetadata(metadataKey, true, options.type)(target, key, descriptor);
       };
 
     decoratorFn.KEY = metadataKey;
-    return decoratorFn as ReflectableDecorator<TParam, TTransformed>;
+    return decoratorFn as ReflectableDecorators<Options, Transformed>;
   }
 
   /**
@@ -131,10 +145,10 @@ export class Reflector {
    * @param target context (decorated object) to retrieve metadata from
    *
    */
-  public get<T extends ReflectableDecorator<any>>(
+  public get<T extends ReflectableDecorators<any>>(
     decorator: T,
     target: Type | Function,
-  ): T extends ReflectableDecorator<any, infer R> ? R : unknown;
+  ): T extends ReflectableDecorators<any, infer R> ? R : unknown;
   /**
    * Retrieve metadata for a specified key for a specified target.
    *
@@ -157,7 +171,7 @@ export class Reflector {
    *
    */
   public get<TResult = any, TKey = any>(metadataKeyOrDecorator: TKey, target: Type | Function): TResult {
-    const metadataKey = (metadataKeyOrDecorator as ReflectableDecorator<unknown>).KEY ?? metadataKeyOrDecorator;
+    const metadataKey = (metadataKeyOrDecorator as ReflectableDecorators<unknown>).KEY ?? metadataKeyOrDecorator;
 
     return Reflect.getMetadata(metadataKey, target);
   }
@@ -169,10 +183,10 @@ export class Reflector {
    * @param targets context (decorated objects) to retrieve metadata from
    *
    */
-  public getAll<T extends ReflectableDecorator<any>>(
+  public getAll<T extends ReflectableDecorators<any>>(
     decorator: T,
     targets: (Type | Function)[],
-  ): T extends ReflectableDecorator<infer R> ? (R extends Array<any> ? R : R[]) : unknown;
+  ): T extends ReflectableDecorators<infer R> ? (R extends Array<any> ? R : R[]) : unknown;
   /**
    * Retrieve metadata for a specified key for a specified set of targets.
    *
@@ -202,10 +216,10 @@ export class Reflector {
    * @param targets context (decorated objects) to retrieve metadata from
    *
    */
-  public getAllAndMerge<T extends ReflectableDecorator<any>>(
+  public getAllAndMerge<T extends ReflectableDecorators<any>>(
     decorator: T,
     targets: (Type | Function)[],
-  ): T extends ReflectableDecorator<infer R> ? R : unknown;
+  ): T extends ReflectableDecorators<infer R> ? R : unknown;
   /**
    * Retrieve metadata for a specified key for a specified set of targets and merge results.
    *
@@ -228,23 +242,15 @@ export class Reflector {
     metadataKeyOrDecorator: TKey,
     targets: (Type | Function)[],
   ): TResult {
-    const metadataCollection = this.getAll<any[], TKey>(metadataKeyOrDecorator, targets).filter(
-      (item) => item !== undefined,
-    );
+    const metadataCollection = this.getAll<any[], TKey>(metadataKeyOrDecorator, targets).filter(Boolean);
 
-    if (isEmpty(metadataCollection)) {
-      return metadataCollection as TResult;
-    }
+    if (isEmpty(metadataCollection)) return metadataCollection as TResult;
+
     return metadataCollection.reduce((a, b) => {
-      if (Array.isArray(a)) {
-        return a.concat(b);
-      }
-      if (isObject(a) && isObject(b)) {
-        return {
-          ...a,
-          ...b,
-        };
-      }
+      if (Array.isArray(a)) return a.concat(b);
+
+      if (isObject(a) && isObject(b)) return { ...a, ...b };
+
       return [a, b];
     });
   }
@@ -256,10 +262,10 @@ export class Reflector {
    * @param targets context (decorated objects) to retrieve metadata from
    *
    */
-  public getAllAndOverride<T extends ReflectableDecorator<any>>(
+  public getAllAndOverride<T extends ReflectableDecorators<any>>(
     decorator: T,
     targets: (Type | Function)[],
-  ): T extends ReflectableDecorator<infer R> ? R : unknown;
+  ): T extends ReflectableDecorators<infer R> ? R : unknown;
   /**
    * Retrieve metadata for a specified key for a specified set of targets and return a first not undefined value.
    *
