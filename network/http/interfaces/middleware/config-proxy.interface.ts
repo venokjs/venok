@@ -1,6 +1,5 @@
-import { RouteInfo } from "./configuration.interface";
 import { Type } from "@venok/core";
-import { MiddlewareConsumer } from "./consumer.interface";
+import { MiddlewareConsumer, RouteInfo } from "@venok/http/interfaces";
 
 /**
  * @publicApi
@@ -21,5 +20,5 @@ export interface MiddlewareConfigProxy {
    * @param {(string | Type | RouteInfo)[]} routes
    * @returns {MiddlewareConsumer}
    */
-  forRoutes(...routes: (string | Type | RouteInfo)[]): MiddlewareConsumer;
+  to(...routes: (string | Type | RouteInfo)[]): MiddlewareConsumer;
 }
