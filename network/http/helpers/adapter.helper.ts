@@ -1,6 +1,5 @@
-import { AbstractHttpAdapter } from "../adapter/adapter";
-import { RequestMethod } from "../enums";
-import { VersioningOptions, VersionValue } from "../interfaces/router/version-options.interface";
+import { AbstractHttpAdapter } from "@venok/http/adapter/adapter";
+import { RequestMethod, VersioningOptions, VersionValue } from "@venok/http";
 
 export class NoopHttpAdapter extends AbstractHttpAdapter {
   constructor(instance: any) {
