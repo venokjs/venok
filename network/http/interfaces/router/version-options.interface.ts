@@ -1,4 +1,4 @@
-import { VersioningType } from "../../enums";
+import { VersioningType } from "@venok/http/enums";
 
 /**
  * Indicates that this will work for any version passed in the request, or no version.
