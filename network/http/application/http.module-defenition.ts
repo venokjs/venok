@@ -1,8 +1,7 @@
-import { HttpApplication } from "./application";
-import { HttpServer } from "../interfaces";
-import { ConfigurableModuleBuilder } from "@venok/core/module";
-import { NoopHttpAdapter } from "../helpers";
-import { AbstractHttpAdapter } from "../adapter/adapter";
+import { ConfigurableModuleBuilder } from "@venok/integration";
+
+import { HttpApplication } from "@venok/http/application/application";
+import { AbstractHttpAdapter } from "@venok/http/adapter/adapter";
 
 export interface HttpAppOptions {
   port: number;
