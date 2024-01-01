@@ -1,8 +1,7 @@
 import { InjectionToken, Type, VenokContainer } from "@venok/core";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import { MiddlewareConfiguration } from "../interfaces/middleware";
-import { getClassScope } from "@venok/core/injector/helpers/class-scope.helper";
-import { isDurable } from "@venok/core/injector/helpers/is-durable.helper";
+import { MiddlewareConfiguration } from "@venok/http";
+
+import { getClassScope, InstanceWrapper, isDurable } from "@venok/core/injector";
 import { Injectable } from "@venok/core/interfaces/injectable.interface";
 
 export class MiddlewareContainer {
