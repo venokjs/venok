@@ -1,13 +1,13 @@
-import { PathsExplorer } from "../explorers/path.explorer";
-import { MetadataScanner, Type, VenokContainer } from "@venok/core";
-import { HttpConfig } from "../application/config";
-import { RouteDefinition, RouteInfo, VERSION_NEUTRAL, VersionValue } from "../interfaces";
-import { isString, isUndefined } from "@venok/core/helpers/shared.helper";
-import { addLeadingSlash } from "../helpers";
-import { PATH_METADATA, VERSION_METADATA } from "../constants";
-import { Module } from "@venok/core/injector/module/module";
-import { targetModulesByContainer } from "../router/module";
-import { MODULE_PATH } from "@venok/core/constants";
+import { Controller, HttpConfig, RouteDefinition, RouteInfo, VERSION_NEUTRAL, VersionValue } from "@venok/http";
+import { MetadataScanner, MODULE_PATH, Reflector, Type, VenokContainer } from "@venok/core";
+
+import { targetModulesByContainer } from "@venok/http/router/module";
+import { PathsExplorer } from "@venok/http/explorers/path.explorer";
+import { ControllerDiscovery } from "@venok/http/discovery";
+import { addLeadingSlash } from "@venok/http/helpers";
+
+import { isString } from "@venok/core/helpers";
+import { Module } from "@venok/core/injector";
 
 export class RoutesMapper {
   private readonly pathsExplorer: PathsExplorer;
@@ -22,11 +22,13 @@ export class RoutesMapper {
   public mapRouteToRouteInfo(controllerOrRoute: Type | RouteInfo | string): RouteInfo[] {
     if (isString(controllerOrRoute)) return this.getRouteInfoFromPath(controllerOrRoute);
 
-    const routePathOrPaths = this.getRoutePath(controllerOrRoute);
+    return this.isRouteInfo(controllerOrRoute)
+      ? this.getRouteInfoFromObject(controllerOrRoute)
+      : this.getRouteInfoFromController(controllerOrRoute);
+  }
 
-    if (this.isRouteInfo(routePathOrPaths, controllerOrRoute)) return this.getRouteInfoFromObject(controllerOrRoute);
-
-    return this.getRouteInfoFromController(controllerOrRoute, routePathOrPaths as string);
+  private isRouteInfo(controllerOrRoute: Type | RouteInfo): controllerOrRoute is RouteInfo {
+    return "path" in controllerOrRoute;
   }
 
   private getRouteInfoFromPath(routePath: string): RouteInfo[] {
@@ -50,12 +52,13 @@ export class RoutesMapper {
     return [routeInfo];
   }
 
-  private getRouteInfoFromController(controller: Type, routePath: string | string[]): RouteInfo[] {
+  private getRouteInfoFromController(controller: Type): RouteInfo[] {
     const controllerPaths = this.pathsExplorer.scanForPaths(Object.create(controller), controller.prototype);
     const controllerVersion = this.getVersionMetadata(controller);
     const versioningConfig = this.httpConfig.getVersioning();
     const moduleRef = this.getHostModuleOfController(controller);
     const modulePath = this.getModulePath(moduleRef?.metatype);
+    const routePath = this.getRoutePath(controller);
 
     const concatPaths = <T>(acc: T[], currentValue: T[]) => acc.concat(currentValue);
 
@@ -94,20 +97,14 @@ export class RoutesMapper {
       .reduce(concatPaths, []);
   }
 
-  private isRouteInfo(
-    path: string | string[] | undefined,
-    objectOrClass: Function | RouteInfo,
-  ): objectOrClass is RouteInfo {
-    return isUndefined(path);
-  }
-
   private normalizeGlobalPath(path: string): string {
     const prefix = addLeadingSlash(path);
     return prefix === "/" ? "" : prefix;
   }
 
-  private getRoutePath(route: Type | RouteInfo): string | undefined {
-    return Reflect.getMetadata(PATH_METADATA, route);
+  private getRoutePath(route: Type | RouteInfo): string | string[] {
+    const discovery = Reflector.reflector.get<ControllerDiscovery>(Controller, route as Type);
+    return discovery.getPath();
   }
 
   private getHostModuleOfController(metatype: Type): Module | undefined {
@@ -132,6 +129,10 @@ export class RoutesMapper {
 
   private getVersionMetadata(metatype: Type | Function): VersionValue | undefined {
     const versioningConfig = this.httpConfig.getVersioning();
-    if (versioningConfig) return Reflect.getMetadata(VERSION_METADATA, metatype) ?? versioningConfig.defaultVersion;
+    if (!versioningConfig) return undefined;
+
+    const discovery = Reflector.reflector.get<ControllerDiscovery>(Controller, metatype);
+
+    return (discovery.getVersion() as VersionValue) ?? versioningConfig.defaultVersion;
   }
 }
