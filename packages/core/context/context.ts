@@ -24,6 +24,7 @@ import { PipesConsumer, PipesContextCreator } from "@venok/core/pipes";
 import { VenokExceptionFilterContext } from "@venok/core/filters";
 
 import { RuntimeException } from "@venok/core/errors/exceptions";
+// import { HandlerMetadataStorage } from "@venok/core/storage/handler-metadata.storage";
 
 export interface ExternalHandlerMetadata {
   argsLength: number;
@@ -42,7 +43,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
   public readonly contextUtils = new ContextUtils();
   public readonly venokProxy = new VenokProxy();
   public readonly reflector = new Reflector();
-  // private readonly handlerMetadataStorage = new HandlerMetadataStorage<ExternalHandlerMetadata>();
+  // private readonly handlerMetadataStorage = new HandlerMetadataStorage();
   public container!: VenokContainer;
 
   constructor(
@@ -56,16 +57,18 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     protected readonly filtersContextCreator: VenokExceptionFilterContext,
   ) {}
 
-  static fromContainer(container: VenokContainer): VenokContextCreator {
+  static fromContainer(
+    container: VenokContainer,
+    contextClass: typeof VenokContextCreator = VenokContextCreator,
+    filtersContext: typeof VenokExceptionFilterContext = VenokExceptionFilterContext,
+  ): VenokContextCreator {
     const guardsContextCreator = new GuardsContextCreator(container, container.applicationConfig);
     const guardsConsumer = new GuardsConsumer();
     const interceptorsContextCreator = new InterceptorsContextCreator(container, container.applicationConfig);
     const interceptorsConsumer = new InterceptorsConsumer();
     const pipesContextCreator = new PipesContextCreator(container, container.applicationConfig);
     const pipesConsumer = new PipesConsumer();
-    const filtersContextCreator = VenokContextCreator.getExceptionFilter(container);
-
-    const contextClass = VenokContextCreator.getContextCreatorClass();
+    const filtersContextCreator = new filtersContext(container, container.applicationConfig);
 
     const venokContextCreator = new contextClass(
       guardsContextCreator,
@@ -79,14 +82,6 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     );
     venokContextCreator.container = container;
     return venokContextCreator;
-  }
-
-  public static getContextCreatorClass() {
-    return VenokContextCreator;
-  }
-
-  public static getExceptionFilter(container: VenokContainer) {
-    return new VenokExceptionFilterContext(container, container.applicationConfig);
   }
 
   public create<TParamsMetadata extends ParamsMetadata = ParamsMetadata, TContext extends string = ContextType>(
@@ -105,6 +100,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     },
     contextType: TContext = "native" as TContext,
   ) {
+    console.log("CREATE FROM MAIN CONTEXT CREATOR");
     const module = this.getContextModuleKey(instance.constructor);
     const { argsLength, paramtypes, getParamsMetadata } = this.getMetadata<TParamsMetadata, TContext>(
       instance,
@@ -162,9 +158,8 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     contextType?: TContext,
   ): ExternalHandlerMetadata {
     // const cacheMetadata = this.handlerMetadataStorage.get(instance, methodName);
-    // if (cacheMetadata) {
-    //   return cacheMetadata;
-    // }
+    // if (cacheMetadata) return cacheMetadata;
+
     const metadata =
       this.contextUtils.reflectCallbackMetadata<TMetadata>(instance, methodName, metadataKey || "") || {};
     const keys = Object.keys(metadata);
