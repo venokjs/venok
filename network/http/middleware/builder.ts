@@ -1,19 +1,16 @@
-import { RoutesMapper } from "./routes-mapper";
-import {
-  MiddlewareConfigProxy,
-  MiddlewareConfiguration,
-  MiddlewareConsumer,
-  RouteInfo,
-  HttpServer,
-} from "../interfaces";
-import { RouteInfoPathExtractor } from "./extractor";
+import { HttpServer, MiddlewareConfigProxy, MiddlewareConsumer, RouteInfo } from "@venok/http";
+import { BaseMiddlewareConfiguration } from "@venok/integration";
 import { Type } from "@venok/core";
-import { flatten } from "@venok/core/helpers/flatten.helper";
-import { filterMiddleware } from "./utils";
-import { stripEndSlash } from "../helpers";
+
+import { RouteInfoPathExtractor } from "@venok/http/middleware/extractor";
+import { RoutesMapper } from "@venok/http/middleware/routes-mapper";
+import { filterMiddleware } from "@venok/http/middleware/utils";
+import { stripEndSlash } from "@venok/http/helpers";
+
+import { flatten } from "@venok/core/helpers";
 
 export class MiddlewareBuilder implements MiddlewareConsumer {
-  private readonly middlewareCollection = new Set<MiddlewareConfiguration>();
+  private readonly middlewareCollection = new Set<BaseMiddlewareConfiguration<Type[], RouteInfo>>();
 
   constructor(
     private readonly routesMapper: RoutesMapper,
@@ -25,7 +22,7 @@ export class MiddlewareBuilder implements MiddlewareConsumer {
     return new MiddlewareBuilder.ConfigProxy(this, flatten(middleware), this.routeInfoPathExtractor);
   }
 
-  public build(): MiddlewareConfiguration[] {
+  public build(): BaseMiddlewareConfiguration<Type[], RouteInfo>[] {
     return [...this.middlewareCollection];
   }
 
@@ -54,14 +51,14 @@ export class MiddlewareBuilder implements MiddlewareConsumer {
       return this;
     }
 
-    public forRoutes(...routes: Array<string | Type | RouteInfo>): MiddlewareConsumer {
+    public to(...routes: Array<string | Type | RouteInfo>): MiddlewareConsumer {
       const { middlewareCollection } = this.builder;
 
       const flattedRoutes = this.getRoutesFlatList(routes);
       const forRoutes = this.removeOverlappedRoutes(flattedRoutes);
-      const configuration = {
+      const configuration: BaseMiddlewareConfiguration<Type[], RouteInfo> = {
         middleware: filterMiddleware(this.middleware, this.excludedRoutes, this.builder.getHttpAdapter()),
-        forRoutes,
+        to: forRoutes,
       };
       middlewareCollection.add(configuration);
       return this.builder;
