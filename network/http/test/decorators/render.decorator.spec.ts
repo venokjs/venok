@@ -1,6 +1,7 @@
 import { expect } from "chai";
-import { Render } from "../../decorators";
-import { RENDER_METADATA } from "../../constants";
+
+import { Reflector } from "@venok/core";
+import { Render } from "@venok/http";
 
 describe("@Render", () => {
   const template = "template";
@@ -11,7 +12,7 @@ describe("@Render", () => {
   }
 
   it("should enhance method with expected template string", () => {
-    const metadata = Reflect.getMetadata(RENDER_METADATA, Test.test);
+    const metadata = Reflector.reflector.get(Render, Test.test);
     expect(metadata).to.be.eql(template);
   });
 });

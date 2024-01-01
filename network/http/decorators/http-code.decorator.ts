@@ -1,4 +1,3 @@
-import { HTTP_CODE_METADATA } from "../constants";
 import { Reflector } from "@venok/core";
 
 /**
@@ -9,8 +8,4 @@ import { Reflector } from "@venok/core";
  *
  * @publicApi
  */
-export const HttpCode = Reflector.createDecorator<number>({
-  type: "method",
-  key: HTTP_CODE_METADATA,
-  transform: (statusCode) => statusCode,
-});
+export const HttpCode = Reflector.createDecorator<number>({ type: "method" });

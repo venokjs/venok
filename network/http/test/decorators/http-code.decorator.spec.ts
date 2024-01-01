@@ -1,6 +1,7 @@
 import { expect } from "chai";
-import { HttpCode } from "../../decorators";
-import { HTTP_CODE_METADATA } from "../../constants";
+
+import { Reflector } from "@venok/core";
+import { HttpCode } from "@venok/http";
 
 describe("@HttpCode", () => {
   const httpCode = 200;
@@ -10,7 +11,7 @@ describe("@HttpCode", () => {
   }
 
   it("should enhance method with expected http status code", () => {
-    const metadata = Reflect.getMetadata(HTTP_CODE_METADATA, Test.test);
+    const metadata = Reflector.reflector.get(HttpCode, Test.test);
     expect(metadata).to.be.eql(httpCode);
   });
 });
