@@ -291,6 +291,7 @@ export class ConfigurableModuleBuilder<
         };
       }
     }
+
     return InternalModuleClass as unknown as ConfigurableModuleCls<
       ModuleOptions,
       StaticMethodKey,
