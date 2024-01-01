@@ -35,9 +35,9 @@ type VersionedRoute = <TRequest extends Record<string, any> = any, TResponse = a
 /**
  * @publicApi
  */
-export class Express extends AbstractHttpAdapter<http.Server | https.Server> {
+export class ExpressAdapter extends AbstractHttpAdapter<http.Server | https.Server> {
   private readonly routerMethodFactory = new RouterMethodFactory();
-  private readonly logger = new Logger(Express.name);
+  private readonly logger = new Logger(ExpressAdapter.name);
   private readonly openConnections = new Set<Duplex>();
 
   constructor(instance?: any) {
@@ -67,8 +67,7 @@ export class Express extends AbstractHttpAdapter<http.Server | https.Server> {
           body.errorHandler(err, response);
         }),
         response,
-        // @ts-ignore
-        (err: Error) => {
+        (err: any) => {
           if (err) {
             this.logger.error(err.message, err.stack);
           }
