@@ -136,6 +136,44 @@ export class Reflector {
   }
 
   /**
+   * Check if metadata exist for a metadata decorator for a specified target.
+   *
+   * @example
+   * `const roles = this.reflector.has(Roles, context.getHandler());`
+   *
+   * @param decorator reflectable decorator created through `Reflector.createDecorator`
+   * @param target context (decorated object) to check metadata from
+   *
+   */
+  public has<T extends ReflectableDecorators<any>>(decorator: T, target: Type | Function): boolean;
+  /**
+   * Check if metadata exist for a specified key for a specified target.
+   *
+   * @example
+   * `const roles = this.reflector.has('roles', context.getHandler());`
+   *
+   * @param metadataKey lookup key for metadata to check
+   * @param target context (decorated object) to check metadata from
+   *
+   */
+  public has<TKey = any>(metadataKey: TKey, target: Type | Function): boolean;
+  /**
+   * Check if metadata exist for a specified key or metadata decorator for a specified target.
+   *
+   * @example
+   * `const roles = this.reflector.has('roles', context.getHandler());`
+   *
+   * @param metadataKeyOrDecorator lookup key or decorator for metadata to check
+   * @param target context (decorated object) to check metadata from
+   *
+   */
+  public has<TKey = any>(metadataKeyOrDecorator: TKey, target: Type | Function): boolean {
+    const metadataKey = (metadataKeyOrDecorator as ReflectableDecorators<unknown>).KEY ?? metadataKeyOrDecorator;
+
+    return Reflect.hasMetadata(metadataKey, target);
+  }
+
+  /**
    * Retrieve metadata for a reflectable decorator for a specified target.
    *
    * @example
