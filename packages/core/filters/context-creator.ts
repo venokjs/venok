@@ -10,7 +10,7 @@ import { ExceptionFilter } from "@venok/core/interfaces/features/exception-filte
 export class ExceptionFilterContextCreator extends ContextCreator {
   protected moduleContext!: string;
 
-  constructor(private readonly container: VenokContainer) {
+  constructor(protected readonly container: VenokContainer) {
     super();
   }
 
