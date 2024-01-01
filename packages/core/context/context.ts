@@ -1,22 +1,26 @@
 import { isObservable, lastValueFrom, Observable } from "rxjs";
 
-import { ParamData } from "@venok/core/decorators/create-param.decorator";
-import { GuardsConsumer, GuardsContextCreator } from "@venok/core/guards";
-import { InterceptorsConsumer, InterceptorsContextCreator } from "@venok/core/interceptors";
-import { ModulesContainer } from "@venok/core/injector/module/container";
-import { PipesConsumer, PipesContextCreator } from "@venok/core/pipes";
-import { VenokContainer } from "@venok/core/injector/container";
-import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { ContextType } from "@venok/core/interfaces/context/arguments-host.interface";
-import { CUSTOM_ROUTE_ARGS_METADATA, FORBIDDEN_MESSAGE } from "@venok/core/constants";
-import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
-import { isEmpty } from "@venok/core/helpers/shared.helper";
-import { RuntimeException } from "@venok/core/errors/exceptions";
-import { ContextId } from "@venok/core/injector/instance/wrapper";
-import { ContextUtils, ParamProperties } from "@venok/core/helpers/context.helper";
+import {
+  ContextType,
+  CUSTOM_ROUTE_ARGS_METADATA,
+  FORBIDDEN_MESSAGE,
+  ParamData,
+  PipeTransform,
+  Reflector,
+  VenokContainer,
+  VenokContextCreatorInterface,
+} from "@venok/core";
+
+import { ContextId, ModulesContainer, STATIC_CONTEXT } from "@venok/core/injector";
+import { ContextUtils, isEmpty, ParamProperties } from "@venok/core/helpers";
 import { VenokProxy } from "@venok/core/context/proxy";
-import { VenokExceptionFilterContext } from "@venok/core/filters/context";
-import { VenokContextCreatorInterface } from "@venok/core";
+
+import { InterceptorsConsumer, InterceptorsContextCreator } from "@venok/core/interceptors";
+import { GuardsConsumer, GuardsContextCreator } from "@venok/core/guards";
+import { PipesConsumer, PipesContextCreator } from "@venok/core/pipes";
+import { VenokExceptionFilterContext } from "@venok/core/filters";
+
+import { RuntimeException } from "@venok/core/errors/exceptions";
 
 export interface ParamsFactory {
   exchangeKeyForValue(type: number, data: ParamData, args: any): any;
@@ -47,6 +51,7 @@ export interface ExternalContextOptions {
 export class VenokContextCreator implements VenokContextCreatorInterface {
   public readonly contextUtils = new ContextUtils();
   public readonly venokProxy = new VenokProxy();
+  public readonly reflector = new Reflector();
   // private readonly handlerMetadataStorage = new HandlerMetadataStorage<ExternalHandlerMetadata>();
   public container!: VenokContainer;
 
@@ -58,7 +63,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     private readonly modulesContainer: ModulesContainer,
     private readonly pipesContextCreator: PipesContextCreator,
     private readonly pipesConsumer: PipesConsumer,
-    private readonly filtersContextCreator: VenokExceptionFilterContext,
+    protected readonly filtersContextCreator: VenokExceptionFilterContext,
   ) {}
 
   static fromContainer(container: VenokContainer): VenokContextCreator {
@@ -68,9 +73,11 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     const interceptorsConsumer = new InterceptorsConsumer();
     const pipesContextCreator = new PipesContextCreator(container, container.applicationConfig);
     const pipesConsumer = new PipesConsumer();
-    const filtersContextCreator = new VenokExceptionFilterContext(container, container.applicationConfig);
+    const filtersContextCreator = VenokContextCreator.getExceptionFilter(container);
 
-    const venokContextCreator = new VenokContextCreator(
+    const contextClass = VenokContextCreator.getContextCreatorClass();
+
+    const venokContextCreator = new contextClass(
       guardsContextCreator,
       guardsConsumer,
       interceptorsContextCreator,
@@ -82,6 +89,14 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     );
     venokContextCreator.container = container;
     return venokContextCreator;
+  }
+
+  public static getContextCreatorClass() {
+    return VenokContextCreator;
+  }
+
+  public static getExceptionFilter(container: VenokContainer) {
+    return new VenokExceptionFilterContext(container, container.applicationConfig);
   }
 
   public create<TParamsMetadata extends ParamsMetadata = ParamsMetadata, TContext extends string = ContextType>(
@@ -268,9 +283,5 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
       if (!canActivate) throw new RuntimeException(FORBIDDEN_MESSAGE);
     };
     return guards.length ? canActivateFn : null;
-  }
-
-  public registerRequestProvider<T = any>(request: T, contextId: ContextId) {
-    this.container.registerRequestProvider<T>(request, contextId);
   }
 }
