@@ -7,12 +7,17 @@ export interface RequestMappingMetadata {
   method?: RequestMethod;
 }
 
+type RequestMappingDecorator = {
+  [PATH_METADATA]: string | string[];
+  [METHOD_METADATA]: RequestMethod;
+};
+
 const defaultMetadata = {
   [PATH_METADATA]: "/",
   [METHOD_METADATA]: RequestMethod.GET,
 };
 
-export const RequestMapping = Reflector.createDecoratorWithAdditionalMetadata<RequestMappingMetadata, undefined>({
+export const RequestMapping = Reflector.createMetadataDecorator<RequestMappingMetadata, RequestMappingDecorator>({
   type: "method",
   transform: (metadata = defaultMetadata) => {
     const pathMetadata = metadata[PATH_METADATA];
@@ -20,10 +25,8 @@ export const RequestMapping = Reflector.createDecoratorWithAdditionalMetadata<Re
     const requestMethod = metadata[METHOD_METADATA] || RequestMethod.GET;
 
     return {
-      additional: {
-        [PATH_METADATA]: path,
-        [METHOD_METADATA]: requestMethod,
-      },
+      [PATH_METADATA]: path,
+      [METHOD_METADATA]: requestMethod,
     };
   },
 });

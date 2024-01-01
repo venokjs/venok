@@ -1,6 +1,7 @@
 import { expect } from "chai";
-import { RequestMethod } from "../../enums";
-import { RequestMapping } from "../../decorators";
+
+import { Reflector } from "@venok/core";
+import { RequestMapping, RequestMethod } from "@venok/http";
 
 describe("@RequestMapping", () => {
   const requestProps = {
@@ -22,10 +23,10 @@ describe("@RequestMapping", () => {
       public static testUsingArray() {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const method = Reflect.getMetadata("method", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
-    const methodUsingArray = Reflect.getMetadata("method", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const method = Reflector.reflector.get<string>("method", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
+    const methodUsingArray = Reflector.reflector.get<string>("method", Test.testUsingArray);
 
     expect(path).to.be.eql(requestProps.path);
     expect(method).to.be.eql(requestProps.method);
@@ -39,7 +40,7 @@ describe("@RequestMapping", () => {
       public static test() {}
     }
 
-    const method = Reflect.getMetadata("method", Test.test);
+    const method = Reflector.reflector.get<string>("method", Test.test);
 
     expect(method).to.be.eql(RequestMethod.GET);
   });
@@ -53,8 +54,8 @@ describe("@RequestMapping", () => {
       public static testUsingArray() {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
 
     expect(path).to.be.eql("/");
     expect(pathUsingArray).to.be.eql("/");
