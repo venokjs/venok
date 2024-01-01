@@ -4,15 +4,18 @@ import {
   ContextType,
   CUSTOM_ROUTE_ARGS_METADATA,
   FORBIDDEN_MESSAGE,
-  ParamData,
+  GetParamsMetadata,
+  ParamProperties,
+  ParamsFactory,
+  ParamsMetadata,
   PipeTransform,
   Reflector,
   VenokContainer,
   VenokContextCreatorInterface,
 } from "@venok/core";
 
-import { ContextId, ModulesContainer, STATIC_CONTEXT } from "@venok/core/injector";
-import { ContextUtils, isEmpty, ParamProperties } from "@venok/core/helpers";
+import { ModulesContainer, STATIC_CONTEXT } from "@venok/core/injector";
+import { ContextUtils, isEmpty } from "@venok/core/helpers";
 import { VenokProxy } from "@venok/core/context/proxy";
 
 import { InterceptorsConsumer, InterceptorsContextCreator } from "@venok/core/interceptors";
@@ -22,23 +25,10 @@ import { VenokExceptionFilterContext } from "@venok/core/filters";
 
 import { RuntimeException } from "@venok/core/errors/exceptions";
 
-export interface ParamsFactory {
-  exchangeKeyForValue(type: number, data: ParamData, args: any): any;
-}
-
-export type ParamsMetadata = Record<number, ParamMetadata>;
-
-export interface ParamMetadata {
-  index: number;
-  data?: ParamData;
-}
-
-type ParamPropertiesWithMetatype<T = any> = ParamProperties & { metatype?: T };
-
 export interface ExternalHandlerMetadata {
   argsLength: number;
   paramtypes: any[];
-  getParamsMetadata: (moduleKey: string, contextId?: ContextId, inquirerId?: string) => ParamPropertiesWithMetatype[];
+  getParamsMetadata: GetParamsMetadata;
 }
 
 export interface ExternalContextOptions {

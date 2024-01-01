@@ -1,14 +1,6 @@
-import { ContextType, ParamData, PARAMTYPES_METADATA, PipeTransform, Type } from "@venok/core";
+import { ContextType, ParamProperties, PARAMTYPES_METADATA, Type } from "@venok/core";
 import { ExecutionContextHost } from "@venok/core/context";
 import { isFunction } from "@venok/core/helpers/shared.helper";
-
-export interface ParamProperties<T = any, IExtractor extends Function = any> {
-  index: number;
-  type: T | string;
-  data: ParamData;
-  pipes: PipeTransform[];
-  extractValue: IExtractor;
-}
 
 export class ContextUtils {
   public mapParamType(key: string): string {
