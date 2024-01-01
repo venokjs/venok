@@ -1,11 +1,16 @@
-import { CorsOptions, CorsOptionsDelegate, GlobalPrefixOptions, HttpServer, VersioningOptions } from "../interfaces";
-import { HttpConfig } from "./config";
-import { AbstractHttpAdapter } from "../adapter/adapter";
-import { VersioningType } from "../enums";
-import { mapToExcludeRoute } from "../middleware/utils";
+import {
+  CorsOptions,
+  CorsOptionsDelegate,
+  GlobalPrefixOptions,
+  HttpConfig,
+  HttpServer,
+  VersioningOptions,
+  VersioningType,
+} from "@venok/http";
+import { AbstractHttpAdapter } from "@venok/http/adapter/adapter";
+import { mapToExcludeRoute } from "@venok/http/middleware";
 
 export class HttpApplication {
-  private start: boolean = false;
   constructor(
     private readonly httpAdapter: HttpServer,
     private readonly config: HttpConfig,
@@ -29,6 +34,7 @@ export class HttpApplication {
     this.config.enableVersioning(options);
     return this;
   }
+
   public setGlobalPrefix(prefix: string, options?: GlobalPrefixOptions): this {
     this.config.setGlobalPrefix(prefix);
     if (options) {
