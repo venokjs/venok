@@ -1,14 +1,19 @@
-import { ExceptionFilter } from "@venok/core/interfaces/features/exception-filter.interface";
+import {
+  ApplicationContext,
+  ArgumentsHost,
+  ExceptionFilter,
+  Inject,
+  MESSAGES,
+  Optional,
+  VenokContainer,
+} from "@venok/core";
 import { Logger } from "@venok/core/services/logger.service";
-import { Inject, Optional } from "@venok/core";
-import { ArgumentsHost } from "@venok/core/interfaces/context/arguments-host.interface";
-import { isObject } from "@venok/core/helpers/shared.helper";
-import { MESSAGES } from "@venok/core/constants";
-import { HttpStatus } from "../enums";
-import { HttpServer } from "../interfaces";
-import { HttpAdapterHost } from "../adapter/host";
-import { AbstractHttpAdapter } from "../adapter/adapter";
-import { HttpException } from "../errors";
+
+import { AbstractHttpAdapter } from "@venok/http/adapter/adapter";
+import { HttpConfig, HttpServer, HttpStatus } from "@venok/http";
+import { HttpAdapterHost } from "@venok/http/adapter/host";
+import { HttpException } from "@venok/http/errors";
+import { isObject } from "@venok/core/helpers";
 
 export class HttpExceptionFilter<T = any> implements ExceptionFilter<T> {
   private static readonly logger = new Logger("ExceptionsHandler");
@@ -17,10 +22,17 @@ export class HttpExceptionFilter<T = any> implements ExceptionFilter<T> {
   @Inject()
   protected readonly httpAdapterHost?: HttpAdapterHost;
 
-  constructor(protected readonly applicationRef?: HttpServer) {}
+  private readonly context: ApplicationContext;
+
+  constructor(protected readonly container: VenokContainer) {
+    const context = new ApplicationContext(container, container.applicationConfig);
+    context.selectContextModule();
+    this.context = context;
+  }
 
   catch(exception: T, host: ArgumentsHost) {
-    const applicationRef = this.applicationRef || (this.httpAdapterHost && this.httpAdapterHost.httpAdapter);
+    const applicationRef = this.context.get(HttpConfig).getHttpAdapterRef();
+    // const applicationRef = this.applicationRef || (this.httpAdapterHost && this.httpAdapterHost.httpAdapter);
 
     if (!(exception instanceof HttpException)) {
       return this.handleUnknownError(exception, host, applicationRef as any);
