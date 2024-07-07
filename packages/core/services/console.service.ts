@@ -298,7 +298,7 @@ export class ConsoleLogger implements LoggerService {
   private isStackFormat(stack: unknown) {
     if (!isString(stack)) return false;
 
-    return /^(.)+\n\s+at .+:\d+:\d+$/.test(stack);
+    return /^(.)+\n\s+at .+:\d+:\d+/.test(stack);
   }
 
   private getColorByLogLevel(level: LogLevel) {
