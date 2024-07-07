@@ -35,7 +35,7 @@ describe("Injector", () => {
 
       constructor(
         public one: DependencyOne,
-        public two: DependencyTwo,
+        @Inject() public two: DependencyTwo,
       ) {}
     }
 
@@ -681,6 +681,7 @@ describe("Injector", () => {
   describe("getClassDependencies", () => {
     it("should return an array that consists of deps and optional dep ids", async () => {
       class FixtureDep1 {}
+
       class FixtureDep2 {}
 
       @Injectable()
@@ -700,6 +701,7 @@ describe("Injector", () => {
 
     it("should not mutate the constructor metadata", async () => {
       class FixtureDep1 {}
+
       /** This needs to be something other than FixtureDep1 so the test can ensure that the metadata was not mutated */
       const injectionToken = "test_token";
 
@@ -720,6 +722,7 @@ describe("Injector", () => {
   describe("getFactoryProviderDependencies", () => {
     it("should return an array that consists of deps and optional dep ids", async () => {
       class FixtureDep1 {}
+
       class FixtureDep2 {}
 
       const wrapper = new InstanceWrapper({
