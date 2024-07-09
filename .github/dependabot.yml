@@ -9,7 +9,8 @@ updates:
   - package-ecosystem: npm
     directory: "/"
     schedule:
-      interval: daily
+      interval: "weekly"
+      day: "wednesday"
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
