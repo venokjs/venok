@@ -1,6 +1,7 @@
 import { expect } from "chai";
-import { RequestMethod } from "../../enums";
-import { All, Body, Delete, Get, HostParam, Param, Patch, Post, Put, Query, Search } from "../../decorators";
+
+import { Reflector } from "@venok/core";
+import { All, Body, Delete, Get, HostParam, Param, Patch, Post, Put, Query, RequestMethod, Search } from "@venok/http";
 
 describe("@Get", () => {
   const requestPath = "test";
@@ -24,10 +25,10 @@ describe("@Get", () => {
       public static testUsingArray(@Param("id") params: any) {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const method = Reflect.getMetadata("method", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
-    const methodUsingArray = Reflect.getMetadata("method", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const method = Reflector.reflector.get<string>("method", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
+    const methodUsingArray = Reflector.reflector.get<string>("method", Test.testUsingArray);
 
     expect(path).to.be.eql(requestPath);
     expect(method).to.be.eql(requestProps.method);
@@ -44,8 +45,8 @@ describe("@Get", () => {
       public static testUsingArray() {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
 
     expect(path).to.be.eql("/");
     expect(pathUsingArray).to.be.eql("/");
@@ -74,10 +75,10 @@ describe("@Post", () => {
       public static testUsingArray() {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const method = Reflect.getMetadata("method", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
-    const methodUsingArray = Reflect.getMetadata("method", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const method = Reflector.reflector.get<string>("method", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
+    const methodUsingArray = Reflector.reflector.get<string>("method", Test.testUsingArray);
 
     expect(path).to.be.eql(requestPath);
     expect(method).to.be.eql(requestProps.method);
@@ -94,8 +95,8 @@ describe("@Post", () => {
       public static testUsingArray(@Query() query: any, @Param() params: any, @HostParam() hostParams: any) {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
 
     expect(path).to.be.eql("/");
     expect(pathUsingArray).to.be.eql("/");
@@ -124,10 +125,10 @@ describe("@Delete", () => {
       public static testUsingArray(@Body() body: any) {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const method = Reflect.getMetadata("method", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
-    const methodUsingArray = Reflect.getMetadata("method", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const method = Reflector.reflector.get<string>("method", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
+    const methodUsingArray = Reflector.reflector.get<string>("method", Test.testUsingArray);
 
     expect(path).to.be.eql(requestPath);
     expect(method).to.be.eql(requestProps.method);
@@ -144,8 +145,8 @@ describe("@Delete", () => {
       public static testUsingArray() {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
 
     expect(path).to.be.eql("/");
     expect(pathUsingArray).to.be.eql("/");
@@ -174,10 +175,10 @@ describe("@All", () => {
       public static testUsingArray() {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const method = Reflect.getMetadata("method", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
-    const methodUsingArray = Reflect.getMetadata("method", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const method = Reflector.reflector.get<string>("method", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
+    const methodUsingArray = Reflector.reflector.get<string>("method", Test.testUsingArray);
 
     expect(path).to.be.eql(requestPath);
     expect(method).to.be.eql(requestProps.method);
@@ -194,8 +195,8 @@ describe("@All", () => {
       public static testUsingArray() {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
 
     expect(path).to.be.eql("/");
     expect(pathUsingArray).to.be.eql("/");
@@ -224,10 +225,10 @@ describe("@Put", () => {
       public static testUsingArray() {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const method = Reflect.getMetadata("method", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
-    const methodUsingArray = Reflect.getMetadata("method", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const method = Reflector.reflector.get<string>("method", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
+    const methodUsingArray = Reflector.reflector.get<string>("method", Test.testUsingArray);
 
     expect(path).to.be.eql(requestPath);
     expect(method).to.be.eql(requestProps.method);
@@ -244,8 +245,8 @@ describe("@Put", () => {
       public static testUsingArray() {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
 
     expect(path).to.be.eql("/");
     expect(pathUsingArray).to.be.eql("/");
@@ -274,10 +275,10 @@ describe("@Patch", () => {
       public static testUsingArray() {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const method = Reflect.getMetadata("method", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
-    const methodUsingArray = Reflect.getMetadata("method", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const method = Reflector.reflector.get<string>("method", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
+    const methodUsingArray = Reflector.reflector.get<string>("method", Test.testUsingArray);
 
     expect(path).to.be.eql(requestPath);
     expect(method).to.be.eql(requestProps.method);
@@ -294,8 +295,8 @@ describe("@Patch", () => {
       public static testUsingArray() {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
 
     expect(path).to.be.eql("/");
     expect(pathUsingArray).to.be.eql("/");
@@ -324,10 +325,10 @@ describe("@Search", () => {
       public static testUsingArray() {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const method = Reflect.getMetadata("method", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
-    const methodUsingArray = Reflect.getMetadata("method", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const method = Reflector.reflector.get<string>("method", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
+    const methodUsingArray = Reflector.reflector.get<string>("method", Test.testUsingArray);
 
     expect(path).to.be.eql(requestPath);
     expect(method).to.be.eql(requestProps.method);
@@ -344,8 +345,8 @@ describe("@Search", () => {
       public static testUsingArray(@Query() query: any, @Param() params: any, @HostParam() hostParams: any) {}
     }
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
     expect(path).to.be.eql("/");
     expect(pathUsingArray).to.be.eql("/");
   });
@@ -375,10 +376,10 @@ describe("Inheritance", () => {
 
     class Test extends Parent {}
 
-    const path = Reflect.getMetadata("path", Test.test);
-    const method = Reflect.getMetadata("method", Test.test);
-    const pathUsingArray = Reflect.getMetadata("path", Test.testUsingArray);
-    const methodUsingArray = Reflect.getMetadata("method", Test.testUsingArray);
+    const path = Reflector.reflector.get<string>("path", Test.test);
+    const method = Reflector.reflector.get<string>("method", Test.test);
+    const pathUsingArray = Reflector.reflector.get<string>("path", Test.testUsingArray);
+    const methodUsingArray = Reflector.reflector.get<string>("method", Test.testUsingArray);
 
     expect(path).to.be.eql(requestPath);
     expect(method).to.be.eql(requestProps.method);

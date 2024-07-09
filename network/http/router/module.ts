@@ -1,9 +1,8 @@
-import { DynamicModule, Inject, Module, ModulesContainer, Type } from "@venok/core";
-import { Module as ModuleClass } from "@venok/core/injector/module/module";
-import { normalizePath } from "../helpers";
-import { MODULE_PATH } from "@venok/core/constants";
-import { Routes, RouteTree } from "../interfaces";
-import { flattenRoutePaths } from "../helpers";
+import { DynamicModule, Inject, Module, MODULE_PATH, Type } from "@venok/core";
+import { ModulesContainer, Module as ModuleClass } from "@venok/core/injector";
+
+import { Routes, RouteTree } from "@venok/http";
+import { flattenRoutePaths, normalizePath } from "@venok/http/helpers";
 
 export const ROUTES = Symbol("ROUTES");
 
@@ -34,7 +33,7 @@ export class RouterModule {
     };
   }
 
-  private deepCloneRoutes(routes: Routes | Type[]): Routes | Array<Type<any>> {
+  private deepCloneRoutes(routes: Routes | Type[]): Routes | Array<Type> {
     return routes.map((routeOrType: Type | RouteTree) => {
       if (typeof routeOrType === "function") return routeOrType;
 
@@ -45,7 +44,7 @@ export class RouterModule {
         };
       }
       return { ...routeOrType };
-    }) as Routes | Array<Type<any>>;
+    }) as Routes | Array<Type>;
   }
 
   private initialize() {

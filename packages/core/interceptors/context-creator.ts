@@ -1,12 +1,7 @@
-import { VenokContainer } from "@venok/core/injector/container";
+import { ApplicationConfig, INTERCEPTORS_METADATA, Type, VenokContainer, VenokInterceptor } from "@venok/core";
+import { InstanceWrapper, STATIC_CONTEXT } from "@venok/core/injector";
+import { isEmpty, isFunction } from "@venok/core/helpers";
 import { ContextCreator } from "@venok/core/context/creator";
-import { ApplicationConfig } from "@venok/core/application/config";
-import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { INTERCEPTORS_METADATA } from "@venok/core/constants";
-import { isEmpty, isFunction } from "@venok/core/helpers/shared.helper";
-import { VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface";
-import { Type } from "@venok/core/interfaces";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 
 export class InterceptorsContextCreator extends ContextCreator {
   private moduleContext!: string;
@@ -34,9 +29,8 @@ export class InterceptorsContextCreator extends ContextCreator {
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
   ): R {
-    if (isEmpty(metadata)) {
-      return [] as any as R;
-    }
+    if (isEmpty(metadata)) return [] as any as R;
+
     return metadata
       .filter((interceptor) => interceptor && (interceptor.name || interceptor.intercept))
       .map((interceptor) => this.getInterceptorInstance(interceptor, contextId, inquirerId))
@@ -49,41 +43,36 @@ export class InterceptorsContextCreator extends ContextCreator {
     inquirerId?: string,
   ): VenokInterceptor | null {
     const isObject = (metatype as VenokInterceptor).intercept;
-    // @ts-ignore
-    if (isObject) {
-      return metatype as VenokInterceptor;
-    }
+
+    if (!!isObject) return metatype as VenokInterceptor;
+
     const instanceWrapper = this.getInstanceByMetatype(metatype as Type);
-    if (!instanceWrapper) {
-      return null;
-    }
+    if (!instanceWrapper) return null;
+
     const instanceHost = instanceWrapper.getInstanceByContextId(
       this.getContextId(contextId, instanceWrapper),
       inquirerId,
     );
+
     return instanceHost && instanceHost.instance;
   }
 
   public getInstanceByMetatype(metatype: Type): InstanceWrapper | undefined {
-    if (!this.moduleContext) {
-      return;
-    }
+    if (!this.moduleContext) return;
+
     const collection = this.container.getModules();
     const moduleRef = collection.get(this.moduleContext);
-    if (!moduleRef) {
-      return;
-    }
+    if (!moduleRef) return;
+
     return moduleRef.injectables.get(metatype);
   }
 
   public getGlobalMetadata<T extends unknown[]>(contextId = STATIC_CONTEXT, inquirerId?: string): T {
-    if (!this.config) {
-      return [] as any as T;
-    }
+    if (!this.config) return [] as any as T;
+
     const globalInterceptors = this.config.getGlobalInterceptors() as T;
-    if (contextId === STATIC_CONTEXT && !inquirerId) {
-      return globalInterceptors;
-    }
+    if (contextId === STATIC_CONTEXT && !inquirerId) return globalInterceptors;
+
     const scopedInterceptorWrappers = this.config.getGlobalRequestInterceptors() as InstanceWrapper[];
     const scopedInterceptors = scopedInterceptorWrappers
       .map((wrapper) => wrapper.getInstanceByContextId(this.getContextId(contextId, wrapper), inquirerId))

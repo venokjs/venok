@@ -1,6 +1,7 @@
 export * from "./application";
 export * from "./context";
 export * from "./features";
+export * from "./hooks";
 export * from "./modules";
 
 export * from "./abstract.interface";

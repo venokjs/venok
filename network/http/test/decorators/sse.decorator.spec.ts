@@ -1,7 +1,10 @@
 import { expect } from "chai";
-import { METHOD_METADATA, PATH_METADATA, SSE_METADATA } from "../../constants";
-import { Sse } from "../../decorators";
-import { RequestMethod } from "../../enums";
+
+import { Reflector } from "@venok/core";
+
+import { METHOD_METADATA, PATH_METADATA } from "@venok/http/constants";
+import { RequestMethod } from "@venok/http/enums";
+import { Sse } from "@venok/http";
 
 describe("@Sse", () => {
   const prefix = "/prefix";
@@ -11,13 +14,13 @@ describe("@Sse", () => {
   }
 
   it("should enhance method with expected http status code", () => {
-    const path = Reflect.getMetadata(PATH_METADATA, Test.test);
+    const path = Reflector.reflector.get<string>(PATH_METADATA, Test.test);
     expect(path).to.be.eql("/prefix");
 
-    const method = Reflect.getMetadata(METHOD_METADATA, Test.test);
+    const method = Reflector.reflector.get<RequestMethod>(METHOD_METADATA, Test.test);
     expect(method).to.be.eql(RequestMethod.GET);
 
-    const metadata = Reflect.getMetadata(SSE_METADATA, Test.test);
+    const metadata = Reflector.reflector.has(Sse, Test.test);
     expect(metadata).to.be.eql(true);
   });
 });

@@ -1,6 +1,6 @@
-import { RequestMethod } from "../../enums";
-import { VersionValue } from "../router/version-options.interface";
 import { Type } from "@venok/core";
+import { RequestMethod } from "@venok/http/enums";
+import { VersionValue } from "@venok/http/interfaces";
 
 export interface RouteInfo {
   path: string;
@@ -10,5 +10,5 @@ export interface RouteInfo {
 
 export interface MiddlewareConfiguration<T = any> {
   middleware: T;
-  forRoutes: (Type | string | RouteInfo)[];
+  to: (Type | string | RouteInfo)[];
 }

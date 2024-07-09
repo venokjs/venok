@@ -1,7 +1,15 @@
 import { RouteParamtypes } from "../enums";
-import { IRouteParamsFactory } from "../context/context";
+import { VenokParamsFactoryInterface } from "@venok/core";
 
-export class RouteParamsFactory implements IRouteParamsFactory {
+export interface HttpParamsFactory extends VenokParamsFactoryInterface {
+  exchangeKeyForValue<TRequest extends Record<string, any> = any, TResponse = any, TResult = any>(
+    key: RouteParamtypes | string,
+    data: any,
+    args: [TRequest, TResponse, Function],
+  ): TResult;
+}
+
+export class RouteParamsFactory implements HttpParamsFactory {
   public exchangeKeyForValue<TRequest extends Record<string, any> = any, TResponse = any, TResult = any>(
     key: RouteParamtypes | string,
     data: string | object | any,

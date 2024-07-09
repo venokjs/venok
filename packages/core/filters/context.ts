@@ -1,13 +1,15 @@
-import { VenokContainer } from "@venok/core/injector/container";
-import { ApplicationConfig } from "@venok/core/application/config";
+import {
+  ApplicationConfig,
+  EXCEPTION_FILTERS_METADATA,
+  ExceptionFilter,
+  ExceptionFilterMetadata,
+  VenokContainer,
+} from "@venok/core";
 import { ExceptionFilterContextCreator } from "@venok/core/filters/context-creator";
-import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { ExceptionFilter, ExceptionFilterMetadata } from "@venok/core/interfaces/features/exception-filter.interface";
-import { EXCEPTION_FILTERS_METADATA } from "@venok/core/constants";
-import { isEmpty } from "@venok/core/helpers/shared.helper";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import { VenokExceptionsHandler } from "@venok/core/exceptions/handler";
+import { InstanceWrapper, STATIC_CONTEXT } from "@venok/core/injector";
 import { VenokExceptionFilter } from "@venok/core/filters/filter";
+import { VenokExceptionsHandler } from "@venok/core/exceptions";
+import { isEmpty } from "@venok/core/helpers";
 
 export class VenokExceptionFilterContext extends ExceptionFilterContextCreator {
   constructor(
@@ -34,6 +36,7 @@ export class VenokExceptionFilterContext extends ExceptionFilterContextCreator {
       contextId,
       inquirerId,
     );
+
     if (isEmpty(filters)) return exceptionHandler;
 
     exceptionHandler.setCustomFilters(filters.reverse());

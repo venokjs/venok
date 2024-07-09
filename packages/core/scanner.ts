@@ -1,22 +1,23 @@
 import {
+  ApplicationConfig,
+  CanActivate,
   ClassProvider,
   DynamicModule,
+  ExceptionFilter,
   ExistingProvider,
   FactoryProvider,
   ForwardReference,
   InjectionToken,
+  MetadataScanner,
   ModuleDefinition,
+  PipeTransform,
   Provider,
   Scope,
   Type,
   ValueProvider,
-} from "@venok/core/interfaces";
-import { ModuleOverride } from "@venok/core/interfaces/modules/override.interface";
-import { MetadataScanner } from "@venok/core/metadata-scanner";
-import { GraphInspector } from "@venok/core/inspector/graph-inspector";
-import { ApplicationConfig } from "@venok/core/application/config";
-import { VenokContainer } from "@venok/core/injector/container";
-import { Module } from "@venok/core/injector/module/module";
+  VenokContainer,
+  VenokInterceptor,
+} from "@venok/core";
 import {
   APP_FILTER,
   APP_GUARD,
@@ -34,21 +35,18 @@ import {
   PIPES_METADATA,
   ROUTE_ARGS_METADATA,
 } from "@venok/core/constants";
+
+import { InternalCoreModuleFactory } from "@venok/core/injector/internal-core-module/internal-core-module-factory";
+import { InvalidClassModuleException } from "@venok/core/errors/exceptions/invalid-class-module.exception";
 import { UndefinedModuleException } from "@venok/core/errors/exceptions/undefined-module.exception";
 import { InvalidModuleException } from "@venok/core/errors/exceptions/invalid-module.exception";
-import { InvalidClassModuleException } from "@venok/core/errors/exceptions/invalid-class-module.exception";
-import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
-import { isFunction, isNull, isUndefined } from "@venok/core/helpers/shared.helper";
+import { ModuleOverride } from "@venok/core/interfaces/modules/override.interface";
+import { flatten, isFunction, isNull, isUndefined } from "@venok/core/helpers";
+import { getClassScope, InstanceWrapper, Module } from "@venok/core/injector";
 import { CircularDependencyException } from "@venok/core/errors/exceptions";
-import { UuidFactory } from "@venok/core/helpers/uuid.helper";
-import { getClassScope } from "@venok/core/injector/helpers/class-scope.helper";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import { InternalCoreModuleFactory } from "@venok/core/injector/internal-core-module/internal-core-module-factory";
-import { flatten } from "@venok/core/helpers/flatten.helper";
-import { VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface";
-import { CanActivate } from "@venok/core/interfaces/features/guards.interface";
-import { ExceptionFilter } from "@venok/core/interfaces/features/exception-filter.interface";
 import { Injectable } from "@venok/core/interfaces/injectable.interface";
+import { GraphInspector } from "@venok/core/inspector/graph-inspector";
+import { UuidFactory } from "@venok/core/helpers/uuid.helper";
 
 interface ApplicationProviderWrapper {
   moduleKey: string;
@@ -107,6 +105,7 @@ export class DependenciesScanner {
     if (this.isForwardReference(moduleDefinition)) {
       moduleDefinition = (moduleDefinition as ForwardReference).forwardRef();
     }
+
     const modules = !this.isDynamicModule(moduleDefinition as Type | DynamicModule)
       ? this.reflectMetadata(MODULE_METADATA.IMPORTS, moduleDefinition as Type)
       : [
@@ -136,26 +135,18 @@ export class DependenciesScanner {
       });
       registeredModuleRefs = registeredModuleRefs.concat(moduleRefs);
     }
-    if (!moduleInstance) {
-      return registeredModuleRefs;
-    }
 
-    if (lazy && moduleInserted) {
-      this.container.bindGlobalsToImports(moduleInstance);
-    }
+    if (!moduleInstance) return registeredModuleRefs;
+
+    if (lazy && moduleInserted) this.container.bindGlobalsToImports(moduleInstance);
+
     return [moduleInstance].concat(registeredModuleRefs);
   }
 
   public async insertModule(
     moduleDefinition: any,
     scope: Type[],
-  ): Promise<
-    | {
-        moduleRef: Module;
-        inserted: boolean;
-      }
-    | undefined
-  > {
+  ): Promise<{ moduleRef: Module; inserted: boolean } | undefined> {
     const moduleToAdd = this.isForwardReference(moduleDefinition) ? moduleDefinition.forwardRef() : moduleDefinition;
 
     if (this.isInjectable(moduleToAdd) || this.isExceptionFilter(moduleToAdd)) {
@@ -178,6 +169,7 @@ export class DependenciesScanner {
       ...this.reflectMetadata(MODULE_METADATA.IMPORTS, module),
       ...(this.container.getDynamicMetadataByToken(token, MODULE_METADATA.IMPORTS as "imports") as any[]),
     ];
+
     for (const related of modules) {
       await this.insertImport(related, token, context);
     }
@@ -188,6 +180,7 @@ export class DependenciesScanner {
       ...this.reflectMetadata(MODULE_METADATA.PROVIDERS, module),
       ...(this.container.getDynamicMetadataByToken(token, MODULE_METADATA.PROVIDERS as "providers") as any[]),
     ];
+
     providers.forEach((provider) => {
       this.insertProvider(provider, token);
       this.reflectDynamicMetadata(provider, token);
@@ -195,9 +188,8 @@ export class DependenciesScanner {
   }
 
   public reflectDynamicMetadata(cls: Type<Injectable>, token: string) {
-    if (!cls || !cls.prototype) {
-      return;
-    }
+    if (!cls || !cls.prototype) return;
+
     this.reflectInjectables(cls, token, GUARDS_METADATA);
     this.reflectInjectables(cls, token, INTERCEPTORS_METADATA);
     this.reflectInjectables(cls, token, EXCEPTION_FILTERS_METADATA);
@@ -210,6 +202,7 @@ export class DependenciesScanner {
       ...this.reflectMetadata(MODULE_METADATA.EXPORTS, module),
       ...(this.container.getDynamicMetadataByToken(token, MODULE_METADATA.EXPORTS as "exports") as any[]),
     ];
+
     exports.forEach((exportedProvider) => this.insertExportedProvider(exportedProvider, token));
   }
 
@@ -222,9 +215,7 @@ export class DependenciesScanner {
     const methodInjectables = this.metadataScanner.getAllMethodNames(component.prototype).reduce((acc, method) => {
       const methodInjectable = this.reflectKeyMetadata(component, metadataKey, method);
 
-      if (methodInjectable) {
-        acc.push(methodInjectable);
-      }
+      if (methodInjectable) acc.push(methodInjectable);
 
       return acc;
     }, [] as any[]);
@@ -232,6 +223,7 @@ export class DependenciesScanner {
     Injectables.forEach((injectable) =>
       this.insertInjectable(injectable, token, component, ENHANCER_KEY_TO_SUBTYPE_MAP[metadataKey]),
     );
+
     methodInjectables.forEach((methodInjectable) => {
       methodInjectable.metadata.forEach((injectable: object) =>
         this.insertInjectable(
@@ -258,9 +250,7 @@ export class DependenciesScanner {
         }
       > = Reflect.getMetadata(metadataKey, component, methodKey);
 
-      if (!metadata) {
-        return;
-      }
+      if (!metadata) return;
 
       const params = Object.values(metadata);
       params
@@ -278,15 +268,14 @@ export class DependenciesScanner {
     let prototype = component.prototype;
     do {
       const descriptor = Reflect.getOwnPropertyDescriptor(prototype, methodKey);
-      if (!descriptor) {
-        continue;
-      }
+      if (!descriptor) continue;
+
       const metadata = Reflect.getMetadata(key, descriptor.value);
-      if (!metadata) {
-        return;
-      }
+      if (!metadata) return;
+
       return { methodKey, metadata };
     } while ((prototype = Reflect.getPrototypeOf(prototype)) && prototype !== Object.prototype && prototype);
+
     return undefined;
   }
 
@@ -298,17 +287,15 @@ export class DependenciesScanner {
 
     const modulesStack: any[] = [];
     const calculateDistance = (moduleRef: Module, distance = 1) => {
-      if (!moduleRef || modulesStack.includes(moduleRef)) {
-        return;
-      }
+      if (!moduleRef || modulesStack.includes(moduleRef)) return;
+
       modulesStack.push(moduleRef);
 
       const moduleImports = moduleRef.imports;
       moduleImports.forEach((importedModuleRef) => {
         if (importedModuleRef) {
-          if (distance > importedModuleRef.distance) {
-            importedModuleRef.distance = distance;
-          }
+          if (distance > importedModuleRef.distance) importedModuleRef.distance = distance;
+
           calculateDistance(importedModuleRef, distance + 1);
         }
       });
@@ -319,12 +306,10 @@ export class DependenciesScanner {
   }
 
   public async insertImport(related: any, token: string, context: string) {
-    if (isUndefined(related)) {
-      throw new CircularDependencyException(context);
-    }
-    if (this.isForwardReference(related)) {
-      return this.container.addImport(related.forwardRef(), token);
-    }
+    if (isUndefined(related)) throw new CircularDependencyException(context);
+
+    if (this.isForwardReference(related)) return this.container.addImport(related.forwardRef(), token);
+
     await this.container.addImport(related, token);
   }
 
@@ -336,16 +321,14 @@ export class DependenciesScanner {
 
   public insertProvider(provider: Provider, token: string) {
     const isCustomProvider = this.isCustomProvider(provider);
-    if (!isCustomProvider) {
-      return this.container.addProvider(provider as Type, token);
-    }
+    if (!isCustomProvider) return this.container.addProvider(provider as Type, token);
+
     const applyProvidersMap = this.getApplyProvidersMap();
     const providersKeys = Object.keys(applyProvidersMap);
     const type = (provider as ClassProvider | ValueProvider | FactoryProvider | ExistingProvider).provide;
 
-    if (!providersKeys.includes(type as string)) {
-      return this.container.addProvider(provider as any, token);
-    }
+    if (!providersKeys.includes(type as string)) return this.container.addProvider(provider as any, token);
+
     const uuid = UuidFactory.get(type.toString());
     const providerToken = `${type as string} (UUID: ${uuid})`;
 
@@ -353,6 +336,7 @@ export class DependenciesScanner {
     if (isNull(scope) && (provider as ClassProvider).useClass) {
       scope = getClassScope((provider as ClassProvider).useClass);
     }
+
     this.applicationProvidersApplyMap.push({
       type,
       moduleKey: token,
@@ -374,6 +358,7 @@ export class DependenciesScanner {
     if (this.isRequestOrTransient(factoryOrClassProvider.scope as any)) {
       return this.container.addInjectable(newProvider, token, enhancerSubtype);
     }
+
     this.container.addProvider(newProvider, token, enhancerSubtype);
   }
 
@@ -407,25 +392,22 @@ export class DependenciesScanner {
     }
   }
 
-  public insertExportedProvider(exportedProvider: Type<Injectable>, token: string) {
-    this.container.addExportedProvider(exportedProvider, token);
+  /* TODO: improve the type definition bellow because it doesn't reflects the real usage of this method */
+  public insertExportedProvider(exportedProvider: Type<Injectable> | ForwardReference, token: string) {
+    const fulfilledProvider = this.isForwardReference(exportedProvider)
+      ? exportedProvider.forwardRef()
+      : exportedProvider;
+    this.container.addExportedProvider(fulfilledProvider, token);
   }
 
   private insertOrOverrideModule(
     moduleDefinition: ModuleDefinition,
     overrides: ModuleOverride[],
     scope: Type[],
-  ): Promise<
-    | {
-        moduleRef: Module;
-        inserted: boolean;
-      }
-    | undefined
-  > {
+  ): Promise<{ moduleRef: Module; inserted: boolean } | undefined> {
     const overrideModule = this.getOverrideModuleByModule(moduleDefinition, overrides);
-    if (overrideModule !== undefined) {
-      return this.overrideModule(moduleDefinition, overrideModule.newModule, scope);
-    }
+
+    if (overrideModule !== undefined) return this.overrideModule(moduleDefinition, overrideModule.newModule, scope);
 
     return this.insertModule(moduleDefinition, scope);
   }
@@ -447,13 +429,7 @@ export class DependenciesScanner {
     moduleToOverride: ModuleDefinition,
     newModule: ModuleDefinition,
     scope: Type[],
-  ): Promise<
-    | {
-        moduleRef: Module;
-        inserted: boolean;
-      }
-    | undefined
-  > {
+  ): Promise<{ moduleRef: Module; inserted: boolean } | undefined> {
     return this.container.replaceModule(
       this.isForwardReference(moduleToOverride) ? moduleToOverride.forwardRef() : moduleToOverride,
       this.isForwardReference(newModule) ? newModule.forwardRef() : newModule,

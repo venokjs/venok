@@ -1,7 +1,7 @@
 import { IncomingMessage, OutgoingHttpHeaders } from "http";
 import { Transform } from "node:stream";
 import { isObject } from "@venok/core/helpers/shared.helper";
-import { MessageEvent } from "../interfaces/http/message-event.interface";
+import { MessageEvent } from "@venok/http/interfaces";
 
 function toDataString(data: string | object): string {
   if (isObject(data)) {

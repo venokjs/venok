@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Controller } from "../../decorators";
-import { CONTROLLER_WATERMARK, VERSION_METADATA } from "../../constants";
+import { Controller } from "@venok/http/decorators";
+import { VenokBaseDiscovery } from "@venok/http/discovery/base.discovery";
 import { Reflector } from "@venok/core";
 
 describe("@Controller", () => {
@@ -39,67 +39,63 @@ describe("@Controller", () => {
   @Controller({ version: reflectedVersionWithDuplicates })
   class VersionOnlyArrayDecorator {}
 
-  it(`should enhance component with "${CONTROLLER_WATERMARK}" metadata`, () => {
-    const controllerWatermark = Reflect.getMetadata(CONTROLLER_WATERMARK, EmptyDecorator);
+  it(`should enhance component with @Controller decorator by Reflector`, () => {
+    const controllerDiscovery = Reflector.reflector.get(Controller, EmptyDecorator);
 
-    expect(controllerWatermark).to.be.true;
-  });
+    console.log(controllerDiscovery);
 
-  it(`should enhance component with "${CONTROLLER_WATERMARK}" metadata by Reflector`, () => {
-    const controllerWatermark = new Reflector().get(Controller, EmptyDecorator);
-
-    expect(controllerWatermark).to.be.true;
+    expect(controllerDiscovery).to.be.instanceof(VenokBaseDiscovery);
   });
 
   it("should enhance controller with expected path metadata", () => {
-    const path = Reflect.getMetadata("path", Test);
-    expect(path).to.be.eql(reflectedPath);
-    const path2 = Reflect.getMetadata("path", PathAndHostDecorator);
+    const path1 = Reflector.reflector.get(Controller, Test).getPath();
+    expect(path1).to.be.eql(reflectedPath);
+    const path2 = Reflector.reflector.get(Controller, PathAndHostDecorator).getPath();
     expect(path2).to.be.eql(reflectedPath);
-    const path3 = Reflect.getMetadata("path", PathAndHostAndVersionDecorator);
+    const path3 = Reflector.reflector.get(Controller, PathAndHostAndVersionDecorator).getPath();
     expect(path3).to.be.eql(reflectedPath);
   });
 
   it("should enhance controller with expected host metadata", () => {
-    const host = Reflect.getMetadata("host", PathAndHostDecorator);
-    expect(host).to.be.eql(reflectedHost);
-    const host2 = Reflect.getMetadata("host", HostOnlyDecorator);
+    const host1 = Reflector.reflector.get(Controller, PathAndHostDecorator).getHost();
+    expect(host1).to.be.eql(reflectedHost);
+    const host2 = Reflector.reflector.get(Controller, HostOnlyDecorator).getHost();
     expect(host2).to.be.eql(reflectedHost);
-    const host3 = Reflect.getMetadata("host", PathAndHostArrayDecorator);
+    const host3 = Reflector.reflector.get(Controller, PathAndHostArrayDecorator).getHost();
     expect(host3).to.be.eql(reflectedHostArray);
-    const host4 = Reflect.getMetadata("host", PathAndHostAndVersionDecorator);
+    const host4 = Reflector.reflector.get(Controller, PathAndHostAndVersionDecorator).getHost();
     expect(host4).to.be.eql(reflectedHost);
   });
 
   it("should enhance controller with expected version metadata", () => {
-    const version = Reflect.getMetadata(VERSION_METADATA, PathAndHostAndVersionDecorator);
+    const version = Reflector.reflector.get(Controller, PathAndHostAndVersionDecorator).getVersion();
     expect(version).to.be.eql(reflectedVersion);
-    const version2 = Reflect.getMetadata(VERSION_METADATA, VersionOnlyDecorator);
+    const version2 = Reflector.reflector.get(Controller, VersionOnlyDecorator).getVersion();
     expect(version2).to.be.eql(reflectedVersion);
-    const version3 = Reflect.getMetadata(VERSION_METADATA, VersionOnlyArrayDecorator);
+    const version3 = Reflector.reflector.get(Controller, VersionOnlyArrayDecorator).getVersion();
     expect(version3).to.be.eql(reflectedVersionWithoutDuplicates);
   });
 
   it("should set default path when no object passed as param", () => {
-    const path = Reflect.getMetadata("path", EmptyDecorator);
+    const path = Reflector.reflector.get(Controller, EmptyDecorator).getPath();
     expect(path).to.be.eql("/");
-    const path2 = Reflect.getMetadata("path", HostOnlyDecorator);
+    const path2 = Reflector.reflector.get(Controller, HostOnlyDecorator).getPath();
     expect(path2).to.be.eql("/");
-    const path3 = Reflect.getMetadata("path", VersionOnlyDecorator);
+    const path3 = Reflector.reflector.get(Controller, VersionOnlyDecorator).getPath();
     expect(path3).to.be.eql("/");
   });
 
   it("should not set host when no host passed as param", () => {
-    const host = Reflect.getMetadata("host", Test);
+    const host = Reflector.reflector.get(Controller, Test).getHost();
     expect(host).to.be.undefined;
-    const host2 = Reflect.getMetadata("host", EmptyDecorator);
+    const host2 = Reflector.reflector.get(Controller, EmptyDecorator).getHost();
     expect(host2).to.be.undefined;
   });
 
   it("should not set version when no version passed as param", () => {
-    const version = Reflect.getMetadata(VERSION_METADATA, Test);
+    const version = Reflector.reflector.get(Controller, Test).getVersion();
     expect(version).to.be.undefined;
-    const version2 = Reflect.getMetadata(VERSION_METADATA, EmptyDecorator);
+    const version2 = Reflector.reflector.get(Controller, EmptyDecorator).getVersion();
     expect(version2).to.be.undefined;
   });
 });

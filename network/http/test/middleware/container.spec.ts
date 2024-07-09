@@ -40,7 +40,7 @@ describe("MiddlewareContainer", () => {
     const config: MiddlewareConfiguration[] = [
       {
         middleware: [TestMiddleware],
-        forRoutes: [TestRoute, "test"],
+        to: [TestRoute, "test"],
       },
     ];
     container.insertConfig(config, "Module");
@@ -53,7 +53,7 @@ describe("MiddlewareContainer", () => {
     const config: MiddlewareConfiguration[] = [
       {
         middleware: TestMiddleware,
-        forRoutes: [TestRoute],
+        to: [TestRoute],
       },
     ];
 

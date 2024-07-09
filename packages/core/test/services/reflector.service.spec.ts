@@ -6,15 +6,12 @@ const transformDecorator = Reflector.createDecorator<string[], number>({
   transform: (value) => value.length,
 });
 
-const additionalDecorator = Reflector.createDecoratorWithAdditionalMetadata({
+const additionalDecorator = Reflector.createMetadataDecorator<any, { a: string; b: string; c: string }>({
   transform: (options) => {
     return {
-      value: true,
-      additional: {
-        a: "1",
-        b: "2",
-        c: "3",
-      },
+      a: "1",
+      b: "2",
+      c: "3",
     };
   },
 });
@@ -55,7 +52,7 @@ describe("Reflector", () => {
     });
 
     it("should reflect metadata by decorator (custom key)", () => {
-      const decorator = Reflector.createDecorator<string[]>({ key: "custom" });
+      const decorator = Reflector.createDecorator<string[], number>({ key: "custom", transform: () => 0 });
       const value = ["value"];
       Reflect.defineMetadata("custom", value, Test);
 

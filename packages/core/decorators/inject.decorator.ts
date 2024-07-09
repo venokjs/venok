@@ -1,5 +1,5 @@
 import { isUndefined } from "@venok/core/helpers/shared.helper";
-import { PROPERTY_DEPS_METADATA, SELF_DECLARED_DEPS_METADATA } from "@venok/core/constants";
+import { PARAMTYPES_METADATA, PROPERTY_DEPS_METADATA, SELF_DECLARED_DEPS_METADATA } from "@venok/core/constants";
 
 /**
  * Decorator that marks a constructor parameter as a target for
@@ -27,8 +27,14 @@ import { PROPERTY_DEPS_METADATA, SELF_DECLARED_DEPS_METADATA } from "@venok/core
  * @publicApi
  */
 export function Inject<T = any>(token?: T): PropertyDecorator & ParameterDecorator {
+  const injectCallHasArguments = arguments.length > 0;
+
   return (target: object, key: string | symbol | undefined, index?: number) => {
-    const type = token || Reflect.getMetadata("design:type", target, key as string | symbol);
+    let type = token || Reflect.getMetadata("design:type", target, key as string | symbol);
+    /* Try to infer the token in a constructor-based injection */
+    if (!type && !injectCallHasArguments) {
+      type = Reflect.getMetadata(PARAMTYPES_METADATA, target, key as string | symbol)?.[index as number];
+    }
 
     if (!isUndefined(index)) {
       let dependencies = Reflect.getMetadata(SELF_DECLARED_DEPS_METADATA, target) || [];

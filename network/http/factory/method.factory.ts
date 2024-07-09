@@ -1,4 +1,4 @@
-import { HttpServer } from "../interfaces";
+import { HttpServer } from "@venok/http";
 import { RequestMethod } from "../enums";
 
 export class RouterMethodFactory {

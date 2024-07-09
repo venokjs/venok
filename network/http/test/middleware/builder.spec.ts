@@ -1,6 +1,5 @@
 import { expect } from "chai";
 import { VenokContainer } from "@venok/core";
-import { MiddlewareBuilder } from "../../middleware";
 import { RequestMethod, VersioningType } from "../../enums";
 import { RoutesMapper } from "../../middleware/routes-mapper";
 import { NoopHttpAdapter } from "../../helpers";
@@ -8,13 +7,18 @@ import { RouteInfoPathExtractor } from "../../middleware/extractor";
 import { MiddlewareConfigProxy } from "../../interfaces";
 import { Controller, Delete, Get, Head, Options, Patch, Post, Put, Version } from "../../decorators";
 import { HttpConfig } from "../../application/config";
+import { MiddlewareBuilder } from "@venok/http/middleware";
 
 describe("MiddlewareBuilder", () => {
   let builder: MiddlewareBuilder;
 
   beforeEach(() => {
     const container = new VenokContainer();
-    const httpConfig = new HttpConfig();
+    const httpConfig = new HttpConfig({
+      port: 9999,
+      adapter: new NoopHttpAdapter({}),
+      callback: () => {},
+    });
     httpConfig.enableVersioning({ type: VersioningType.URI });
     builder = new MiddlewareBuilder(
       new RoutesMapper(container, httpConfig),
@@ -49,12 +53,12 @@ describe("MiddlewareBuilder", () => {
         const route = { path: "/test", method: RequestMethod.GET };
 
         it("should store configuration passed as argument", () => {
-          configProxy.forRoutes(route, Test);
+          configProxy.to(route, Test);
 
           expect(builder.build()).to.deep.equal([
             {
               middleware: [],
-              forRoutes: [
+              to: [
                 {
                   method: RequestMethod.GET,
                   path: route.path,
@@ -113,12 +117,12 @@ describe("MiddlewareBuilder", () => {
         }
 
         it("should remove overlapping routes", () => {
-          configProxy.forRoutes(UsersController);
+          configProxy.to(UsersController);
 
           expect(builder.build()).to.deep.equal([
             {
               middleware: [],
-              forRoutes: [
+              to: [
                 {
                   method: RequestMethod.HEAD,
                   path: "/users/rsvp",

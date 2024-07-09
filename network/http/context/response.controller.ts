@@ -1,11 +1,12 @@
 import { catchError, debounce, EMPTY, isObservable, lastValueFrom, map, Observable } from "rxjs";
 import { IncomingMessage } from "http";
 
-import { AdditionalHeaders, SseStream, WritableHeaderStream } from "../helpers";
-import { isObject } from "@venok/core/helpers/shared.helper";
+import { AdditionalHeaders, SseStream, WritableHeaderStream } from "@venok/http/helpers";
+import { HttpStatus, RequestMethod } from "@venok/http/enums";
+import { HttpServer } from "@venok/http/interfaces";
+
 import { Logger } from "@venok/core/services/logger.service";
-import { HttpServer } from "../interfaces";
-import { HttpStatus, RequestMethod } from "../enums";
+import { isObject } from "@venok/core/helpers";
 
 export interface CustomHeader {
   name: string;
@@ -52,9 +53,8 @@ export class RouterResponseController {
   }
 
   public async transformToResult(resultOrDeferred: any) {
-    if (isObservable(resultOrDeferred)) {
-      return lastValueFrom(resultOrDeferred);
-    }
+    if (isObservable(resultOrDeferred)) return lastValueFrom(resultOrDeferred);
+
     return resultOrDeferred;
   }
 
@@ -111,9 +111,10 @@ export class RouterResponseController {
         },
       });
 
-    request.on("close", () => {
-      subscription.unsubscribe();
-    });
+    request.on &&
+      request.on("close", () => {
+        subscription.unsubscribe();
+      });
   }
 
   private assertObservable(value: any) {

@@ -22,6 +22,7 @@ import { isDurable } from "@venok/core/injector/helpers/is-durable.helper";
 import { ApplicationConfig } from "@venok/core/application/config";
 import { createContextId } from "@venok/core/helpers/context-id-factory.helper";
 import { Injectable } from "@venok/core/interfaces/injectable.interface";
+import { PROVIDER_ID_KEY } from "@venok/core/injector";
 
 export class Module {
   private readonly _id: string;
@@ -192,6 +193,15 @@ export class Module {
     return instanceWrapper;
   }
 
+  public assignProviderUniqueId(provider: Type) {
+    Object.defineProperty(provider, PROVIDER_ID_KEY, {
+      enumerable: false,
+      writable: false,
+      configurable: true,
+      value: randomStringGenerator(),
+    });
+  }
+
   // public addProvider(provider: Provider): InjectionToken;
   // public addProvider(provider: Provider, enhancerSubtype: EnhancerSubtype): InjectionToken;
   public addProvider(provider: Provider, enhancerSubtype?: EnhancerSubtype) {
@@ -215,6 +225,8 @@ export class Module {
         host: this,
       }),
     );
+
+    this.assignProviderUniqueId(provider);
 
     if (this.isEntryProvider(provider)) {
       this._entryProviderKeys.add(provider);
@@ -296,6 +308,8 @@ export class Module {
         subtype: enhancerSubtype,
       }),
     );
+
+    this.assignProviderUniqueId(useClass);
   }
 
   public addCustomValue(
@@ -317,6 +331,8 @@ export class Module {
         subtype: enhancerSubtype,
       }),
     );
+
+    this.assignProviderUniqueId(value);
   }
 
   public addCustomFactory(

@@ -1,8 +1,8 @@
 import { Readable } from "node:stream";
 import { types } from "util";
-import { StreamableFileOptions, StreamableHandlerResponse } from "./interfaces";
-import { HttpStatus } from "../enums";
-import { isFunction } from "@venok/core/helpers/shared.helper";
+
+import { isFunction } from "@venok/core/helpers";
+import { HttpStatus, StreamableFileOptions, StreamableHandlerResponse } from "@venok/http";
 
 /**
  *
@@ -12,9 +12,8 @@ export class StreamableFile {
   private readonly stream!: Readable;
 
   protected handleError: (err: Error, response: StreamableHandlerResponse) => void = (err: Error, res) => {
-    if (res.destroyed) {
-      return;
-    }
+    if (res.destroyed) return;
+
     if (res.headersSent) {
       res.end();
       return;

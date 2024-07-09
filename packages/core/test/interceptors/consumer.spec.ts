@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "async_hooks";
 import { expect } from "chai";
-import { Observable, lastValueFrom, of, retry } from "rxjs";
-import sinon from "sinon";
+import { Observable, lastValueFrom, of, retry, merge, defer } from "rxjs";
+import sinon, { SinonStub } from "sinon";
 import { InterceptorsConsumer } from "@venok/core/interceptors";
 import { CallHandler, VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface";
 import { ExecutionContext } from "@venok/core/interfaces/context/execution.interface";
@@ -75,11 +75,13 @@ describe("InterceptorsConsumer", () => {
     describe("when AsyncLocalStorage is used", () => {
       it("should allow an interceptor to set values in AsyncLocalStorage that are accesible from the controller", async () => {
         const storage = new AsyncLocalStorage<Record<string, any>>();
+
         class StorageInterceptor implements VenokInterceptor {
           intercept(_context: ExecutionContext, next: CallHandler<any>): Observable<any> | Promise<Observable<any>> {
             return storage.run({ value: "hello" }, () => next.handle());
           }
         }
+
         const next = () => {
           return Promise.resolve(storage.getStore()!.value);
         };
@@ -105,11 +107,13 @@ describe("InterceptorsConsumer", () => {
           }
           return Promise.resolve(count);
         };
+
         class RetryInterceptor implements VenokInterceptor {
           intercept(_context: ExecutionContext, next: CallHandler<any>): Observable<any> | Promise<Observable<any>> {
             return next.handle().pipe(retry(4));
           }
         }
+
         const intercepted = await consumer.intercept(
           [new RetryInterceptor()],
           null as any,
@@ -152,6 +156,47 @@ describe("InterceptorsConsumer", () => {
         const next = async () => of(val);
         expect(await lastValueFrom(consumer.transformDeferred(next) as any)).to.be.eql(val);
       });
+    });
+  });
+  describe("deferred promise conversion", () => {
+    it("should convert promise to observable deferred", async () => {
+      class TestError extends Error {}
+
+      const testInterceptors = [
+        {
+          intercept: sinon.stub().callsFake(async (ctx, handler) => {
+            return merge(
+              handler.handle(),
+              defer(() => {
+                throw new TestError();
+              }),
+            );
+          }),
+        },
+        {
+          intercept: sinon.stub().callsFake(async (ctx, handler) => handler.handle()),
+        },
+        {
+          intercept: sinon.stub().callsFake(async (ctx, handler) => handler.handle()),
+        },
+      ] as VenokInterceptor[];
+
+      const observable = await consumer.intercept(
+        testInterceptors,
+        null as unknown as unknown[],
+        { constructor: null },
+        () => {},
+        async () => 1,
+      );
+
+      try {
+        await transformToResult(observable);
+      } catch (error) {
+        if (!(error instanceof TestError)) {
+          throw error;
+        }
+      }
+      expect((testInterceptors[2].intercept as SinonStub).called).to.be.false;
     });
   });
 });

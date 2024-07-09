@@ -1,12 +1,7 @@
-import { VenokContainer } from "@venok/core/injector/container";
-import { ApplicationConfig } from "@venok/core/application/config";
+import { ApplicationConfig, CanActivate, GUARDS_METADATA, Type, VenokContainer } from "@venok/core";
+import { InstanceWrapper, STATIC_CONTEXT } from "@venok/core/injector";
+import { isEmpty, isFunction } from "@venok/core/helpers";
 import { ContextCreator } from "@venok/core/context/creator";
-import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { CanActivate } from "@venok/core/interfaces/features/guards.interface";
-import { GUARDS_METADATA } from "@venok/core/constants";
-import { isEmpty, isFunction } from "@venok/core/helpers/shared.helper";
-import { Type } from "@venok/core/interfaces";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 
 export class GuardsContextCreator extends ContextCreator {
   private moduleContext!: string;
@@ -34,9 +29,8 @@ export class GuardsContextCreator extends ContextCreator {
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
   ): R {
-    if (isEmpty(metadata)) {
-      return [] as any as R;
-    }
+    if (isEmpty(metadata)) return [] as any as R;
+
     return metadata
       .filter((guard: any) => guard && (guard.name || guard.canActivate))
       .map((guard) => this.getGuardInstance(guard as Function, contextId, inquirerId))
@@ -49,43 +43,37 @@ export class GuardsContextCreator extends ContextCreator {
     inquirerId?: string,
   ): CanActivate | null {
     const isObject = (metatype as CanActivate).canActivate;
-    // Maybe error
-    // @ts-ignore
-    if (isObject) {
-      return metatype as CanActivate;
-    }
+
+    if (!!isObject) return metatype as CanActivate;
+
     const instanceWrapper = this.getInstanceByMetatype(metatype as Type);
-    if (!instanceWrapper) {
-      return null;
-    }
+    if (!instanceWrapper) return null;
+
     const instanceHost = instanceWrapper.getInstanceByContextId(
       this.getContextId(contextId, instanceWrapper),
       inquirerId,
     );
+
     return instanceHost && instanceHost.instance;
   }
 
   public getInstanceByMetatype(metatype: Type): InstanceWrapper | undefined {
-    if (!this.moduleContext) {
-      return;
-    }
+    if (!this.moduleContext) return;
+
     const collection = this.container.getModules();
     const moduleRef = collection.get(this.moduleContext);
-    if (!moduleRef) {
-      return;
-    }
+    if (!moduleRef) return;
+
     const injectables = moduleRef.injectables;
     return injectables.get(metatype);
   }
 
   public getGlobalMetadata<T extends unknown[]>(contextId = STATIC_CONTEXT, inquirerId?: string): T {
-    if (!this.config) {
-      return [] as any as T;
-    }
+    if (!this.config) return [] as any as T;
+
     const globalGuards = this.config.getGlobalGuards() as T;
-    if (contextId === STATIC_CONTEXT && !inquirerId) {
-      return globalGuards;
-    }
+    if (contextId === STATIC_CONTEXT && !inquirerId) return globalGuards;
+
     const scopedGuardWrappers = this.config.getGlobalRequestGuards() as InstanceWrapper[];
     const scopedGuards = scopedGuardWrappers
       .map((wrapper) => wrapper.getInstanceByContextId(this.getContextId(contextId, wrapper), inquirerId))

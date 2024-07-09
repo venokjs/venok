@@ -37,7 +37,7 @@ export class SerializedGraph {
     Reflector,
     SerializedGraph,
     // HttpAdapterHost.name,
-    Reflector.name,
+    // Reflector.name,
     REQUEST,
     INQUIRER,
   ];

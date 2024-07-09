@@ -3,6 +3,7 @@ import { RouteInfoPathExtractor } from "../../middleware/extractor";
 import { RequestMethod, VersioningType } from "../../enums";
 import { mapToExcludeRoute } from "../../middleware/utils";
 import { HttpConfig } from "../../application/config";
+import { NoopHttpAdapter } from "@venok/http/helpers";
 
 describe("RouteInfoPathExtractor", () => {
   describe("extractPathsFrom", () => {
@@ -10,7 +11,11 @@ describe("RouteInfoPathExtractor", () => {
     let routeInfoPathExtractor: RouteInfoPathExtractor;
 
     beforeEach(() => {
-      httpConfig = new HttpConfig();
+      httpConfig = new HttpConfig({
+        port: 9999,
+        adapter: new NoopHttpAdapter({}),
+        callback: () => {},
+      });
       httpConfig.enableVersioning({
         type: VersioningType.URI,
       });
@@ -95,7 +100,11 @@ describe("RouteInfoPathExtractor", () => {
     let routeInfoPathExtractor: RouteInfoPathExtractor;
 
     beforeEach(() => {
-      httpConfig = new HttpConfig();
+      httpConfig = new HttpConfig({
+        port: 9999,
+        adapter: new NoopHttpAdapter({}),
+        callback: () => {},
+      });
       httpConfig.enableVersioning({
         type: VersioningType.URI,
       });

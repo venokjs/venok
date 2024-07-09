@@ -2,24 +2,37 @@ import { expect } from "chai";
 import createHttpError from "http-errors";
 import sinon from "sinon";
 import { AbstractHttpAdapter } from "../../adapter/adapter";
-import { NoopHttpAdapter } from "../../helpers/adapter.helper";
+import { NoopHttpAdapter } from "@venok/http/helpers";
 import { ExecutionContextHost } from "@venok/core/context/execution-host";
 import { InvalidExceptionFilterException } from "@venok/core/errors/exceptions/invalid-exception-filter.exception";
 import { isNull, isObject } from "@venok/core/helpers/shared.helper";
 import { HttpException } from "../../errors";
 import { HttpExceptionFilter } from "../../filters/filter";
 import { VenokExceptionsHandler } from "@venok/core/exceptions/handler";
+import { Module, VenokContainer, VenokFactory } from "@venok/core";
+import { HttpConfig } from "@venok/http/application/config";
+import { HTTP_APP_OPTIONS } from "@venok/http/application/http.module-defenition";
 
 describe("VenokExceptionsHandler", () => {
   let adapter: AbstractHttpAdapter;
   let handler: VenokExceptionsHandler;
+  let container: VenokContainer;
   let statusStub: sinon.SinonStub;
   let jsonStub: sinon.SinonStub;
   let response: any;
 
-  beforeEach(() => {
+  let module: any;
+
+  beforeEach(async () => {
     adapter = new NoopHttpAdapter({});
-    handler = new VenokExceptionsHandler(new HttpExceptionFilter(adapter));
+    container = new VenokContainer();
+
+    @Module({
+      providers: [{ useValue: { port: 9999, adapter, callback: () => {} }, provide: HTTP_APP_OPTIONS }, HttpConfig],
+    })
+    class TestModule {}
+    const context = await VenokFactory.createApplicationContext(TestModule);
+    handler = new VenokExceptionsHandler(new HttpExceptionFilter(context.container));
     statusStub = sinon.stub();
     jsonStub = sinon.stub();
 

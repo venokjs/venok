@@ -1,6 +1,7 @@
 import { expect } from "chai";
-import { Version } from "../../decorators";
-import { VERSION_METADATA } from "../../constants";
+
+import { Reflector } from "@venok/core";
+import { Version, VERSION_METADATA, VersionValue } from "@venok/http";
 
 describe("@Version", () => {
   const version = "1";
@@ -16,12 +17,12 @@ describe("@Version", () => {
   }
 
   it("should enhance method with expected version string", () => {
-    const metadata = Reflect.getMetadata(VERSION_METADATA, Test.oneVersion);
+    const metadata = Reflector.reflector.get<VersionValue>(VERSION_METADATA, Test.oneVersion);
     expect(metadata).to.be.eql(version);
   });
 
   it("should enhance method with expected version array", () => {
-    const metadata = Reflect.getMetadata(VERSION_METADATA, Test.multipleVersions);
+    const metadata = Reflector.reflector.get<VersionValue>(VERSION_METADATA, Test.multipleVersions);
     expect(metadata).to.be.eql(versionsWithoutDuplicates);
   });
 });

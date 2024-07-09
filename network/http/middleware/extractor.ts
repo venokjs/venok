@@ -1,8 +1,13 @@
-import { RoutePathFactory } from "../factory";
-import { ExcludeRouteMetadata, RouteInfo, VersioningOptions, VersionValue } from "../interfaces";
-import { HttpConfig } from "../application/config";
-import { addLeadingSlash, isRouteExcluded, stripEndSlash } from "../helpers";
-import { VersioningType } from "../enums";
+import {
+  ExcludeRouteMetadata,
+  HttpConfig,
+  RouteInfo,
+  VersioningOptions,
+  VersioningType,
+  VersionValue,
+} from "@venok/http";
+import { RoutePathFactory } from "@venok/http/factory";
+import { addLeadingSlash, isRouteExcluded, stripEndSlash } from "@venok/http/helpers";
 
 export class RouteInfoPathExtractor {
   private routePathFactory: RoutePathFactory;

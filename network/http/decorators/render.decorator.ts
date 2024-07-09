@@ -1,4 +1,3 @@
-import { RENDER_METADATA } from "../constants";
 import { Reflector } from "@venok/core";
 
 /**
@@ -10,8 +9,4 @@ import { Reflector } from "@venok/core";
  *
  * @publicApi
  */
-export const Render = Reflector.createDecorator<string>({
-  type: "method",
-  key: RENDER_METADATA,
-  transform: (template) => template,
-});
+export const Render = Reflector.createDecorator<string>({ type: "method" });

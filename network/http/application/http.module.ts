@@ -1,9 +1,15 @@
-import { HttpConfigurableModuleClass } from "./http.module-defenition";
+import { IntegrationModule } from "@venok/integration";
 import { Module } from "@venok/core";
-import { DiscoveryModule } from "@venok/core/discovery/module";
-import { HttpCoreService } from "./http.service";
+
+import { HttpConfig } from "@venok/http/application/config";
+import { HttpMiddlewareService } from "@venok/http/middleware";
+import { RoutesExplorer } from "@venok/http/explorers/routes.explorer";
+import { HttpStarterModule } from "@venok/http/application/starter.module";
+import { HttpConfigurableModuleClass } from "@venok/http/application/http.module-defenition";
 
 @Module({
-  providers: [DiscoveryModule, HttpCoreService],
+  imports: [IntegrationModule],
+  providers: [HttpConfig, HttpMiddlewareService, RoutesExplorer, HttpStarterModule],
+  // providers: [HttpConfig, RoutesExplorer, HttpStarterModule],
 })
 export class HttpModule extends HttpConfigurableModuleClass {}

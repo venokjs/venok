@@ -55,13 +55,14 @@ export abstract class MiddlewareService<MiddlewareConfiguration extends BaseMidd
     try {
       await (instance as any).configure(builder);
     } catch (err) {
-      throw err;
       // if (!this.appOptions.preview) throw err;
 
       const warningMessage =
         `Warning! "${moduleRef.name}" module exposes a "configure" method that throws an exception in the preview mode` +
         ` (possibly due to missing dependencies). Note: you can ignore this message, just be aware that some of those conditional middlewares will not be reflected in your graph.`;
       this.logger.warn(warningMessage);
+
+      throw err;
     }
 
     const config = builder.build();

@@ -1,10 +1,11 @@
 import { expect } from "chai";
 import sinon from "sinon";
-import { ApplicationConfig, Catch, UseFilters, VenokContainer } from "@venok/core";
+import { ApplicationConfig, Catch, Module, UseFilters, VenokContainer, VenokFactory } from "@venok/core";
 import { RouterExceptionFiltersContext } from "../../filters/context";
 import { HttpConfig } from "../../application/config";
 import { NoopHttpAdapter } from "../../helpers";
 import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
+import { HTTP_APP_OPTIONS } from "@venok/http/application/http.module-defenition";
 
 describe("RouterExceptionFiltersContext", () => {
   let applicationConfig: ApplicationConfig;
@@ -17,14 +18,25 @@ describe("RouterExceptionFiltersContext", () => {
     public catch(exc: any, res: any) {}
   }
 
-  beforeEach(() => {
-    applicationConfig = new ApplicationConfig();
-    httpConfig = new HttpConfig();
-    exceptionFilter = new RouterExceptionFiltersContext(
-      new VenokContainer(),
-      applicationConfig,
-      new NoopHttpAdapter({}),
-    );
+  beforeEach(async () => {
+    @Module({
+      providers: [
+        {
+          useValue: {
+            port: 9999,
+            adapter: new NoopHttpAdapter({}),
+            callback: () => {},
+          },
+          provide: HTTP_APP_OPTIONS,
+        },
+        HttpConfig,
+      ],
+    })
+    class TestModule {}
+
+    const { container } = await VenokFactory.createApplicationContext(TestModule);
+    exceptionFilter = new RouterExceptionFiltersContext(container, container.applicationConfig);
+    applicationConfig = container.applicationConfig;
   });
   describe("create", () => {
     describe("when filters metadata is empty", () => {

@@ -1,40 +1,35 @@
 import { isObservable, lastValueFrom, Observable } from "rxjs";
 
-import { ParamData } from "@venok/core/decorators/create-param.decorator";
-import { GuardsConsumer, GuardsContextCreator } from "@venok/core/guards";
-import { InterceptorsConsumer, InterceptorsContextCreator } from "@venok/core/interceptors";
-import { ModulesContainer } from "@venok/core/injector/module/container";
-import { PipesConsumer, PipesContextCreator } from "@venok/core/pipes";
-import { VenokContainer } from "@venok/core/injector/container";
-import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { ContextType } from "@venok/core/interfaces/context/arguments-host.interface";
-import { CUSTOM_ROUTE_ARGS_METADATA, FORBIDDEN_MESSAGE } from "@venok/core/constants";
-import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
-import { isEmpty } from "@venok/core/helpers/shared.helper";
-import { RuntimeException } from "@venok/core/errors/exceptions";
-import { ContextId } from "@venok/core/injector/instance/wrapper";
-import { ContextUtils, ParamProperties } from "@venok/core/helpers/context.helper";
+import {
+  ContextType,
+  CUSTOM_ROUTE_ARGS_METADATA,
+  FORBIDDEN_MESSAGE,
+  GetParamsMetadata,
+  ParamProperties,
+  ParamsFactory,
+  ParamsMetadata,
+  PipeTransform,
+  Reflector,
+  VenokContainer,
+  VenokContextCreatorInterface,
+} from "@venok/core";
+
+import { ModulesContainer, STATIC_CONTEXT } from "@venok/core/injector";
+import { ContextUtils, isEmpty } from "@venok/core/helpers";
 import { VenokProxy } from "@venok/core/context/proxy";
-import { VenokExceptionFilterContext } from "@venok/core/filters/context";
-import { VenokContextCreatorInterface } from "@venok/core";
 
-export interface ParamsFactory {
-  exchangeKeyForValue(type: number, data: ParamData, args: any): any;
-}
+import { InterceptorsConsumer, InterceptorsContextCreator } from "@venok/core/interceptors";
+import { GuardsConsumer, GuardsContextCreator } from "@venok/core/guards";
+import { PipesConsumer, PipesContextCreator } from "@venok/core/pipes";
+import { VenokExceptionFilterContext } from "@venok/core/filters";
 
-export type ParamsMetadata = Record<number, ParamMetadata>;
-
-export interface ParamMetadata {
-  index: number;
-  data?: ParamData;
-}
-
-type ParamPropertiesWithMetatype<T = any> = ParamProperties & { metatype?: T };
+import { RuntimeException } from "@venok/core/errors/exceptions";
+import { HandlerMetadataStorage } from "@venok/core/storage/handler-metadata.storage";
 
 export interface ExternalHandlerMetadata {
   argsLength: number;
   paramtypes: any[];
-  getParamsMetadata: (moduleKey: string, contextId?: ContextId, inquirerId?: string) => ParamPropertiesWithMetatype[];
+  getParamsMetadata: GetParamsMetadata;
 }
 
 export interface ExternalContextOptions {
@@ -47,7 +42,8 @@ export interface ExternalContextOptions {
 export class VenokContextCreator implements VenokContextCreatorInterface {
   public readonly contextUtils = new ContextUtils();
   public readonly venokProxy = new VenokProxy();
-  // private readonly handlerMetadataStorage = new HandlerMetadataStorage<ExternalHandlerMetadata>();
+  public readonly reflector = new Reflector();
+  private readonly handlerMetadataStorage = new HandlerMetadataStorage();
   public container!: VenokContainer;
 
   constructor(
@@ -58,19 +54,23 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     private readonly modulesContainer: ModulesContainer,
     private readonly pipesContextCreator: PipesContextCreator,
     private readonly pipesConsumer: PipesConsumer,
-    private readonly filtersContextCreator: VenokExceptionFilterContext,
+    protected readonly filtersContextCreator: VenokExceptionFilterContext,
   ) {}
 
-  static fromContainer(container: VenokContainer): VenokContextCreator {
+  static fromContainer(
+    container: VenokContainer,
+    contextClass: typeof VenokContextCreator = VenokContextCreator,
+    filtersContext: typeof VenokExceptionFilterContext = VenokExceptionFilterContext,
+  ): VenokContextCreator {
     const guardsContextCreator = new GuardsContextCreator(container, container.applicationConfig);
     const guardsConsumer = new GuardsConsumer();
     const interceptorsContextCreator = new InterceptorsContextCreator(container, container.applicationConfig);
     const interceptorsConsumer = new InterceptorsConsumer();
     const pipesContextCreator = new PipesContextCreator(container, container.applicationConfig);
     const pipesConsumer = new PipesConsumer();
-    const filtersContextCreator = new VenokExceptionFilterContext(container, container.applicationConfig);
+    const filtersContextCreator = new filtersContext(container, container.applicationConfig);
 
-    const venokContextCreator = new VenokContextCreator(
+    const venokContextCreator = new contextClass(
       guardsContextCreator,
       guardsConsumer,
       interceptorsContextCreator,
@@ -156,10 +156,9 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     paramsFactory?: ParamsFactory,
     contextType?: TContext,
   ): ExternalHandlerMetadata {
-    // const cacheMetadata = this.handlerMetadataStorage.get(instance, methodName);
-    // if (cacheMetadata) {
-    //   return cacheMetadata;
-    // }
+    const cacheMetadata = this.handlerMetadataStorage.get(instance, methodName);
+    if (cacheMetadata) return cacheMetadata;
+
     const metadata =
       this.contextUtils.reflectCallbackMetadata<TMetadata>(instance, methodName, metadataKey || "") || {};
     const keys = Object.keys(metadata);
@@ -180,7 +179,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
       paramtypes,
       getParamsMetadata,
     };
-    // this.handlerMetadataStorage.set(instance, methodName, handlerMetadata);
+    this.handlerMetadataStorage.set(instance, methodName, handlerMetadata);
     return handlerMetadata;
   }
 
@@ -218,9 +217,10 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
         return { index, extractValue: customExtractValue, type, data, pipes };
       }
       const numericType = Number(type);
-      const extractValue = (...args: unknown[]) => paramsFactory.exchangeKeyForValue(numericType, data, args);
+      const extractValue = (...args: unknown[]) => paramsFactory.exchangeKeyForValue(type, data, args);
 
-      return { index, extractValue, type: numericType, data, pipes };
+      /* TODO Pass non numeric type */
+      return { index, extractValue, type, data, pipes };
     });
   }
 
@@ -268,9 +268,5 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
       if (!canActivate) throw new RuntimeException(FORBIDDEN_MESSAGE);
     };
     return guards.length ? canActivateFn : null;
-  }
-
-  public registerRequestProvider<T = any>(request: T, contextId: ContextId) {
-    this.container.registerRequestProvider<T>(request, contextId);
   }
 }

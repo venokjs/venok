@@ -1,8 +1,5 @@
-import { CanActivate } from "@venok/core/interfaces/features/guards.interface";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
-import { ExceptionFilter } from "@venok/core/interfaces/features/exception-filter.interface";
-import { VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface";
+import { CanActivate, ExceptionFilter, PipeTransform, VenokInterceptor } from "@venok/core/interfaces";
+import { InstanceWrapper } from "@venok/core/injector";
 
 export class ApplicationConfig {
   private globalPipes: Array<PipeTransform> = [];
@@ -13,16 +10,6 @@ export class ApplicationConfig {
   private readonly globalRequestFilters: InstanceWrapper<ExceptionFilter>[] = [];
   private readonly globalRequestInterceptors: InstanceWrapper<VenokInterceptor>[] = [];
   private readonly globalRequestGuards: InstanceWrapper<CanActivate>[] = [];
-
-  // constructor(private ioAdapter: WebSocketAdapter | null = null) {}
-  //
-  // public setIoAdapter(ioAdapter: WebSocketAdapter) {
-  //   this.ioAdapter = ioAdapter;
-  // }
-  //
-  // public getIoAdapter(): WebSocketAdapter {
-  //   return this.ioAdapter;
-  // }
 
   public addGlobalPipe(pipe: PipeTransform<any>) {
     this.globalPipes.push(pipe);

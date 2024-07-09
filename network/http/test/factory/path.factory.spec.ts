@@ -5,13 +5,14 @@ import { RoutePathFactory } from "../../factory";
 import { RequestMethod, VersioningType } from "../../enums";
 import { VERSION_NEUTRAL } from "../../interfaces";
 import { HttpConfig } from "../../application/config";
+import { NoopHttpAdapter } from "@venok/http/helpers";
 
 describe("RoutePathFactory", () => {
   let routePathFactory: RoutePathFactory;
   let httpConfig: HttpConfig;
 
   beforeEach(() => {
-    httpConfig = new HttpConfig();
+    httpConfig = new HttpConfig({ port: 9999, adapter: new NoopHttpAdapter(undefined), callback: () => {} });
     routePathFactory = new RoutePathFactory(httpConfig);
   });
 

@@ -1,20 +1,19 @@
-import { VenokContainer } from "@venok/core/injector/container";
-import { ApplicationConfig } from "@venok/core/application/config";
-import { Logger } from "@venok/core/services/logger.service";
-import { ApplicationContext } from "@venok/core/application/context";
-import { VenokApplicationContext } from "@venok/core/interfaces";
-import { GraphInspector } from "@venok/core/inspector/graph-inspector";
-import { UuidFactory, UuidFactoryMode } from "@venok/core/helpers/uuid.helper";
-import { Injector } from "@venok/core/injector/injector";
-import { InstanceLoader } from "@venok/core/injector/instance/loader";
-import { MetadataScanner } from "@venok/core/metadata-scanner";
-import { DependenciesScanner } from "@venok/core/scanner";
-import { ExceptionsZone } from "@venok/core/exceptions/zone/zone";
-import { MESSAGES } from "@venok/core/constants";
-import { isFunction, isNull } from "@venok/core/helpers/shared.helper";
-import { NoopGraphInspector } from "@venok/core/inspector/noop-graph-inspector";
 import { ApplicationContextOptions } from "@venok/core/interfaces/application/context-options.interface";
+import { NoopGraphInspector } from "@venok/core/inspector/noop-graph-inspector";
+import { UuidFactory, UuidFactoryMode } from "@venok/core/helpers/uuid.helper";
+import { GraphInspector } from "@venok/core/inspector/graph-inspector";
+import { InstanceLoader } from "@venok/core/injector/instance/loader";
+import { ApplicationContext } from "@venok/core/application/context";
+import { ApplicationConfig } from "@venok/core/application/config";
+import { VenokApplicationContext } from "@venok/core/interfaces";
+import { Injector, VenokContainer } from "@venok/core/injector";
+import { MetadataScanner } from "@venok/core/metadata-scanner";
+import { Logger } from "@venok/core/services/logger.service";
 import { rethrow } from "@venok/core/helpers/rethrow.helper";
+import { DependenciesScanner } from "@venok/core/scanner";
+import { isFunction, isNull } from "@venok/core/helpers";
+import { ExceptionsZone } from "@venok/core/exceptions";
+import { MESSAGES } from "@venok/core/constants";
 
 /**
  * @publicApi
@@ -54,10 +53,9 @@ export class VenokFactoryStatic {
     const context = this.createVenokInstance<ApplicationContext>(
       new ApplicationContext(container, applicationConfig, options, root),
     );
-    if (this.autoFlushLogs) {
-      context.flushLogsOnOverride();
-    }
-    // return context.init();
+
+    if (this.autoFlushLogs) context.flushLogsOnOverride();
+
     return context;
   }
 
@@ -104,28 +102,22 @@ export class VenokFactoryStatic {
   }
 
   private handleInitializationError(err: unknown) {
-    if (this.abortOnError) {
-      process.abort();
-    }
+    if (this.abortOnError) process.abort();
+
     rethrow(err);
   }
 
   private createProxy(target: any) {
     const proxy = this.createExceptionProxy();
-    return new Proxy(target, {
-      get: proxy,
-      set: proxy,
-    });
+    return new Proxy(target, { get: proxy, set: proxy });
   }
 
   private createExceptionProxy() {
     return (receiver: Record<string, any>, prop: string) => {
-      if (!(prop in receiver)) {
-        return;
-      }
-      if (isFunction(receiver[prop])) {
-        return this.createExceptionZone(receiver, prop);
-      }
+      if (!(prop in receiver)) return;
+
+      if (isFunction(receiver[prop])) return this.createExceptionZone(receiver, prop);
+
       return receiver[prop];
     };
   }
@@ -145,16 +137,14 @@ export class VenokFactoryStatic {
   }
 
   private registerLoggerConfiguration(options: ApplicationContextOptions | undefined) {
-    if (!options) {
-      return;
-    }
+    if (!options) return;
+
     const { logger, bufferLogs, autoFlushLogs } = options;
-    if (!!logger && !isNull(logger)) {
-      Logger.overrideLogger(logger);
-    }
-    if (bufferLogs) {
-      Logger.attachBuffer();
-    }
+
+    if (!!logger && !isNull(logger)) Logger.overrideLogger(logger);
+
+    if (bufferLogs) Logger.attachBuffer();
+
     this.autoFlushLogs = autoFlushLogs ?? true;
   }
 

@@ -5,6 +5,7 @@ import { VenokInterceptor } from "@venok/core/interfaces/features/interceptor.in
 import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
 import { ExceptionFilter } from "@venok/core/interfaces/features/exception-filter.interface";
 import { CanActivate } from "@venok/core/interfaces/features/guards.interface";
+import { VenokContainer } from "@venok/core/injector";
 
 export interface GetOrResolveOptions {
   /**
@@ -26,6 +27,7 @@ export interface GetOrResolveOptions {
  * @publicApi
  */
 export interface VenokApplicationContext {
+  container: VenokContainer;
   /**
    * Allows navigating through the modules tree, for example, to pull out a specific instance from the selected module.
    * @returns {VenokApplicationContext}

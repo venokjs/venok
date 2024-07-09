@@ -1,12 +1,28 @@
-import { HttpInstanceStorage } from "../storage/http-instance.storage";
-import { ExcludeRouteMetadata, GlobalPrefixOptions, VersioningOptions } from "../interfaces";
+import { Inject, Injectable } from "@venok/core";
 
+import { ExcludeRouteMetadata, GlobalPrefixOptions, VersioningOptions } from "@venok/http/interfaces";
+import { HTTP_APP_OPTIONS } from "@venok/http/application/http.module-defenition";
+import { HttpInstanceStorage } from "@venok/http/storage/http-instance.storage";
+import { HttpApplication } from "@venok/http/application/application";
+import { AbstractHttpAdapter } from "@venok/http/adapter/adapter";
+
+export interface HttpAppOptions {
+  port: number;
+  callback: (app: HttpApplication) => void;
+  adapter: AbstractHttpAdapter;
+}
+
+@Injectable()
 export class HttpConfig {
   private globalPrefix = "";
   private globalPrefixOptions: GlobalPrefixOptions<ExcludeRouteMetadata> = {};
   private versioningOptions!: VersioningOptions;
 
   private readonly httpInstanceStorage = new HttpInstanceStorage();
+
+  constructor(@Inject(HTTP_APP_OPTIONS) private readonly options: Required<HttpAppOptions>) {
+    this.setHttpAdapter(this.options.adapter);
+  }
 
   public setHttpAdapter(httpAdapter: any) {
     this.httpInstanceStorage.httpAdapter = httpAdapter;

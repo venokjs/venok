@@ -1,9 +1,14 @@
-import { HttpConfig } from "../application/config";
-import { RoutePathMetadata, VERSION_NEUTRAL, VersioningOptions, VersionValue } from "../interfaces";
-import { RequestMethod, VersioningType } from "../enums";
-import { flatten } from "@venok/core/helpers/flatten.helper";
-import { addLeadingSlash, isRouteExcluded, stripEndSlash } from "../helpers";
-import { isUndefined } from "@venok/core/helpers/shared.helper";
+import {
+  HttpConfig,
+  RequestMethod,
+  RoutePathMetadata,
+  VERSION_NEUTRAL,
+  VersioningOptions,
+  VersioningType,
+  VersionValue,
+} from "@venok/http";
+import { flatten, isUndefined } from "@venok/core/helpers";
+import { addLeadingSlash, isRouteExcluded, stripEndSlash } from "@venok/http/helpers";
 
 export class RoutePathFactory {
   constructor(private readonly config: HttpConfig) {}
@@ -46,6 +51,14 @@ export class RoutePathFactory {
     }
 
     return paths.map((path) => addLeadingSlash(path || "/")).map((path) => (path !== "/" ? stripEndSlash(path) : path));
+  }
+
+  public extractControllerPath(path: string | string[]): string[] {
+    if (isUndefined(path)) return [];
+
+    if (Array.isArray(path)) return path.map((p) => addLeadingSlash(p));
+
+    return [addLeadingSlash(path)];
   }
 
   public getVersion(metadata: RoutePathMetadata) {

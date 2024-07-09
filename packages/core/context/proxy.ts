@@ -15,7 +15,7 @@ export class VenokProxy {
         const result = await targetCallback(...args);
         return !isObservable(result)
           ? result
-          : result.pipe(catchError((error) => this.handleError(exceptionsHandler, args, error)));
+          : result.pipe(catchError((error) => this.handleError(exceptionsHandler, args, error, type)));
       } catch (error) {
         return this.handleError(exceptionsHandler, args, error, type);
       }
@@ -39,14 +39,14 @@ export class VenokProxy {
     exceptionsHandler: VenokExceptionsHandler,
     type?: TContext,
   ) {
-    return async <TError>(err: TError, ...args: any[]) => {
+    return async <TError>(err: TError, req: any, res: any, next: any) => {
       try {
-        await targetCallback(err, ...args);
+        await targetCallback(err, req, res, next);
       } catch (e) {
-        const host = new ExecutionContextHost(args);
+        const host = new ExecutionContextHost([req, res, next]);
         host.setType<TContext>(type as any);
         exceptionsHandler.next(e, host);
-        return args;
+        return res;
       }
     };
   }

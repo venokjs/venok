@@ -1,8 +1,9 @@
 import { Reflector, ScopeOptions } from "@venok/core";
 import { SCOPE_OPTIONS_METADATA } from "@venok/core/constants";
 import { isString, isUndefined } from "@venok/core/helpers/shared.helper";
-import { VersionOptions } from "../interfaces";
-import { CONTROLLER_WATERMARK, HOST_METADATA, PATH_METADATA, VERSION_METADATA } from "../constants";
+import { HOST_METADATA, PATH_METADATA, VERSION_METADATA } from "@venok/http/constants";
+import { VersionOptions, VersionValue } from "@venok/http/interfaces";
+import { ControllerDiscovery } from "@venok/http/discovery/controller.discovery";
 
 /**
  * Interface defining options that can be passed to `@Controller()` decorator
@@ -19,14 +20,14 @@ export interface ControllerOptions extends ScopeOptions, VersionOptions {
   path?: string | string[];
 
   /**
-   * Specifies an optional HTTP Request host filter.  When configured, methods
+   * Specifies an optional HTTP Request host filter. When configured, methods
    * within the controller will only be routed if the request host matches the
    * specified value.
    */
   host?: string | RegExp | Array<string | RegExp>;
 }
 
-type Controller = {
+type Controller2 = {
   /**
    * Decorator that marks a class as a Venok controller that can receive inbound
    * requests and produce responses.
@@ -42,7 +43,7 @@ type Controller = {
    *
    * @publicApi
    */
-  (): ClassDecorator;
+  (): any;
 
   /**
    * Decorator that marks a class as a Venok controller that can receive inbound
@@ -62,7 +63,7 @@ type Controller = {
    *
    * @publicApi
    */
-  (prefix: string | string[]): ClassDecorator;
+  (prefix: string | string[]): any;
 
   /**
    * Decorator that marks a class as a Venok controller that can receive inbound
@@ -88,7 +89,7 @@ type Controller = {
    *
    * @publicApi
    */
-  (options: ControllerOptions): ClassDecorator;
+  (options: ControllerOptions): any;
 
   /**
    * Decorator that marks a class as a Venok controller that can receive inbound
@@ -116,18 +117,14 @@ type Controller = {
    *
    * @publicApi
    */
-  (prefixOrOptions?: string | string[] | ControllerOptions): ClassDecorator;
+  (prefixOrOptions?: string | string[] | ControllerOptions): any;
 };
 
-export const Controller: Controller = Reflector.createDecoratorWithAdditionalMetadata<
-  string | string[] | ControllerOptions,
-  boolean
->({
-  type: "class",
-  key: CONTROLLER_WATERMARK,
-  transform: (options) => {
-    const defaultPath = "/";
+const defaultPath = "/";
 
+export const Controller = Reflector.createDecorator<string | string[] | ControllerOptions, ControllerDiscovery>({
+  type: "class",
+  transform: (options) => {
     const [path, host, scopeOptions, versionOptions] = isUndefined(options)
       ? [defaultPath, undefined, undefined, undefined]
       : isString(options) || Array.isArray(options)
@@ -136,17 +133,14 @@ export const Controller: Controller = Reflector.createDecoratorWithAdditionalMet
           options!.path || defaultPath,
           options!.host,
           { scope: options!.scope, durable: options!.durable },
-          Array.isArray(options.version) ? Array.from(new Set(options.version)) : options.version,
+          (Array.isArray(options.version) ? Array.from(new Set(options.version)) : options.version) as VersionValue,
         ];
 
-    return {
-      value: true,
-      additional: {
-        [PATH_METADATA]: path,
-        [HOST_METADATA]: host,
-        [SCOPE_OPTIONS_METADATA]: scopeOptions,
-        [VERSION_METADATA]: versionOptions,
-      },
-    };
+    return new ControllerDiscovery({
+      [PATH_METADATA]: path,
+      [HOST_METADATA]: host,
+      [SCOPE_OPTIONS_METADATA]: scopeOptions,
+      [VERSION_METADATA]: versionOptions,
+    });
   },
 });

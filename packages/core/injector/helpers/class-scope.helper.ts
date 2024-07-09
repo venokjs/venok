@@ -1,5 +1,4 @@
-import { Scope, Type } from "@venok/core/interfaces";
-import { SCOPE_OPTIONS_METADATA } from "@venok/core/constants";
+import { Scope, SCOPE_OPTIONS_METADATA, Type } from "@venok/core";
 
 export function getClassScope(provider: Type): Scope {
   const metadata = Reflect.getMetadata(SCOPE_OPTIONS_METADATA, provider);

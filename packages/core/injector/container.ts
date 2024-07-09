@@ -31,13 +31,13 @@ export class VenokContainer {
   private readonly _serializedGraph = new SerializedGraph();
   private internalCoreModule!: Module;
 
-  constructor(private readonly _applicationConfig: ApplicationConfig | undefined = undefined) {}
+  constructor(private readonly _applicationConfig: ApplicationConfig = new ApplicationConfig()) {}
 
   get serializedGraph(): SerializedGraph {
     return this._serializedGraph;
   }
 
-  get applicationConfig(): ApplicationConfig | undefined {
+  get applicationConfig(): ApplicationConfig {
     return this._applicationConfig;
   }
 

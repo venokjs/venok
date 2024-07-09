@@ -1,18 +1,6 @@
-import { ParamData } from "@venok/core/decorators/create-param.decorator";
-import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
-import { PARAMTYPES_METADATA } from "@venok/core/constants";
-import { ExecutionContextHost } from "@venok/core/context/execution-host";
+import { ContextType, ParamProperties, PARAMTYPES_METADATA, Type } from "@venok/core";
 import { isFunction } from "@venok/core/helpers/shared.helper";
-import { ContextType } from "@venok/core/interfaces/context/arguments-host.interface";
-import { Type } from "@venok/core/interfaces";
-
-export interface ParamProperties<T = any, IExtractor extends Function = any> {
-  index: number;
-  type: T | string;
-  data: ParamData;
-  pipes: PipeTransform[];
-  extractValue: IExtractor;
-}
+import { ExecutionContextHost } from "@venok/core/context";
 
 export class ContextUtils {
   public mapParamType(key: string): string {
@@ -28,10 +16,8 @@ export class ContextUtils {
     return Reflect.getMetadata(metadataKey, instance.constructor, methodName);
   }
 
-  public getArgumentsLength<T>(keys: string[], metadata: T): number {
-    // Maybe Error
-    // @ts-ignore
-    return keys.length ? Math.max(...keys.map((key) => metadata[key].index)) + 1 : 0;
+  public getArgumentsLength<T extends { [key: string]: { index: number } }>(keys: string[], metadata: T): number {
+    return keys.length ? Math.max(...keys.map((key) => metadata[key as keyof T].index)) + 1 : 0;
   }
 
   public createNullArray(length: number): any[] {
@@ -44,9 +30,8 @@ export class ContextUtils {
     paramsProperties: ParamProperties[],
     paramtypes: any[],
   ): (ParamProperties & { metatype?: any })[] {
-    if (!paramtypes) {
-      return paramsProperties;
-    }
+    if (!paramtypes) return paramsProperties;
+
     return paramsProperties.map((param) => ({
       ...param,
       metatype: paramtypes[param.index],
