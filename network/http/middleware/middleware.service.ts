@@ -1,5 +1,5 @@
 import { BaseMiddlewareConfiguration, MiddlewareService } from "@venok/integration";
-import { Inject, Injectable, OnModuleInit, Type } from "@venok/core";
+import { ApplicationContext, Inject, Injectable, OnModuleInit, Type } from "@venok/core";
 import { HttpConfig, RequestMethod, RouteInfo } from "@venok/http";
 
 import { MiddlewareBuilder, RouteInfoPathExtractor, RoutesMapper } from "@venok/http/middleware";
@@ -11,8 +11,8 @@ export class HttpMiddlewareService
   extends MiddlewareService<BaseMiddlewareConfiguration<Type[], RouteInfo>>
   implements OnModuleInit
 {
-  @Inject(HttpConfig)
-  private readonly httpConfig!: HttpConfig;
+  // @Inject(HttpConfig)
+  private httpConfig!: HttpConfig;
 
   private routesMapper!: RoutesMapper;
   private routeInfoPathExtractor!: RouteInfoPathExtractor;
@@ -21,6 +21,9 @@ export class HttpMiddlewareService
 
   onModuleInit(): any {
     this.exceptionsFilter = new RouterExceptionFiltersContext(this.container, this.container.applicationConfig);
+    const context = new ApplicationContext(this.container, this.container.applicationConfig);
+    context.selectContextModule();
+    this.httpConfig = context.get(HttpConfig);
     this.routesMapper = new RoutesMapper(this.container, this.httpConfig);
     this.routeInfoPathExtractor = new RouteInfoPathExtractor(this.httpConfig);
   }
@@ -35,7 +38,6 @@ export class HttpMiddlewareService
     const isMethodAll = isRequestMethodAll(info.method);
     const requestMethod = RequestMethod[info.method];
     const router = await applicationRef.createMiddlewareFactory(info.method);
-    // console.log(isMethodAll, requestMethod, method);
     const middlewareFunction = isMethodAll
       ? proxy
       : <TRequest, TResponse>(req: TRequest, res: TResponse, next: () => void) => {

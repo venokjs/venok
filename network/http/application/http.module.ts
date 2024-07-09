@@ -10,5 +10,6 @@ import { HttpConfigurableModuleClass } from "@venok/http/application/http.module
 @Module({
   imports: [IntegrationModule],
   providers: [HttpConfig, HttpMiddlewareService, RoutesExplorer, HttpStarterModule],
+  // providers: [HttpConfig, RoutesExplorer, HttpStarterModule],
 })
 export class HttpModule extends HttpConfigurableModuleClass {}

@@ -1,4 +1,4 @@
-import { ArgumentMetadata, PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
+import { ArgumentMetadata, PipeTransform } from "@venok/core";
 
 export class PipesConsumer {
   public async apply<TInput = unknown>(
@@ -6,6 +6,7 @@ export class PipesConsumer {
     { metatype, type, data }: ArgumentMetadata,
     pipes: PipeTransform[],
   ) {
+    /* TODO Get type */
     return this.applyPipes(value, { metatype, type, data }, pipes);
   }
 

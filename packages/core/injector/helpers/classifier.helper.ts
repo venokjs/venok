@@ -1,4 +1,4 @@
-import { ClassProvider, FactoryProvider, Provider, ValueProvider } from "@venok/core/interfaces/modules";
+import { ClassProvider, FactoryProvider, Provider, ValueProvider } from "@venok/core";
 import { isUndefined } from "@venok/core/helpers/shared.helper";
 
 export function isClassProvider<T = any>(provider: Provider): provider is ClassProvider<T> {

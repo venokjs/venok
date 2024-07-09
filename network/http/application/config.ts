@@ -1,8 +1,16 @@
 import { Inject, Injectable } from "@venok/core";
 
 import { ExcludeRouteMetadata, GlobalPrefixOptions, VersioningOptions } from "@venok/http/interfaces";
-import { HTTP_APP_OPTIONS, HttpAppOptions } from "@venok/http/application/http.module-defenition";
+import { HTTP_APP_OPTIONS } from "@venok/http/application/http.module-defenition";
 import { HttpInstanceStorage } from "@venok/http/storage/http-instance.storage";
+import { HttpApplication } from "@venok/http/application/application";
+import { AbstractHttpAdapter } from "@venok/http/adapter/adapter";
+
+export interface HttpAppOptions {
+  port: number;
+  callback: (app: HttpApplication) => void;
+  adapter: AbstractHttpAdapter;
+}
 
 @Injectable()
 export class HttpConfig {

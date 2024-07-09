@@ -20,12 +20,10 @@ export function validateEach(
   decorator: string,
   item: string,
 ): boolean {
-  if (!context || !context.name) {
-    return true;
-  }
+  if (!context || !context.name) return true;
+
   const errors = arr.some((str) => !predicate(str));
-  if (errors) {
-    throw new InvalidDecoratorItemException(decorator, item, context.name);
-  }
+  if (errors) throw new InvalidDecoratorItemException(decorator, item, context.name);
+
   return true;
 }

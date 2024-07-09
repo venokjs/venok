@@ -7,6 +7,9 @@
     "references": [
         {
             "path": "../../packages/core/tsconfig.json"
+        },
+        {
+            "path": "../../packages/integration/tsconfig.json"
         }
     ]
 }

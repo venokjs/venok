@@ -1,15 +1,14 @@
-import { AbstractInstanceResolver } from "@venok/core/injector/instance/resolver";
-import { Injector } from "@venok/core/injector/injector";
-import { Logger, LoggerService, LogLevel } from "@venok/core/services/logger.service";
-import { ModuleCompiler } from "@venok/core/injector/module/compiler";
-import { InstanceLinksHost } from "@venok/core/injector/instance/links-host";
-import { Module } from "@venok/core/injector/module/module";
-import { Abstract, DynamicModule, GetOrResolveOptions, Type } from "@venok/core/interfaces";
-import { VenokContainer } from "@venok/core/injector/container";
-import { UnknownModuleException } from "@venok/core/errors/exceptions";
-import { createContextId } from "@venok/core/helpers/context-id-factory.helper";
-import { ContextId } from "@venok/core/injector/instance/wrapper";
-import { isEmpty } from "@venok/core/helpers/shared.helper";
+import {
+  Abstract,
+  CanActivate,
+  DynamicModule,
+  ExceptionFilter,
+  GetOrResolveOptions,
+  PipeTransform,
+  Type,
+  VenokApplicationContext,
+  VenokInterceptor,
+} from "@venok/core";
 import {
   callAppShutdownHook,
   callBeforeAppShutdownHook,
@@ -17,14 +16,17 @@ import {
   callModuleDestroyHook,
   callModuleInitHook,
 } from "@venok/core/hooks";
-import { MESSAGES } from "@venok/core/constants";
+
 import { ApplicationContextOptions } from "@venok/core/interfaces/application/context-options.interface";
-import { VenokApplicationContext } from "@venok/core/interfaces/application/context.interface";
+import { Logger, LoggerService, LogLevel } from "@venok/core/services/logger.service";
+import { ContextId, Injector, Module, VenokContainer } from "@venok/core/injector";
+import { AbstractInstanceResolver } from "@venok/core/injector/instance/resolver";
+import { InstanceLinksHost } from "@venok/core/injector/instance/links-host";
+import { UnknownModuleException } from "@venok/core/errors/exceptions";
+import { ModuleCompiler } from "@venok/core/injector/module/compiler";
 import { ApplicationConfig } from "@venok/core/application/config";
-import { VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface";
-import { CanActivate } from "@venok/core/interfaces/features/guards.interface";
-import { ExceptionFilter } from "@venok/core/interfaces/features/exception-filter.interface";
-import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
+import { createContextId, isEmpty } from "@venok/core/helpers";
+import { MESSAGES } from "@venok/core/constants";
 
 /**
  * System signals which shut down a process
@@ -82,9 +84,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
     super();
     this.injector = new Injector();
 
-    if (this.appOptions.preview) {
-      this.printInPreviewModeWarning();
-    }
+    if (this.appOptions.preview) this.printInPreviewModeWarning();
   }
 
   public selectContextModule() {
@@ -149,10 +149,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
   ): TResult | Array<TResult> {
     return !(options && options.strict)
       ? this.find<TInput, TResult>(typeOrToken, options)
-      : this.find<TInput, TResult>(typeOrToken, {
-          moduleId: this.contextModule?.id,
-          each: options.each,
-        });
+      : this.find<TInput, TResult>(typeOrToken, { moduleId: this.contextModule?.id, each: options.each });
   }
 
   /**
@@ -168,9 +165,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
    */
   public resolve<TInput = any, TResult = TInput>(
     typeOrToken: Type<TInput> | Function | string | symbol,
-    contextId?: {
-      id: number;
-    },
+    contextId?: { id: number },
   ): Promise<TResult>;
   /**
    * Resolves transient or request-scoped instance of either injectable or controller, otherwise, throws exception.
@@ -178,13 +173,8 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
    */
   public resolve<TInput = any, TResult = TInput>(
     typeOrToken: Type<TInput> | Function | string | symbol,
-    contextId?: {
-      id: number;
-    },
-    options?: {
-      strict?: boolean;
-      each?: undefined | false;
-    },
+    contextId?: { id: number },
+    options?: { strict?: boolean; each?: undefined | false },
   ): Promise<TResult>;
   /**
    * Resolves transient or request-scoped instances of either injectables or controllers, otherwise, throws exception.
@@ -192,13 +182,8 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
    */
   public resolve<TInput = any, TResult = TInput>(
     typeOrToken: Type<TInput> | Function | string | symbol,
-    contextId?: {
-      id: number;
-    },
-    options?: {
-      strict?: boolean;
-      each: true;
-    },
+    contextId?: { id: number },
+    options?: { strict?: boolean; each: true },
   ): Promise<Array<TResult>>;
   /**
    * Resolves transient or request-scoped instance (or a list of instances) of either injectable or controller, otherwise, throws exception.
@@ -227,9 +212,8 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
    * @returns {Promise<this>} The ApplicationContext instance as Promise
    */
   public async init(): Promise<this> {
-    if (this.isInitialized) {
-      return this;
-    }
+    if (this.isInitialized) return this;
+
     await this.callInitHook();
     await this.callBootstrapHook();
 
@@ -257,9 +241,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
   public useLogger(logger: LoggerService | LogLevel[] | false) {
     Logger.overrideLogger(logger);
 
-    if (this.shouldFlushLogsOnOverride) {
-      this.flushLogs();
-    }
+    if (this.shouldFlushLogsOnOverride) this.flushLogs();
   }
 
   public useGlobalFilters(...filters: ExceptionFilter[]): this {
@@ -341,11 +323,10 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
     let receivedSignal = false;
     const cleanup = async (signal: string) => {
       try {
-        if (receivedSignal) {
-          // If we receive another signal while we're waiting
-          // for the server to stop, just ignore it.
-          return;
-        }
+        // If we receive another signal while we're waiting
+        // for the server to stop, just ignore it.
+        if (receivedSignal) return;
+
         receivedSignal = true;
         await this.callDestroyHook();
         await this.callBeforeShutdownHook(signal);
@@ -370,9 +351,8 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
    * Unsubscribes from shutdown signals (process events)
    */
   protected unsubscribeFromProcessSignals() {
-    if (!this.shutdownCleanupRef) {
-      return;
-    }
+    if (!this.shutdownCleanupRef) return;
+
     this.activeShutdownSignals.forEach((signal) => {
       process.removeListener(signal, this.shutdownCleanupRef as any);
     });

@@ -1,5 +1,4 @@
-import { SCOPE_OPTIONS_METADATA } from "@venok/core/constants";
-import { Type } from "@venok/core/interfaces";
+import { SCOPE_OPTIONS_METADATA, Type } from "@venok/core";
 
 export function isDurable(provider: Type): boolean | undefined {
   const metadata = Reflect.getMetadata(SCOPE_OPTIONS_METADATA, provider);

@@ -6,9 +6,7 @@ export class MetadataScanner {
   public getAllMethodNames(prototype: object | null): string[] {
     if (!prototype) return [];
 
-    if (this.cachedScannedPrototypes.has(prototype)) {
-      return this.cachedScannedPrototypes.get(prototype) as string[];
-    }
+    if (this.cachedScannedPrototypes.has(prototype)) return this.cachedScannedPrototypes.get(prototype) as string[];
 
     const visitedNames = new Map<string, boolean>();
     const result: string[] = [];

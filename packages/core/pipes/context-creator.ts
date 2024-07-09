@@ -1,12 +1,7 @@
-import { VenokContainer } from "@venok/core/injector/container";
+import { ApplicationConfig, PIPES_METADATA, PipeTransform, Type, VenokContainer } from "@venok/core";
+import { InstanceWrapper, STATIC_CONTEXT } from "@venok/core/injector";
+import { isEmpty, isFunction } from "@venok/core/helpers";
 import { ContextCreator } from "@venok/core/context/creator";
-import { ApplicationConfig } from "@venok/core/application/config";
-import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { PIPES_METADATA } from "@venok/core/constants";
-import { isEmpty, isFunction } from "@venok/core/helpers/shared.helper";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
-import { Type } from "@venok/core/interfaces";
 
 export class PipesContextCreator extends ContextCreator {
   private moduleContext!: string;
@@ -34,9 +29,8 @@ export class PipesContextCreator extends ContextCreator {
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
   ): R {
-    if (isEmpty(metadata)) {
-      return [] as any as R;
-    }
+    if (isEmpty(metadata)) return [] as any as R;
+
     return metadata
       .filter((pipe: any) => pipe && (pipe.name || pipe.transform))
       .map((pipe) => this.getPipeInstance(pipe, contextId, inquirerId))
@@ -49,41 +43,36 @@ export class PipesContextCreator extends ContextCreator {
     inquirerId?: string,
   ): PipeTransform | null {
     const isObject = (pipe as PipeTransform).transform;
-    // @ts-ignore
-    if (isObject) {
-      return pipe as PipeTransform;
-    }
+
+    if (!!isObject) return pipe as PipeTransform;
+
     const instanceWrapper = this.getInstanceByMetatype(pipe as Type);
-    if (!instanceWrapper) {
-      return null;
-    }
+    if (!instanceWrapper) return null;
+
     const instanceHost = instanceWrapper.getInstanceByContextId(
       this.getContextId(contextId, instanceWrapper),
       inquirerId,
     );
+
     return instanceHost && instanceHost.instance;
   }
 
   public getInstanceByMetatype(metatype: Type): InstanceWrapper | undefined {
-    if (!this.moduleContext) {
-      return;
-    }
+    if (!this.moduleContext) return;
+
     const collection = this.container.getModules();
     const moduleRef = collection.get(this.moduleContext);
-    if (!moduleRef) {
-      return;
-    }
+    if (!moduleRef) return;
+
     return moduleRef.injectables.get(metatype);
   }
 
   public getGlobalMetadata<T extends unknown[]>(contextId = STATIC_CONTEXT, inquirerId?: string): T {
-    if (!this.config) {
-      return [] as any as T;
-    }
+    if (!this.config) return [] as any as T;
+
     const globalPipes = this.config.getGlobalPipes() as T;
-    if (contextId === STATIC_CONTEXT && !inquirerId) {
-      return globalPipes;
-    }
+    if (contextId === STATIC_CONTEXT && !inquirerId) return globalPipes;
+
     const scopedPipeWrappers = this.config.getGlobalRequestPipes() as InstanceWrapper[];
     const scopedPipes = scopedPipeWrappers
       .map((wrapper) => wrapper.getInstanceByContextId(this.getContextId(contextId, wrapper), inquirerId))

@@ -1,19 +1,22 @@
 import { expect } from "chai";
 import sinon from "sinon";
-import { NoopHttpAdapter } from "../../helpers/adapter.helper";
+import { NoopHttpAdapter } from "@venok/http/helpers";
 import { ExecutionContextHost } from "@venok/core/context/execution-host";
 import { HttpException } from "../../errors";
 import { HttpExceptionFilter } from "../../filters/filter";
 import { VenokProxy } from "@venok/core/context";
 import { VenokExceptionsHandler } from "@venok/core/exceptions/handler";
+import { VenokContainer } from "@venok/core";
 
 describe("RouterProxy", () => {
   let routerProxy: VenokProxy;
   let handler: VenokExceptionsHandler;
+  let container: VenokContainer;
   const httpException = new HttpException("test", 500);
   let nextStub: sinon.SinonStub;
   beforeEach(() => {
-    handler = new VenokExceptionsHandler(new HttpExceptionFilter(new NoopHttpAdapter({})));
+    container = new VenokContainer();
+    handler = new VenokExceptionsHandler(new HttpExceptionFilter(container));
     nextStub = sinon.stub(handler, "next");
     routerProxy = new VenokProxy();
   });

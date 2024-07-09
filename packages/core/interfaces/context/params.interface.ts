@@ -9,8 +9,9 @@ export interface ParamProperties<T = any, IExtractor extends Function = any> {
   extractValue: IExtractor;
 }
 
+/* TODO Delete number type */
 export interface ParamsFactory {
-  exchangeKeyForValue(type: number, data: ParamData, args: any): any;
+  exchangeKeyForValue(type: number | string, data: ParamData, args: any): any;
 }
 
 export type ParamsMetadata = Record<number, ParamMetadata>;

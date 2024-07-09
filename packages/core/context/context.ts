@@ -217,9 +217,10 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
         return { index, extractValue: customExtractValue, type, data, pipes };
       }
       const numericType = Number(type);
-      const extractValue = (...args: unknown[]) => paramsFactory.exchangeKeyForValue(numericType, data, args);
+      const extractValue = (...args: unknown[]) => paramsFactory.exchangeKeyForValue(type, data, args);
 
-      return { index, extractValue, type: numericType, data, pipes };
+      /* TODO Pass non numeric type */
+      return { index, extractValue, type, data, pipes };
     });
   }
 

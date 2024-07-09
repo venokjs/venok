@@ -2,7 +2,8 @@ import { expect } from "chai";
 import { Routes } from "../../interfaces";
 import { RouterModule, ROUTES, targetModulesByContainer } from "../../router/module";
 import { Module } from "@venok/core/injector/module/module";
-import { ModulesContainer, VenokContainer } from "@venok/core";
+import { VenokContainer } from "@venok/core";
+import { ModulesContainer } from "@venok/core/injector";
 
 class TestModuleClass {}
 

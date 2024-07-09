@@ -1,11 +1,9 @@
-import { ContextType } from "@venok/core/interfaces/context/arguments-host.interface";
-import { isEmpty } from "@venok/core/helpers/shared.helper";
-import { defer, mergeAll, Observable, switchMap } from "rxjs";
+import { defer, mergeAll, Observable, switchMap, from } from "rxjs";
 import { AsyncResource } from "node:async_hooks";
-import { fromPromise } from "rxjs/internal/observable/innerFrom";
-import { ExecutionContextHost } from "@venok/core/context/execution-host";
-import { Type } from "@venok/core/interfaces";
-import { CallHandler, VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface";
+
+import { CallHandler, ContextType, Type, VenokInterceptor } from "@venok/core";
+import { ExecutionContextHost } from "@venok/core/context";
+import { isEmpty } from "@venok/core/helpers";
 
 export class InterceptorsConsumer {
   public async intercept<TContext extends string = ContextType>(
@@ -16,9 +14,8 @@ export class InterceptorsConsumer {
     next: () => Promise<unknown>,
     type?: TContext,
   ): Promise<unknown> {
-    if (isEmpty(interceptors)) {
-      return next();
-    }
+    if (isEmpty(interceptors)) return next();
+
     const context = this.createContext(args, instance, callback);
     context.setType<TContext>(type as TContext);
 
@@ -31,6 +28,7 @@ export class InterceptorsConsumer {
       };
       return interceptors[i].intercept(context, handler);
     };
+
     return defer(() => nextFn()).pipe(mergeAll());
   }
 
@@ -43,7 +41,7 @@ export class InterceptorsConsumer {
   }
 
   public transformDeferred(next: () => Promise<any>): Observable<any> {
-    return fromPromise(next()).pipe(
+    return from(next()).pipe(
       switchMap((res) => {
         const isDeferred = res instanceof Promise || res instanceof Observable;
         return isDeferred ? res : Promise.resolve(res);

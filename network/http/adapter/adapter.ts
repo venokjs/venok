@@ -7,7 +7,7 @@ import {
   VenokApplicationOptions,
   VersioningOptions,
   VersionValue,
-} from "../interfaces";
+} from "@venok/http/interfaces";
 
 /**
  * @publicApi
@@ -102,27 +102,47 @@ export abstract class AbstractHttpAdapter<TServer = any, TRequest = any, TRespon
   }
 
   abstract close(): this | Promise<this>;
+
   abstract initHttpServer(options: VenokApplicationOptions): this;
+
   abstract useStaticAssets(...args: any[]): this;
+
   abstract setViewEngine(engine: string): this;
+
   abstract getRequestHostname(request: any): any;
+
   abstract getRequestMethod(request: any): any;
+
   abstract getRequestUrl(request: any): any;
+
   abstract status(response: any, statusCode: number): any;
+
   abstract reply(response: any, body: any, statusCode?: number): any;
+
   abstract end(response: any, message?: string): any;
+
   abstract render(response: any, view: string, options: any): any;
+
   abstract redirect(response: any, statusCode: number, url: string): any;
+
   abstract setErrorHandler(handler: Function, prefix?: string): any;
+
   abstract setNotFoundHandler(handler: Function, prefix?: string): any;
+
   abstract isHeadersSent(response: any): any;
+
   abstract setHeader(response: any, name: string, value: string): any;
+
   abstract registerParserMiddleware(prefix?: string, rawBody?: boolean): any;
+
   abstract enableCors(options: CorsOptions | CorsOptionsDelegate<TRequest>, prefix?: string): any;
+
   abstract createMiddlewareFactory(
     requestMethod: RequestMethod,
   ): ((path: string, callback: Function) => any) | Promise<(path: string, callback: Function) => any>;
+
   abstract getType(): string;
+
   abstract applyVersionFilter(
     handler: Function,
     version: VersionValue,
