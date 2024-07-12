@@ -1,23 +1,14 @@
 import { ArgumentMetadata, PipeTransform } from "@venok/core";
 
 export class PipesConsumer {
-  public async apply<TInput = unknown>(
-    value: TInput,
-    { metatype, type, data }: ArgumentMetadata,
-    pipes: PipeTransform[],
-  ) {
-    /* TODO Get type */
-    return this.applyPipes(value, { metatype, type, data }, pipes);
+  public async apply<TInput = unknown>(value: TInput, metadata: ArgumentMetadata, pipes: PipeTransform[]) {
+    return this.applyPipes<TInput>(value, metadata, pipes);
   }
 
-  public async applyPipes<TInput = unknown>(
-    value: TInput,
-    { metatype, type, data }: { metatype: any; type?: any; data?: any },
-    transforms: PipeTransform[],
-  ) {
+  public async applyPipes<TInput = unknown>(value: TInput, metadata: ArgumentMetadata, transforms: PipeTransform[]) {
     return transforms.reduce(async (deferredValue, pipe) => {
       const val = await deferredValue;
-      return pipe.transform(val, { metatype, type, data });
+      return pipe.transform(val, metadata);
     }, Promise.resolve(value));
   }
 }

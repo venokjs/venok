@@ -1,8 +1,9 @@
 import { uid } from "uid";
-import { Type } from "@venok/core/interfaces";
-import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
-import { CUSTOM_ROUTE_ARGS_METADATA, ROUTE_ARGS_METADATA } from "@venok/core/constants";
-import { isFunction, isNull } from "@venok/core/helpers/shared.helper";
+
+import { assignCustomParameterMetadata } from "@venok/core/helpers/metadata.helper";
+import { PipeTransform, Type } from "@venok/core/interfaces";
+import { ROUTE_ARGS_METADATA } from "@venok/core/constants";
+import { isFunction, isNull } from "@venok/core/helpers";
 
 export type ParamDecoratorEnhancer = ParameterDecorator;
 
@@ -10,48 +11,6 @@ export type ParamDecoratorEnhancer = ParameterDecorator;
  * @publicApi
  */
 export type CustomParamFactory<TData = any, TInput = any, TOutput = any> = (data: TData, input: TInput) => TOutput;
-
-export type ParamData = object | string | number;
-export interface RouteParamMetadata {
-  index: number;
-  data?: ParamData;
-}
-
-export function assignMetadata<TParamtype = any, TArgs = any>(
-  args: TArgs,
-  paramtype: TParamtype,
-  index: number,
-  data?: ParamData,
-  ...pipes: (Type<PipeTransform> | PipeTransform)[]
-) {
-  return {
-    ...args,
-    [`${paramtype}:${index}`]: {
-      index,
-      data,
-      pipes,
-    },
-  };
-}
-
-export function assignCustomParameterMetadata(
-  args: Record<number, any>,
-  paramtype: number | string,
-  index: number,
-  factory: CustomParamFactory,
-  data?: ParamData,
-  ...pipes: (Type<PipeTransform> | PipeTransform)[]
-) {
-  return {
-    ...args,
-    [`${paramtype}${CUSTOM_ROUTE_ARGS_METADATA}:${index}`]: {
-      index,
-      factory,
-      data,
-      pipes,
-    },
-  };
-}
 
 /**
  * Defines HTTP route param decorator

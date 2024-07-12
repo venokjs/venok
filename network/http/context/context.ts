@@ -1,5 +1,11 @@
 import { ExternalContextOptions, VenokContextCreator } from "@venok/core/context";
-import { ApplicationContext, ContextType, ParamsFactory, ParamsMetadata, PipeTransform } from "@venok/core";
+import {
+  ApplicationContext,
+  ContextType,
+  ParamsMetadata,
+  PipeTransform,
+  VenokParamsFactoryInterface,
+} from "@venok/core";
 import { ContextId, STATIC_CONTEXT } from "@venok/core/injector";
 import { isEmpty, isString } from "@venok/core/helpers";
 import { CustomHeader, RedirectResponse, RouterResponseController } from "@venok/http/context/response.controller";
@@ -58,7 +64,7 @@ export class HttpContextCreator extends VenokContextCreator {
     callback: (...args: unknown[]) => unknown,
     methodName: string,
     metadataKey?: string,
-    paramsFactory?: ParamsFactory,
+    paramsFactory?: VenokParamsFactoryInterface,
     contextId: ContextId = STATIC_CONTEXT,
     inquirerId?: string,
     options: ExternalContextOptions = {

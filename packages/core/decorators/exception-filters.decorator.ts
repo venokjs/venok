@@ -2,7 +2,7 @@ import { ExceptionFilter } from "@venok/core/interfaces/features/exception-filte
 import { isFunction } from "@venok/core/helpers/shared.helper";
 import { EXCEPTION_FILTERS_METADATA } from "@venok/core/constants";
 import { validateEach } from "@venok/core/helpers/validate-each.helper";
-import { extendArrayMetadata } from "@venok/core/helpers/extends-metadata.helper";
+import { extendArrayMetadata } from "@venok/core/helpers/metadata.helper";
 
 /**
  * Decorator that binds exception filters to the scope of the controller or

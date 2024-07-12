@@ -1,12 +1,13 @@
 import { isObservable, lastValueFrom, Observable } from "rxjs";
 
 import {
+  ArgumentMetadata,
   ContextType,
   CUSTOM_ROUTE_ARGS_METADATA,
   FORBIDDEN_MESSAGE,
   GetParamsMetadata,
   ParamProperties,
-  ParamsFactory,
+  VenokParamsFactoryInterface,
   ParamsMetadata,
   PipeTransform,
   Reflector,
@@ -89,7 +90,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     callback: (...args: unknown[]) => unknown,
     methodName: string,
     metadataKey?: string,
-    paramsFactory?: ParamsFactory,
+    paramsFactory?: VenokParamsFactoryInterface,
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
     options: ExternalContextOptions = {
@@ -119,7 +120,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     const paramsOptions = paramsMetadata ? this.contextUtils.mergeParamsMetatypes(paramsMetadata, paramtypes) : [];
 
     const fnCanActivate = options.guards ? this.createGuardsFn(guards, instance, callback, contextType) : null;
-    const fnApplyPipes = this.createPipesFn(pipes, paramsOptions);
+    const fnApplyPipes = this.createPipesFn(pipes, paramsOptions, contextType);
     const handler =
       (initialArgs: unknown[], ...args: unknown[]) =>
       async () => {
@@ -153,7 +154,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     instance: any,
     methodName: string,
     metadataKey?: string,
-    paramsFactory?: ParamsFactory,
+    paramsFactory?: VenokParamsFactoryInterface,
     contextType?: TContext,
   ): ExternalHandlerMetadata {
     const cacheMetadata = this.handlerMetadataStorage.get(instance, methodName);
@@ -199,7 +200,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     keys: string[],
     metadata: TMetadata,
     moduleContext: string,
-    paramsFactory: ParamsFactory,
+    paramsFactory: VenokParamsFactoryInterface,
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
     contextFactory = this.contextUtils.getContextFactory("native"),
@@ -216,21 +217,33 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
         const customExtractValue = this.contextUtils.getCustomFactory(factory, data, contextFactory);
         return { index, extractValue: customExtractValue, type, data, pipes };
       }
-      const numericType = Number(type);
+
       const extractValue = (...args: unknown[]) => paramsFactory.exchangeKeyForValue(type, data, args);
 
-      /* TODO Pass non numeric type */
       return { index, extractValue, type, data, pipes };
     });
   }
 
-  public createPipesFn(pipes: PipeTransform[], paramsOptions: (ParamProperties & { metatype?: unknown })[]) {
+  public createPipesFn(
+    pipes: PipeTransform[],
+    paramsOptions: (ParamProperties & { metatype?: unknown })[],
+    contextType: string,
+  ) {
     const pipesFn = async (args: unknown[], ...params: unknown[]) => {
       const resolveParamValue = async (param: ParamProperties & { metatype?: unknown }) => {
         const { index, extractValue, type, data, metatype, pipes: paramPipes } = param;
         const value = extractValue(...params);
 
-        args[index] = await this.getParamValue(value, { metatype, type, data }, pipes.concat(paramPipes));
+        args[index] = await this.getParamValue(
+          value,
+          {
+            metatype: metatype as any,
+            type,
+            data: data as any,
+            contextType,
+          },
+          pipes.concat(paramPipes),
+        );
       };
       await Promise.all(paramsOptions.map(resolveParamValue));
     };
@@ -239,10 +252,10 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
 
   public async getParamValue<T>(
     value: T,
-    { metatype, type, data }: { metatype: any; type: any; data: any },
+    { metatype, type, data, contextType }: ArgumentMetadata,
     pipes: PipeTransform[],
   ): Promise<any> {
-    return isEmpty(pipes) ? value : this.pipesConsumer.apply(value, { metatype, type, data }, pipes);
+    return isEmpty(pipes) ? value : this.pipesConsumer.apply(value, { metatype, type, data, contextType }, pipes);
   }
 
   public async transformToResult(resultOrDeferred: Observable<any> | any) {

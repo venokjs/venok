@@ -1,7 +1,7 @@
 import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
 import { isFunction } from "@venok/core/helpers/shared.helper";
 import { PIPES_METADATA } from "@venok/core/constants";
-import { extendArrayMetadata } from "@venok/core/helpers/extends-metadata.helper";
+import { extendArrayMetadata } from "@venok/core/helpers/metadata.helper";
 import { validateEach } from "@venok/core/helpers/validate-each.helper";
 
 /**
