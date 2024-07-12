@@ -1,4 +1,5 @@
 import { Type } from "../type.interface";
+
 export type Transform<T = any> = (value: T, metadata: ArgumentMetadata) => any;
 
 /**
@@ -21,6 +22,10 @@ export interface ArgumentMetadata {
    * Example: `@Body('userId')` would yield `userId`
    */
   readonly data?: string | undefined;
+  /**
+   * Current execution context type (string)
+   * */
+  readonly contextType: string;
 }
 
 /**

@@ -2,7 +2,7 @@ import { VenokInterceptor } from "@venok/core/interfaces/features/interceptor.in
 import { isFunction } from "@venok/core/helpers/shared.helper";
 import { INTERCEPTORS_METADATA } from "@venok/core/constants";
 import { validateEach } from "@venok/core/helpers/validate-each.helper";
-import { extendArrayMetadata } from "@venok/core/helpers/extends-metadata.helper";
+import { extendArrayMetadata } from "@venok/core/helpers/metadata.helper";
 
 /**
  * Decorator that binds interceptors to the scope of the provider or method,

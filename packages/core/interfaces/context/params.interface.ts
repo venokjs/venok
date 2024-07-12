@@ -1,5 +1,7 @@
-import { ParamData, PipeTransform } from "@venok/core";
+import { PipeTransform } from "@venok/core";
 import { ContextId } from "@venok/core/injector";
+
+export type ParamData = object | string | number;
 
 export interface ParamProperties<T = any, IExtractor extends Function = any> {
   index: number;
@@ -9,9 +11,8 @@ export interface ParamProperties<T = any, IExtractor extends Function = any> {
   extractValue: IExtractor;
 }
 
-/* TODO Delete number type */
-export interface ParamsFactory {
-  exchangeKeyForValue(type: number | string, data: ParamData, args: any): any;
+export interface VenokParamsFactoryInterface<TKey = unknown> {
+  exchangeKeyForValue(key: TKey | string, data: any, args: any[]): any;
 }
 
 export type ParamsMetadata = Record<number, ParamMetadata>;

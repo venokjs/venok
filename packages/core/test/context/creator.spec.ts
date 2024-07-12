@@ -116,7 +116,7 @@ describe("VenokContextCreator", () => {
   describe("createPipesFn", () => {
     describe('when "paramsOptions" is empty', () => {
       it("returns null", async () => {
-        const pipesFn = contextCreator.createPipesFn([], []);
+        const pipesFn = contextCreator.createPipesFn([], [], "native");
         expect(pipesFn).to.be.null;
       });
     });
@@ -133,6 +133,7 @@ describe("VenokContextCreator", () => {
               extractValue: () => null,
             },
           ],
+          "native",
         ) as any;
         await pipesFn([]);
         expect(pipesFn).to.be.a("function");

@@ -2,7 +2,7 @@ import { CanActivate } from "@venok/core/interfaces/features/guards.interface";
 import { isFunction } from "@venok/core/helpers/shared.helper";
 import { GUARDS_METADATA } from "@venok/core/constants";
 import { validateEach } from "@venok/core/helpers/validate-each.helper";
-import { extendArrayMetadata } from "@venok/core/helpers/extends-metadata.helper";
+import { extendArrayMetadata } from "@venok/core/helpers/metadata.helper";
 
 /**
  * Decorator that binds guards to the scope of the provider or method,

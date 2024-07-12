@@ -1,4 +1,4 @@
-import { extendArrayMetadata } from "@venok/core/helpers/extends-metadata.helper";
+import { extendArrayMetadata } from "@venok/core/helpers/metadata.helper";
 import { HEADERS_METADATA } from "../constants";
 
 /**
