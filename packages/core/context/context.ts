@@ -250,12 +250,8 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     return paramsOptions.length ? pipesFn : null;
   }
 
-  public async getParamValue<T>(
-    value: T,
-    { metatype, type, data, contextType }: ArgumentMetadata,
-    pipes: PipeTransform[],
-  ): Promise<any> {
-    return isEmpty(pipes) ? value : this.pipesConsumer.apply(value, { metatype, type, data, contextType }, pipes);
+  public async getParamValue<T>(value: T, metadata: ArgumentMetadata, pipes: PipeTransform[]): Promise<any> {
+    return isEmpty(pipes) ? value : this.pipesConsumer.apply(value, metadata, pipes);
   }
 
   public async transformToResult(resultOrDeferred: Observable<any> | any) {
