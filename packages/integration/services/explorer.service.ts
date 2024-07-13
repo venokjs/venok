@@ -21,7 +21,7 @@ export abstract class ExplorerService<T = any> extends Reflector {
   protected readonly type: string = "native";
   protected readonly withRequestScope: boolean = false;
   protected readonly requestArgIndex: number = 0;
-  protected readonly options = { guards: true, filters: false, interceptors: true };
+  protected readonly options = { guards: true, filters: true, interceptors: true };
 
   protected readonly exceptionsFilter: VenokExceptionFilterContext = new VenokExceptionFilterContext(
     this.container,

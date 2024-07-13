@@ -35,6 +35,8 @@ export class RoutesExplorer extends ExplorerService<ControllerDiscovery> impleme
 
   protected readonly type = "http";
   protected readonly withRequestScope = true;
+  protected readonly options = { guards: true, filters: false, interceptors: true };
+
   private readonly pathsExplorer = new PathsExplorer(this.metadataScanner);
 
   protected paramsFactory = new RouteParamsFactory();
