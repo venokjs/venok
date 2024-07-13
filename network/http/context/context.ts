@@ -70,7 +70,7 @@ export class HttpContextCreator extends VenokContextCreator {
     options: ExternalContextOptions = {
       interceptors: true,
       guards: true,
-      filters: true,
+      filters: false,
       callback: () => {},
     },
     contextType: TContext = "native" as TContext,
