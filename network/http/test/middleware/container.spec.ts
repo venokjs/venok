@@ -1,11 +1,8 @@
 import { expect } from "chai";
-import { Controller, RequestMapping } from "../../decorators";
-import { RequestMethod } from "../../enums";
+import { Controller, MiddlewareConfiguration, RequestMapping, RequestMethod } from "@venok/http";
 import { Injectable, VenokContainer } from "@venok/core";
-import { MiddlewareConfiguration, VenokMiddleware } from "../../interfaces";
-import { MiddlewareContainer } from "../../middleware/container";
-import { Module } from "@venok/core/injector/module/module";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
+import { MiddlewareContainer, VenokMiddleware } from "@venok/integration";
+import { InstanceWrapper, Module } from "@venok/core/injector";
 
 describe("MiddlewareContainer", () => {
   class ExampleModule {}
@@ -33,7 +30,7 @@ describe("MiddlewareContainer", () => {
     modules.set("Module", new Module(ExampleModule, nestContainer));
     modules.set("Test", new Module(ExampleModule, nestContainer));
 
-    container = new MiddlewareContainer(nestContainer);
+    container = new MiddlewareContainer();
   });
 
   it("should store expected configurations for given module", () => {

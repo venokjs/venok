@@ -32,7 +32,7 @@ export class HttpStarterModule<T extends HttpAppOptions2 = any> implements OnMod
   constructor(
     private readonly routesExplorer: RoutesExplorer,
     private readonly httpConfig: HttpConfig,
-    // private readonly middlewareService: HttpMiddlewareService,
+    private readonly middlewareService: HttpMiddlewareService,
     @Inject(HTTP_APP_OPTIONS) private readonly options: Required<T>,
     private readonly container: VenokContainer,
   ) {}
@@ -44,8 +44,8 @@ export class HttpStarterModule<T extends HttpAppOptions2 = any> implements OnMod
 
     this.options.callback && this.options.callback(new HttpApplication(this.options.adapter, this.httpConfig));
 
-    // await this.middlewareService.explore(HttpMiddlewareModule);
-    // await this.middlewareService.build();
+    await this.middlewareService.explore(HttpMiddlewareModule);
+    await this.middlewareService.build();
 
     this.routesExplorer.explore(Controller.KEY).forEach((item) => this.registerRoutes(item));
 
