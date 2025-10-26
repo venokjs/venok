@@ -89,7 +89,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
 
   public selectContextModule() {
     const modules = this.container.getModules().values();
-    this.contextModule = modules.next().value;
+    this.contextModule = modules.next().value!;
   }
 
   /**
