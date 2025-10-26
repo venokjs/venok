@@ -74,6 +74,11 @@ export class InstanceWrapper<T = any> {
   private transientMap: Map<string, WeakMap<ContextId, InstancePerContext<T>>> = new Map();
   private isTreeStatic: boolean | undefined;
   private isTreeDurable: boolean | undefined;
+  /**
+   * The root inquirer reference. Present only if child instance wrapper
+   * is transient and has a parent inquirer.
+   */
+  private rootInquirer: InstanceWrapper | undefined;
 
   constructor(metadata: Partial<InstanceWrapper<T>> & Partial<InstancePerContext<T>> = {}) {
     this.initialize(metadata);
@@ -325,12 +330,26 @@ export class InstanceWrapper<T = any> {
   public isStatic(contextId: ContextId, inquirer: InstanceWrapper | undefined): boolean {
     const isInquirerRequestScoped = inquirer && !inquirer.isDependencyTreeStatic();
     const isStaticTransient = this.isTransient && !isInquirerRequestScoped;
+    const rootInquirer = inquirer?.getRootInquirer();
 
     return (
       this.isDependencyTreeStatic() &&
       contextId === STATIC_CONTEXT &&
-      (!this.isTransient || (isStaticTransient && !!inquirer && !inquirer.isTransient))
+      (!this.isTransient ||
+        (isStaticTransient && !!inquirer && !inquirer.isTransient) ||
+        (isStaticTransient && !!rootInquirer && !rootInquirer.isTransient))
     );
+  }
+
+  public attachRootInquirer(inquirer: InstanceWrapper) {
+    /* Only attach root inquirer if the instance wrapper is transient */
+    if (!this.isTransient) return;
+
+    this.rootInquirer = inquirer.getRootInquirer() ?? inquirer;
+  }
+
+  public getRootInquirer(): InstanceWrapper | undefined {
+    return this.rootInquirer;
   }
 
   public getStaticTransientInstances() {

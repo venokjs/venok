@@ -220,8 +220,13 @@ export class Injector {
           return parentInquirer && parentInquirer.instance;
         }
         if (inquirer?.isTransient && parentInquirer) {
-          inquirer = parentInquirer;
-          inquirerId = this.getInquirerId(parentInquirer);
+          /*
+           * When `inquirer` is transient too, inherit the parent inquirer
+           * This is required to ensure that transient providers are only resolved
+           * when requested
+           */
+
+          inquirer.attachRootInquirer(parentInquirer);
         }
         const paramWrapper = await this.resolveSingleParam<T>(
           wrapper,
