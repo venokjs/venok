@@ -14,6 +14,7 @@ import { DependenciesScanner } from "@venok/core/scanner.js";
 import { isFunction, isNull } from "@venok/core/helpers/index.js";
 import { ExceptionsZone } from "@venok/core/exceptions/index.js";
 import { MESSAGES } from "@venok/core/constants.js";
+import { ConsoleLogger } from "@venok/core/services/console.service.js";
 
 /**
  * A valid Venok entry (or 'root') module reference.
@@ -144,9 +145,15 @@ export class VenokFactoryStatic {
   private registerLoggerConfiguration(options: ApplicationContextOptions | undefined) {
     if (!options) return;
 
-    const { logger, bufferLogs, autoFlushLogs } = options;
+    const { logger, bufferLogs, autoFlushLogs, forceConsole } = options;
 
     if (!!logger && !isNull(logger)) Logger.overrideLogger(logger);
+    else if (forceConsole) {
+      // If no custom logger is provided but forceConsole is true,
+      // create a ConsoleLogger with forceConsole option
+      const consoleLogger = new ConsoleLogger({ forceConsole: true });
+      Logger.overrideLogger(consoleLogger);
+    }
 
     if (bufferLogs) Logger.attachBuffer();
 

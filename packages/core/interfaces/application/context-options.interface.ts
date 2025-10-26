@@ -44,4 +44,11 @@ export class ApplicationContextOptions {
    * @default false
    */
   snapshot?: boolean;
+
+  /**
+   * If enabled, will force the use of console.log/console.error instead of process.stdout/stderr.write
+   * in the default ConsoleLogger. This is useful for test environments like Jest that can buffer console calls.
+   * @default false
+   */
+  forceConsole?: boolean;
 }

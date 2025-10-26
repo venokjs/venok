@@ -2,38 +2,14 @@ import { ConsoleLogger } from "@venok/core/services/console.service.js";
 import { Injectable } from "@venok/core/decorators/injectable.decorator.js";
 import { Optional } from "@venok/core/decorators/optional.decorator.js";
 import { isObject } from "@venok/core/helpers/shared.helper.js";
+import { isLogLevelEnabled } from "@venok/core/services/utils/index.js";
+
+export const LOG_LEVELS = ["verbose", "debug", "log", "warn", "error", "fatal"] as const satisfies string[];
 
 /**
  * @publicApi
  */
-export type LogLevel = "log" | "error" | "warn" | "debug" | "verbose" | "fatal";
-
-const LOG_LEVEL_VALUES: Record<LogLevel, number> = {
-  verbose: 0,
-  debug: 1,
-  log: 2,
-  warn: 3,
-  error: 4,
-  fatal: 5,
-};
-
-/**
- * Checks if target level is enabled.
- * @param targetLevel target level
- * @param logLevels array of enabled log levels
- */
-export function isLogLevelEnabled(targetLevel: LogLevel, logLevels: LogLevel[] | undefined): boolean {
-  if (!logLevels || (Array.isArray(logLevels) && logLevels?.length === 0)) {
-    return false;
-  }
-  if (logLevels.includes(targetLevel)) {
-    return true;
-  }
-  const highestLogLevelValue = logLevels.map((level) => LOG_LEVEL_VALUES[level]).sort((a, b) => b - a)?.[0];
-
-  const targetLevelValue = LOG_LEVEL_VALUES[targetLevel];
-  return targetLevelValue >= highestLogLevelValue;
-}
+export type LogLevel = (typeof LOG_LEVELS)[number];
 
 /**
  * @publicApi
@@ -105,7 +81,7 @@ const dateTimeFormatter = new Intl.DateTimeFormat(undefined, {
 @Injectable()
 export class Logger implements LoggerService {
   protected static logBuffer = new Array<LogBufferRecord>();
-  protected static staticInstanceRef: LoggerService = DEFAULT_LOGGER;
+  protected static staticInstanceRef?: LoggerService = DEFAULT_LOGGER;
   protected static logLevels?: LogLevel[];
   private static isBufferAttached: boolean;
 
@@ -146,7 +122,7 @@ export class Logger implements LoggerService {
         return this.registerLocalInstanceRef();
       }
     }
-    return Logger.staticInstanceRef;
+    return Logger.staticInstanceRef!;
   }
 
   /**
@@ -311,19 +287,19 @@ export class Logger implements LoggerService {
   }
 
   static overrideLogger(logger: LoggerService | LogLevel[] | boolean) {
-    if (Array.isArray(logger) && this.staticInstanceRef.setLogLevels) {
+    if (Array.isArray(logger)) {
       Logger.logLevels = logger;
-      return this.staticInstanceRef.setLogLevels(logger);
+      return this.staticInstanceRef?.setLogLevels?.(logger);
     }
     if (isObject(logger)) {
       if (logger instanceof Logger && logger.constructor !== Logger) {
         const errorMessage = `Using the "extends Logger" instruction is not allowed in Nest v9. Please, use "extends ConsoleLogger" instead.`;
-        this.staticInstanceRef.error(errorMessage);
+        this.staticInstanceRef?.error(errorMessage);
         throw new Error(errorMessage);
       }
       this.staticInstanceRef = logger as LoggerService;
     } else {
-      this.staticInstanceRef = undefined as any;
+      this.staticInstanceRef = undefined;
     }
   }
 
@@ -336,7 +312,7 @@ export class Logger implements LoggerService {
     if (this.localInstanceRef) {
       return this.localInstanceRef;
     }
-    this.localInstanceRef = new ConsoleLogger(this.context ?? "", {
+    this.localInstanceRef = new ConsoleLogger(this.context!, {
       timestamp: this.options?.timestamp,
       logLevels: Logger.logLevels,
     });
