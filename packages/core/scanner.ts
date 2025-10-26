@@ -85,7 +85,7 @@ export class DependenciesScanner {
     /*
      * Modules distance calculation should be done after all modules are scanned
      * but before global modules are registered (linked to all modules).
-     * Global modules have their distance set to -1 anyway.
+     * Global modules have their distance set to MAX anyway.
      */
     this.calculateModulesDistance();
 
@@ -300,7 +300,8 @@ export class DependenciesScanner {
       const moduleImports = moduleRef.imports;
       moduleImports.forEach((importedModuleRef) => {
         if (importedModuleRef) {
-          if (distance > importedModuleRef.distance) importedModuleRef.distance = distance;
+          if (distance > importedModuleRef.distance && !importedModuleRef.isGlobal)
+            importedModuleRef.distance = distance;
 
           calculateDistance(importedModuleRef, distance + 1);
         }
