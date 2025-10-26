@@ -69,6 +69,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
   private shutdownCleanupRef?: (...args: unknown[]) => unknown;
   private _instanceLinksHost!: InstanceLinksHost;
   private _moduleRefsForHooksByDistance?: Array<Module>;
+  private initializationPromise?: Promise<void>;
 
   protected get instanceLinksHost() {
     if (!this._instanceLinksHost) {
@@ -219,8 +220,8 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
   public async init(): Promise<this> {
     if (this.isInitialized) return this;
 
-    await this.callInitHook();
-    await this.callBootstrapHook();
+    this.initializationPromise = this.internalInit();
+    await this.initializationPromise;
 
     this.isInitialized = true;
     return this;
@@ -231,6 +232,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
    * @returns {Promise<void>}
    */
   public async close(signal?: string): Promise<void> {
+    await this.initializationPromise;
     await this.callDestroyHook();
     await this.callBeforeShutdownHook(signal);
     await this.dispose();
@@ -333,6 +335,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
         if (receivedSignal) return;
 
         receivedSignal = true;
+        await this.initializationPromise;
         await this.callDestroyHook();
         await this.callBeforeShutdownHook(signal);
         await this.dispose();
@@ -424,6 +427,11 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
       this.logger.error(error);
       throw new Error(error);
     }
+  }
+
+  private async internalInit() {
+    await this.callInitHook();
+    await this.callBootstrapHook();
   }
 
   private getModulesToTriggerHooksOn(): Module[] {
