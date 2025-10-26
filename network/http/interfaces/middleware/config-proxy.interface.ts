@@ -1,5 +1,5 @@
-import { Type } from "@venok/core";
-import { MiddlewareConsumer, RouteInfo } from "@venok/http/interfaces";
+import type { Type } from "@venok/core";
+import type { MiddlewareConsumer, RouteInfo } from "@venok/http/interfaces/index.js";
 
 /**
  * @publicApi

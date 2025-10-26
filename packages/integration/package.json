@@ -2,7 +2,8 @@
   "name": "@venok/integration",
   "version": "1.1.0",
   "description": "",
-  "author": "0x303133",
+  "author": "shiz-ceo",
+  "type": "module",
   "homepage": "",
   "main": "index.js",
   "types": "./index.d.ts",
@@ -16,22 +17,12 @@
   },
   "scripts": {
     "build": "venok build",
-    "postbuild": "ts-node ../../tools/move.ts integration",
     "test": "mocha test/**/*.spec.ts"
   },
   "peerDependencies": {
-    "@venok/core": "^1.1.0",
-    "uuid": "^9.0.1",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
-  },
-  "mocha": {
-    "require": [
-      "ts-node/register",
-      "tsconfig-paths/register",
-      "../../node_modules/reflect-metadata/Reflect.js",
-      "../../hooks/mocha-init-hook.ts"
-    ],
-    "exit": true
+    "@venok/core": "workspace:*",
+    "uuid": "catalog:",
+    "reflect-metadata": "catalog:",
+    "rxjs": "catalog:"
   }
 }

@@ -1,2 +1,2 @@
-export * from "./invalid-middleware.exception";
-export * from "./invalid-middleware-configuration.exception";
+export * from "./invalid-middleware.exception.js";
+export * from "./invalid-middleware-configuration.exception.js";

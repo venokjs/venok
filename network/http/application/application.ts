@@ -1,14 +1,15 @@
 import {
-  CorsOptions,
-  CorsOptionsDelegate,
-  GlobalPrefixOptions,
+  type CorsOptions,
+  type CorsOptionsDelegate,
+  type GlobalPrefixOptions,
   HttpConfig,
-  HttpServer,
-  VersioningOptions,
+  type HttpServer,
+  type VersioningOptions,
   VersioningType,
 } from "@venok/http";
-import { AbstractHttpAdapter } from "@venok/http/adapter/adapter";
-import { mapToExcludeRoute } from "@venok/http/middleware";
+import { AbstractHttpAdapter } from "@venok/http/adapter/adapter.js";
+import { mapToExcludeRoute } from "@venok/http/middleware/index.js";
+import type { VenokExpressBodyParserOptions, VenokExpressBodyParserType } from "@venok/express";
 
 export class HttpApplication {
   constructor(
@@ -61,6 +62,15 @@ export class HttpApplication {
 
   public setViewEngine(engineOrOptions: any): this {
     this.httpAdapter.setViewEngine && this.httpAdapter.setViewEngine(engineOrOptions);
+    return this;
+  }
+
+  public useBodyParser<Options = VenokExpressBodyParserOptions>(
+    type: VenokExpressBodyParserType,
+    rawBody: boolean,
+    options?: Omit<Options, "verify">,
+  ) {
+    this.httpAdapter.useBodyParser(type, rawBody, options);
     return this;
   }
 }

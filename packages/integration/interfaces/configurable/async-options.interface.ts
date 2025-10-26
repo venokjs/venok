@@ -1,5 +1,5 @@
-import { FactoryProvider, ModuleMetadata, Provider, Type } from "@venok/core/interfaces";
-import { DEFAULT_FACTORY_CLASS_METHOD_KEY } from "@venok/integration/configurable";
+import type { FactoryProvider, ModuleMetadata, Provider, Type } from "@venok/core/interfaces/index.js";
+import { DEFAULT_FACTORY_CLASS_METHOD_KEY } from "@venok/integration/configurable/index.js";
 
 /**
  * Interface that must be implemented by the module options factory class.

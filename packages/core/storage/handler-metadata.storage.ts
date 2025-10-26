@@ -1,5 +1,5 @@
-import { GetParamsMetadata, Provider, Type } from "@venok/core";
-import { PROVIDER_ID_KEY } from "@venok/core/injector";
+import type { GetParamsMetadata, Provider, Type } from "@venok/core";
+import { PROVIDER_ID_KEY } from "@venok/core/injector/index.js";
 
 export const HANDLER_METADATA_SYMBOL = Symbol.for("handler_metadata:cache");
 

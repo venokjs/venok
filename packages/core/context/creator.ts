@@ -1,5 +1,5 @@
-import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { ContextId, InstanceWrapper } from "@venok/core/injector/instance/wrapper";
+import { STATIC_CONTEXT } from "@venok/core/injector/constants.js";
+import { type ContextId, InstanceWrapper } from "@venok/core/injector/instance/wrapper.js";
 
 export abstract class ContextCreator {
   public abstract createConcreteContext<T extends any[], R extends any[]>(

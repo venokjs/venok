@@ -1,10 +1,10 @@
-import { Injector } from "@venok/core/injector/injector";
-import { Abstract, Scope, Type } from "@venok/core/interfaces";
-import { InvalidClassScopeException, UnknownElementException } from "@venok/core/errors/exceptions";
-import { Module } from "@venok/core/injector/module/module";
-import { ContextId } from "@venok/core/injector/instance/wrapper";
-import { InstanceLink, InstanceLinksHost } from "@venok/core/injector/instance/links-host";
-import { GetOrResolveOptions } from "@venok/core/interfaces/application/context.interface";
+import { Injector } from "@venok/core/injector/injector.js";
+import { type Abstract, Scope, type Type } from "@venok/core/interfaces/index.js";
+import { InvalidClassScopeException, UnknownElementException } from "@venok/core/errors/exceptions/index.js";
+import { Module } from "@venok/core/injector/module/module.js";
+import type { ContextId } from "@venok/core/injector/instance/wrapper.js";
+import type { InstanceLink, InstanceLinksHost } from "@venok/core/injector/instance/links-host.js";
+import type { GetOrResolveOptions } from "@venok/core/interfaces/application/context.interface.js";
 
 export abstract class AbstractInstanceResolver {
   protected abstract instanceLinksHost: InstanceLinksHost;

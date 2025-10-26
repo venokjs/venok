@@ -1,7 +1,7 @@
-import { Type } from "@venok/core/interfaces";
-import { DynamicModule } from "@venok/core/interfaces/modules/dynamic-module.interface";
-import { ForwardReference } from "@venok/core/interfaces/modules/forward-reference.interface";
-import { TokenFactory } from "@venok/core/injector/module/token-factory";
+import type { Type } from "@venok/core/interfaces/index.js";
+import type { DynamicModule } from "@venok/core/interfaces/modules/dynamic-module.interface.js";
+import type { ForwardReference } from "@venok/core/interfaces/modules/forward-reference.interface.js";
+import { TokenFactory } from "@venok/core/injector/module/token-factory.js";
 
 export interface ModuleFactory {
   type: Type;

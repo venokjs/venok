@@ -1,19 +1,19 @@
-import { Inject, Module, OnModuleInit, VenokContainer } from "@venok/core";
+import { Inject, Module, type OnModuleInit, VenokContainer } from "@venok/core";
 import { Controller, HttpMiddlewareModule } from "@venok/http";
 
-import { Logger } from "@venok/core/services/logger.service";
-import { isFunction } from "@venok/core/helpers";
-import { HttpConfig } from "@venok/http/application/config";
+import { Logger } from "@venok/core/services/logger.service.js";
+import { isFunction } from "@venok/core/helpers/index.js";
+import { HttpConfig } from "@venok/http/application/config.js";
 
-import { HTTP_APP_OPTIONS } from "@venok/http/application/http.module-defenition";
-import { AdapterErrorsHelper } from "@venok/http/helpers/errors.helper";
-import { RoutesExplorer } from "@venok/http/explorers/routes.explorer";
-import { HttpApplication } from "@venok/http/application/application";
-import { AbstractHttpAdapter } from "@venok/http/adapter/adapter";
-import { HttpMiddlewareService } from "@venok/http/middleware";
-import { VENOK_HTTP_SERVER_START } from "@venok/http/helpers";
-import { ControllerDiscovery } from "@venok/http/discovery";
-import { RouterMethodFactory } from "@venok/http/factory";
+import { HTTP_APP_OPTIONS } from "@venok/http/application/http.module-defenition.js";
+import { AdapterErrorsHelper } from "@venok/http/helpers/errors.helper.js";
+import { RoutesExplorer } from "@venok/http/explorers/routes.explorer.js";
+import { HttpApplication } from "@venok/http/application/application.js";
+import { AbstractHttpAdapter } from "@venok/http/adapter/adapter.js";
+import { HttpMiddlewareService } from "@venok/http/middleware/index.js";
+import { VENOK_HTTP_SERVER_START } from "@venok/http/helpers/index.js";
+import { ControllerDiscovery } from "@venok/http/discovery/index.js";
+import { RouterMethodFactory } from "@venok/http/factory/index.js";
 
 export interface HttpAppOptions2 {
   port: number;

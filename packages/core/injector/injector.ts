@@ -1,17 +1,17 @@
-import { InjectionToken, OptionalFactoryDependency } from "@venok/core/interfaces/modules";
+import type { InjectionToken, OptionalFactoryDependency } from "@venok/core/interfaces/modules/index.js";
 import {
-  ContextId,
-  InstancePerContext,
+  type ContextId,
+  type InstancePerContext,
   InstanceWrapper,
-  PropertyMetadata,
-} from "@venok/core/injector/instance/wrapper";
-import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { Logger, LoggerService } from "@venok/core/services/logger.service";
-import { Module } from "@venok/core/injector/module/module";
-import { CircularDependencyException, RuntimeException } from "@venok/core/errors/exceptions";
-import { isFunction, isNull, isObject, isString, isSymbol, isUndefined } from "@venok/core/helpers/shared.helper";
-import { Type, WithRequired } from "@venok/core/interfaces";
-import { SettlementSignal } from "@venok/core/injector/settlement-signal";
+  type PropertyMetadata,
+} from "@venok/core/injector/instance/wrapper.js";
+import { STATIC_CONTEXT } from "@venok/core/injector/constants.js";
+import { Logger, type LoggerService } from "@venok/core/services/logger.service.js";
+import { Module } from "@venok/core/injector/module/module.js";
+import { CircularDependencyException, RuntimeException } from "@venok/core/errors/exceptions/index.js";
+import { isFunction, isNull, isObject, isString, isSymbol, isUndefined } from "@venok/core/helpers/shared.helper.js";
+import type { Type, WithRequired } from "@venok/core/interfaces/index.js";
+import { SettlementSignal } from "@venok/core/injector/settlement-signal.js";
 import {
   INQUIRER,
   OPTIONAL_DEPS_METADATA,
@@ -19,11 +19,11 @@ import {
   PARAMTYPES_METADATA,
   PROPERTY_DEPS_METADATA,
   SELF_DECLARED_DEPS_METADATA,
-} from "@venok/core/constants";
-import { UndefinedDependencyException } from "@venok/core/errors/exceptions/undefined-dependency.exception";
-import { UnknownDependenciesException } from "@venok/core/errors/exceptions/unknown-dependencies.exception";
-import { colors } from "@venok/core/helpers/color.helper";
-import { Injectable } from "@venok/core/interfaces/injectable.interface";
+} from "@venok/core/constants.js";
+import { UndefinedDependencyException } from "@venok/core/errors/exceptions/undefined-dependency.exception.js";
+import { UnknownDependenciesException } from "@venok/core/errors/exceptions/unknown-dependencies.exception.js";
+import { colors } from "@venok/core/helpers/color.helper.js";
+import type { Injectable } from "@venok/core/interfaces/injectable.interface.js";
 
 /**
  * The type of injectable dependency
@@ -604,6 +604,11 @@ export class Injector {
     }
 
     if (isNull(inject) && isInContext) {
+      console.log(
+        metatype,
+        instances.map((i) => i.constructor),
+      );
+
       instanceHost.instance = wrapper.forwardRef
         ? Object.assign(instanceHost.instance, new (metatype as Type)(...instances))
         : new (metatype as Type)(...instances);

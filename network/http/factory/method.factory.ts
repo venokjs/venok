@@ -1,5 +1,5 @@
-import { HttpServer } from "@venok/http";
-import { RequestMethod } from "../enums";
+import type { HttpServer } from "@venok/http";
+import { RequestMethod } from "../enums/index.js";
 
 export class RouterMethodFactory {
   public get(target: HttpServer, requestMethod: RequestMethod): Function {

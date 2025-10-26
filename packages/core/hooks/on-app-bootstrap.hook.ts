@@ -1,9 +1,9 @@
-import { isFunction, isNull } from "@venok/core/helpers/shared.helper";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import { Module } from "@venok/core/injector/module/module";
-import { getNonTransientInstances, getTransientInstances } from "@venok/core/helpers/transient.helper";
-import { InjectionToken } from "@venok/core/interfaces";
-import { OnApplicationBootstrap } from "@venok/core/interfaces/hooks";
+import { isFunction, isNull } from "@venok/core/helpers/shared.helper.js";
+import { InstanceWrapper } from "@venok/core/injector/instance/wrapper.js";
+import { Module } from "@venok/core/injector/module/module.js";
+import { getNonTransientInstances, getTransientInstances } from "@venok/core/helpers/transient.helper.js";
+import type { InjectionToken } from "@venok/core/interfaces/index.js";
+import type { OnApplicationBootstrap } from "@venok/core/interfaces/hooks/index.js";
 
 /**
  * Checks if the given instance has the `onApplicationBootstrap` function

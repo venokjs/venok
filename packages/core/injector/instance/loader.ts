@@ -1,9 +1,9 @@
-import { InternalCoreModule } from "@venok/core/injector/internal-core-module/internal-core-module";
-import { Logger, LoggerService } from "@venok/core/services/logger.service";
-import { MODULE_INIT_MESSAGE } from "@venok/core/helpers/messages.helper";
-import { Injectable } from "@venok/core/interfaces/injectable.interface";
-import { Injector, Module, VenokContainer } from "@venok/core/injector";
-import { GraphInspector } from "@venok/core/inspector/graph-inspector";
+import { InternalCoreModule } from "@venok/core/injector/internal-core-module/internal-core-module.js";
+import { Logger, type LoggerService } from "@venok/core/services/logger.service.js";
+import { MODULE_INIT_MESSAGE } from "@venok/core/helpers/messages.helper.js";
+import { type Injectable } from "@venok/core/interfaces/injectable.interface.js";
+import { Injector, Module, VenokContainer } from "@venok/core/injector/index.js";
+import { GraphInspector } from "@venok/core/inspector/graph-inspector.js";
 
 export class InstanceLoader<TInjector extends Injector = Injector> {
   constructor(

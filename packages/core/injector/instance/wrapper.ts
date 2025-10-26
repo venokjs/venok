@@ -1,15 +1,15 @@
-import { FactoryProvider, InjectionToken, Provider } from "@venok/core/interfaces/modules";
-import { Module } from "@venok/core/injector/module/module";
-import { EnhancerSubtype } from "@venok/core/constants";
-import { Scope, Type } from "@venok/core/interfaces";
-import { SettlementSignal } from "@venok/core/injector/settlement-signal";
-import { STATIC_CONTEXT } from "@venok/core/injector/constants";
-import { isNull, isString, isUndefined } from "@venok/core/helpers/shared.helper";
-import { UuidFactory } from "@venok/core/helpers/uuid.helper";
-import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper";
-import { colors } from "@venok/core/helpers/color.helper";
-import { isClassProvider, isFactoryProvider, isValueProvider } from "@venok/core/injector/helpers/classifier.helper";
-import { Logger, LoggerService } from "@venok/core/services/logger.service";
+import type { FactoryProvider, InjectionToken, Provider } from "@venok/core/interfaces/modules/index.js";
+import { Module } from "@venok/core/injector/module/module.js";
+import type { EnhancerSubtype } from "@venok/core/constants.js";
+import { Scope, type Type } from "@venok/core/interfaces/index.js";
+import { SettlementSignal } from "@venok/core/injector/settlement-signal.js";
+import { STATIC_CONTEXT } from "@venok/core/injector/constants.js";
+import { isNull, isString, isUndefined } from "@venok/core/helpers/shared.helper.js";
+import { UuidFactory } from "@venok/core/helpers/uuid.helper.js";
+import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper.js";
+import { colors } from "@venok/core/helpers/color.helper.js";
+import { isClassProvider, isFactoryProvider, isValueProvider } from "@venok/core/injector/helpers/classifier.helper.js";
+import { Logger, type LoggerService } from "@venok/core/services/logger.service.js";
 
 export const INSTANCE_METADATA_SYMBOL = Symbol.for("instance_metadata:cache");
 export const INSTANCE_ID_SYMBOL = Symbol.for("instance_metadata:id");

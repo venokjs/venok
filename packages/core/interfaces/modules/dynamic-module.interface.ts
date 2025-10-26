@@ -1,5 +1,5 @@
-import { ModuleMetadata } from "@venok/core/interfaces/modules";
-import { Type } from "@venok/core/interfaces";
+import type { ModuleMetadata } from "@venok/core/interfaces/modules/index.js";
+import type { Type } from "@venok/core/interfaces/index.js";
 
 /**
  * Interface defining a Dynamic Module.

@@ -1,9 +1,10 @@
-import { SerializedGraphStatus } from '../serialized-graph';
-import { Edge } from './edge.interface';
-import { Entrypoint } from './entrypoint.interface';
-import { Extras } from './extras.interface';
-import { Node } from './node.interface';
-import { SerializedGraphMetadata } from './serialized-graph-metadata.interface';
+import type { Edge } from './edge.interface.js';
+import type { Entrypoint } from './entrypoint.interface.js';
+import type { Extras } from './extras.interface.js';
+import type { Node } from './node.interface.js';
+import type { SerializedGraphMetadata } from './serialized-graph-metadata.interface.js';
+
+export type SerializedGraphStatus = "partial" | "complete";
 
 export interface SerializedGraphJson {
   nodes: Record<string, Node>;

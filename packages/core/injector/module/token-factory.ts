@@ -1,10 +1,10 @@
 import { createHash } from "crypto";
 import stringify from "fast-safe-stringify";
 
-import { Type } from "@venok/core/interfaces";
-import { DynamicModule } from "@venok/core/interfaces/modules";
-import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper";
-import { isFunction, isSymbol } from "@venok/core/helpers/shared.helper";
+import type { Type } from "@venok/core/interfaces/index.js";
+import type { DynamicModule } from "@venok/core/interfaces/modules/index.js";
+import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper.js";
+import { isFunction, isSymbol } from "@venok/core/helpers/shared.helper.js";
 
 const CLASS_STR = "class ";
 const CLASS_STR_LEN = CLASS_STR.length;

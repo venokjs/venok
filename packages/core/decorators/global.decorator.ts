@@ -1,4 +1,4 @@
-import { GLOBAL_MODULE_METADATA } from "@venok/core/constants";
+import { GLOBAL_MODULE_METADATA } from "@venok/core/constants.js";
 
 /**
  * Decorator that makes a module global-scoped.

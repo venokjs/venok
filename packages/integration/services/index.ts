@@ -1,2 +1,2 @@
-export * from "./discovery.service";
-export * from "./explorer.service";
+export * from "./discovery.service.js";
+export * from "./explorer.service.js";

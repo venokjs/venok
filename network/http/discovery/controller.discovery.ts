@@ -1,9 +1,9 @@
-import { VenokBaseDiscovery } from "@venok/http/discovery/base.discovery";
-import { RouteDiscovery } from "@venok/http/discovery/route.discovery";
-import { HOST_METADATA, PATH_METADATA, VERSION_METADATA } from "@venok/http/constants";
-import { SCOPE_OPTIONS_METADATA } from "@venok/core/constants";
-import { ScopeOptions } from "@venok/core";
-import { VersionValue } from "@venok/http/interfaces";
+import { VenokBaseDiscovery } from "@venok/http/discovery/base.discovery.js";
+import { RouteDiscovery } from "@venok/http/discovery/route.discovery.js";
+import { HOST_METADATA, PATH_METADATA, VERSION_METADATA } from "@venok/http/constants.js";
+import { SCOPE_OPTIONS_METADATA } from "@venok/core/constants.js";
+import type { ScopeOptions } from "@venok/core";
+import type { VersionValue } from "@venok/http/interfaces/index.js";
 
 type ControllerDiscoveryMeta = {
   [PATH_METADATA]: string | string[];

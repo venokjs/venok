@@ -1,5 +1,5 @@
-import { MODULE_METADATA as metadataConstants } from "../constants";
-import { ModuleMetadata } from "@venok/core/interfaces/modules";
+import { MODULE_METADATA as metadataConstants } from "../constants.js";
+import type { ModuleMetadata } from "@venok/core/interfaces/modules/index.js";
 
 export const INVALID_MODULE_CONFIG_MESSAGE = (text: TemplateStringsArray, property: string) =>
   `Invalid property '${property}' passed into the @Module() decorator.`;

@@ -1,5 +1,5 @@
 import type { Server } from "http";
-import { AbstractHttpAdapter } from "@venok/http/adapter/adapter";
+import { AbstractHttpAdapter } from "@venok/http/adapter/adapter.js";
 import http from "http";
 import https from "https";
 import express from "express";
@@ -7,24 +7,24 @@ import { Duplex, pipeline } from "stream";
 import bodyparser, { json as bodyParserJson, urlencoded as bodyParserUrlencoded } from "body-parser";
 import cors from "cors";
 
-import { RouterMethodFactory } from "@venok/http/factory";
-import { Logger } from "@venok/core/services/logger.service";
+import { RouterMethodFactory } from "@venok/http/factory/index.js";
+import { Logger } from "@venok/core/services/logger.service.js";
 
-import { isFunction, isNull, isObject, isString, isUndefined } from "@venok/core/helpers/shared.helper";
-import { HttpStatus, RequestMethod, VersioningType } from "@venok/http/enums";
-import { ServeStaticOptions } from "../interfaces/express/serve-static-options.interface";
+import { isFunction, isNull, isObject, isString, isUndefined } from "@venok/core/helpers/shared.helper.js";
+import { HttpStatus, RequestMethod, VersioningType } from "@venok/http/enums/index.js";
+import type { ServeStaticOptions } from "../interfaces/express/serve-static-options.interface.js";
 import {
-  CorsOptions,
-  CorsOptionsDelegate,
-  VenokApplicationOptions,
+  type CorsOptions,
+  type CorsOptionsDelegate,
+  type VenokApplicationOptions,
   VERSION_NEUTRAL,
-  VersioningOptions,
-  VersionValue,
-} from "@venok/http/interfaces";
-import { InternalServerErrorException } from "@venok/http/errors";
-import { getBodyParserOptions } from "./utils/get-body-parser-options.util";
-import { VenokExpressBodyParserOptions, VenokExpressBodyParserType } from "../interfaces";
-import { StreamableFile } from "@venok/http/stream";
+  type VersioningOptions,
+  type VersionValue,
+} from "@venok/http/interfaces/index.js";
+import { InternalServerErrorException } from "@venok/http/errors/index.js";
+import { getBodyParserOptions } from "./utils/get-body-parser-options.util.js";
+import type { VenokExpressBodyParserOptions, VenokExpressBodyParserType } from "../interfaces/index.js";
+import { StreamableFile } from "@venok/http/stream/index.js";
 
 type VersionedRoute = <TRequest extends Record<string, any> = any, TResponse = any>(
   req: TRequest,

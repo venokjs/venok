@@ -1,4 +1,4 @@
-import { ModuleDefinition } from "@venok/core/interfaces/modules/definition.interface";
+import type { ModuleDefinition } from "@venok/core/interfaces/modules/definition.interface.js";
 
 export interface ModuleOverride {
   moduleToReplace: ModuleDefinition;

@@ -1,8 +1,8 @@
-import { DynamicModule, Inject, Module, MODULE_PATH, Type } from "@venok/core";
-import { ModulesContainer, Module as ModuleClass } from "@venok/core/injector";
+import { type DynamicModule, Inject, Module, MODULE_PATH, type Type } from "@venok/core";
+import { ModulesContainer, Module as ModuleClass } from "@venok/core/injector/index.js";
 
-import { Routes, RouteTree } from "@venok/http";
-import { flattenRoutePaths, normalizePath } from "@venok/http/helpers";
+import type { Routes, RouteTree } from "@venok/http";
+import { flattenRoutePaths, normalizePath } from "@venok/http/helpers/index.js";
 
 export const ROUTES = Symbol("ROUTES");
 

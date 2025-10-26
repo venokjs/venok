@@ -1,13 +1,20 @@
-import { Controller, HttpConfig, RouteDefinition, RouteInfo, VERSION_NEUTRAL, VersionValue } from "@venok/http";
-import { MetadataScanner, MODULE_PATH, Reflector, Type, VenokContainer } from "@venok/core";
+import {
+  Controller,
+  HttpConfig,
+  type RouteDefinition,
+  type RouteInfo,
+  VERSION_NEUTRAL,
+  type VersionValue,
+} from "@venok/http";
+import { MetadataScanner, MODULE_PATH, Reflector, type Type, VenokContainer } from "@venok/core";
 
-import { targetModulesByContainer } from "@venok/http/router/module";
-import { PathsExplorer } from "@venok/http/explorers/path.explorer";
-import { ControllerDiscovery } from "@venok/http/discovery";
-import { addLeadingSlash } from "@venok/http/helpers";
+import { targetModulesByContainer } from "@venok/http/router/module.js";
+import { PathsExplorer } from "@venok/http/explorers/path.explorer.js";
+import { ControllerDiscovery } from "@venok/http/discovery/index.js";
+import { addLeadingSlash } from "@venok/http/helpers/index.js";
 
-import { isString } from "@venok/core/helpers";
-import { Module } from "@venok/core/injector";
+import { isString } from "@venok/core/helpers/index.js";
+import { Module } from "@venok/core/injector/index.js";
 
 export class RoutesMapper {
   private readonly pathsExplorer: PathsExplorer;

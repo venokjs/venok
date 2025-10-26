@@ -1,5 +1,5 @@
-import { ExceptionHandler } from "@venok/core/exceptions/zone/handler";
-import { Logger } from "@venok/core/services/logger.service";
+import { ExceptionHandler } from "@venok/core/exceptions/zone/handler.js";
+import { Logger } from "@venok/core/services/logger.service.js";
 
 const DEFAULT_TEARDOWN = () => process.exit(1);
 

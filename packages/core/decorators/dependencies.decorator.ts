@@ -1,5 +1,5 @@
-import { PARAMTYPES_METADATA } from "@venok/core/constants";
-import { flatten } from "@venok/core/helpers/flatten.helper";
+import { PARAMTYPES_METADATA } from "@venok/core/constants.js";
+import { flatten } from "@venok/core/helpers/flatten.helper.js";
 
 /**
  * Decorator that sets required dependencies (required with a vanilla JavaScript objects)

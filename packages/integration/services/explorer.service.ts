@@ -4,15 +4,19 @@ import {
   Reflector,
   ROUTE_ARGS_METADATA,
   VenokContainer,
-  VenokContextCreatorInterface,
-  VenokParamsFactoryInterface,
+  type VenokContextCreatorInterface,
+  type VenokParamsFactoryInterface,
 } from "@venok/core";
 
-import { Injector, InstanceWrapper, STATIC_CONTEXT } from "@venok/core/injector";
-import { ExecutionContextHost, VenokContextCreator } from "@venok/core/context";
-import { VenokExceptionFilterContext } from "@venok/core/filters";
+// class Reflector {
+//   constructor() {}
+// }
 
-import { DiscoveryService } from "@venok/integration/services/discovery.service";
+import { Injector, InstanceWrapper, STATIC_CONTEXT } from "@venok/core/injector/index.js";
+import { ExecutionContextHost, VenokContextCreator } from "@venok/core/context/index.js";
+import { VenokExceptionFilterContext } from "@venok/core/filters/index.js";
+
+import { DiscoveryService } from "@venok/integration/services/discovery.service.js";
 
 @Injectable()
 export abstract class ExplorerService<T = any> extends Reflector {
@@ -23,18 +27,10 @@ export abstract class ExplorerService<T = any> extends Reflector {
   protected readonly requestArgIndex: number = 0;
   protected readonly options = { guards: true, filters: true, interceptors: true };
 
-  protected readonly exceptionsFilter: VenokExceptionFilterContext = new VenokExceptionFilterContext(
-    this.container,
-    this.container.applicationConfig,
-  );
+  protected readonly exceptionsFilter: VenokExceptionFilterContext;
   protected contextCreator: VenokContextCreatorInterface = this.externalContextCreator;
 
-  protected readonly wrappers = this.discoveryService.getProviders().filter((wrapper) => {
-    const { instance } = wrapper;
-    const prototype = instance ? Object.getPrototypeOf(instance) : null;
-
-    return this.withRequestScope ? instance && prototype : instance && prototype && wrapper.isDependencyTreeStatic();
-  });
+  protected readonly wrappers: InstanceWrapper[];
 
   private readonly exceptionFiltersCache = new WeakMap();
 
@@ -45,6 +41,13 @@ export abstract class ExplorerService<T = any> extends Reflector {
     protected readonly metadataScanner: MetadataScanner,
   ) {
     super();
+    this.exceptionsFilter = new VenokExceptionFilterContext(this.container, this.container.applicationConfig);
+    this.wrappers = this.discoveryService.getProviders().filter((wrapper) => {
+      const { instance } = wrapper;
+      const prototype = instance ? Object.getPrototypeOf(instance) : null;
+
+      return this.withRequestScope ? instance && prototype : instance && prototype && wrapper.isDependencyTreeStatic();
+    });
   }
 
   public explore(metadataKey: string): T[] {

@@ -1,5 +1,5 @@
 import { MetadataScanner, Module } from "@venok/core";
-import { DiscoveryService } from "@venok/integration/services/discovery.service";
+import { DiscoveryService } from "@venok/integration/services/discovery.service.js";
 
 /**
  * @publicApi

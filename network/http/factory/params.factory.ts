@@ -1,5 +1,5 @@
-import { RouteParamtypes } from "../enums";
-import { VenokParamsFactoryInterface } from "@venok/core";
+import { RouteParamtypes } from "../enums/index.js";
+import type { VenokParamsFactoryInterface } from "@venok/core";
 
 export class RouteParamsFactory implements VenokParamsFactoryInterface<RouteParamtypes> {
   public exchangeKeyForValue<TRequest extends Record<string, any> = any, TResponse = any, TResult = any>(

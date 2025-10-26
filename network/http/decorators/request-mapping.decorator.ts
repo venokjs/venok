@@ -1,5 +1,5 @@
-import { METHOD_METADATA, PATH_METADATA } from "../constants";
-import { RequestMethod } from "../enums";
+import { METHOD_METADATA, PATH_METADATA } from "../constants.js";
+import { RequestMethod } from "../enums/index.js";
 import { Reflector } from "@venok/core";
 
 export interface RequestMappingMetadata {

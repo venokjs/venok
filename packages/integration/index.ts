@@ -1,8 +1,8 @@
 import "reflect-metadata";
 
-export * from "./configurable";
-export * from "./interfaces";
-export * from "./middleware";
-export * from "./services";
+export * from "./configurable/index.js";
+export * from "./interfaces/index.js";
+export * from "./middleware/index.js";
+export * from "./services/index.js";
 
-export * from "./integration.module";
+export * from "./integration.module.js";

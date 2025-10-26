@@ -1,14 +1,14 @@
 import {
   HttpConfig,
   RequestMethod,
-  RoutePathMetadata,
+  type RoutePathMetadata,
   VERSION_NEUTRAL,
-  VersioningOptions,
+  type VersioningOptions,
   VersioningType,
-  VersionValue,
+  type VersionValue,
 } from "@venok/http";
-import { flatten, isUndefined } from "@venok/core/helpers";
-import { addLeadingSlash, isRouteExcluded, stripEndSlash } from "@venok/http/helpers";
+import { flatten, isUndefined } from "@venok/core/helpers/index.js";
+import { addLeadingSlash, isRouteExcluded, stripEndSlash } from "@venok/http/helpers/index.js";
 
 export class RoutePathFactory {
   constructor(private readonly config: HttpConfig) {}

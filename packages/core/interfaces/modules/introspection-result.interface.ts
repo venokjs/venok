@@ -1,4 +1,4 @@
-import { Scope } from "@venok/core/interfaces";
+import { Scope } from "@venok/core/interfaces/index.js";
 
 /**
  * @publicApi

@@ -1,5 +1,5 @@
-import { isUndefined } from "@venok/core/helpers/shared.helper";
-import { PARAMTYPES_METADATA, PROPERTY_DEPS_METADATA, SELF_DECLARED_DEPS_METADATA } from "@venok/core/constants";
+import { isUndefined } from "@venok/core/helpers/shared.helper.js";
+import { PARAMTYPES_METADATA, PROPERTY_DEPS_METADATA, SELF_DECLARED_DEPS_METADATA } from "@venok/core/constants.js";
 
 /**
  * Decorator that marks a constructor parameter as a target for

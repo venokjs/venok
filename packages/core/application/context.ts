@@ -1,4 +1,4 @@
-import {
+import type {
   Abstract,
   CanActivate,
   DynamicModule,
@@ -15,18 +15,18 @@ import {
   callModuleBootstrapHook,
   callModuleDestroyHook,
   callModuleInitHook,
-} from "@venok/core/hooks";
+} from "@venok/core/hooks/index.js";
 
-import { ApplicationContextOptions } from "@venok/core/interfaces/application/context-options.interface";
-import { Logger, LoggerService, LogLevel } from "@venok/core/services/logger.service";
-import { ContextId, Injector, Module, VenokContainer } from "@venok/core/injector";
-import { AbstractInstanceResolver } from "@venok/core/injector/instance/resolver";
-import { InstanceLinksHost } from "@venok/core/injector/instance/links-host";
-import { UnknownModuleException } from "@venok/core/errors/exceptions";
-import { ModuleCompiler } from "@venok/core/injector/module/compiler";
-import { ApplicationConfig } from "@venok/core/application/config";
-import { createContextId, isEmpty } from "@venok/core/helpers";
-import { MESSAGES } from "@venok/core/constants";
+import { ApplicationContextOptions } from "@venok/core/interfaces/application/context-options.interface.js";
+import { Logger, type LoggerService, type LogLevel } from "@venok/core/services/logger.service.js";
+import { type ContextId, Injector, Module, VenokContainer } from "@venok/core/injector/index.js";
+import { AbstractInstanceResolver } from "@venok/core/injector/instance/resolver.js";
+import { InstanceLinksHost } from "@venok/core/injector/instance/links-host.js";
+import { UnknownModuleException } from "@venok/core/errors/exceptions/index.js";
+import { ModuleCompiler } from "@venok/core/injector/module/compiler.js";
+import { ApplicationConfig } from "@venok/core/application/config.js";
+import { createContextId, isEmpty } from "@venok/core/helpers/index.js";
+import { MESSAGES } from "@venok/core/constants.js";
 
 /**
  * System signals which shut down a process

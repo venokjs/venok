@@ -1,10 +1,10 @@
 import { pathToRegexp } from "path-to-regexp";
 import { uid } from "uid";
-import { ExcludeRouteMetadata, HttpServer, RouteInfo } from "../interfaces";
-import { isFunction, isNumber, isString } from "@venok/core/helpers/shared.helper";
-import { RequestMethod } from "../enums";
-import { addLeadingSlash, isRouteExcluded } from "../helpers";
-import { Type } from "@venok/core";
+import type { ExcludeRouteMetadata, HttpServer, RouteInfo } from "../interfaces/index.js";
+import { isFunction, isNumber, isString } from "@venok/core/helpers/shared.helper.js";
+import { RequestMethod } from "../enums/index.js";
+import { addLeadingSlash, isRouteExcluded } from "../helpers/index.js";
+import type { Type } from "@venok/core";
 
 export const mapToExcludeRoute = (routes: (string | RouteInfo)[]): ExcludeRouteMetadata[] => {
   return routes.map((route) => {

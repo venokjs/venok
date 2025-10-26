@@ -1,5 +1,5 @@
-import { extendArrayMetadata } from "@venok/core/helpers/metadata.helper";
-import { HEADERS_METADATA } from "../constants";
+import { extendArrayMetadata } from "@venok/core/helpers/metadata.helper.js";
+import { HEADERS_METADATA } from "../constants.js";
 
 /**
  * Request method Decorator.  Sets a response header.

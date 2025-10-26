@@ -1,5 +1,5 @@
-import { Abstract, Type } from "@venok/core/interfaces";
-import { DynamicModule, Provider, ForwardReference } from "@venok/core/interfaces/modules";
+import type { Abstract, Type } from "@venok/core/interfaces/index.js";
+import type { DynamicModule, Provider, ForwardReference } from "@venok/core/interfaces/modules/index.js";
 
 /**
  * Interface defining the property object that describes the module.

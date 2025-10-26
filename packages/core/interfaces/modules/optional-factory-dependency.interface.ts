@@ -1,4 +1,4 @@
-import { InjectionToken } from "@venok/core/interfaces/modules";
+import type { InjectionToken } from "@venok/core/interfaces/modules/index.js";
 
 /**
  * @publicApi

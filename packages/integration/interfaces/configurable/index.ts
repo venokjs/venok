@@ -1,3 +1,3 @@
-export * from "./async-options.interface";
-export * from "./cls.interface";
-export * from "./host.interface";
+export * from "./async-options.interface.js";
+export * from "./cls.interface.js";
+export * from "./host.interface.js";

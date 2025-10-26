@@ -1,5 +1,5 @@
-import { Type } from "@venok/core";
-import { InstanceWrapper, ModulesContainer } from "@venok/core/injector";
+import type { Type } from "@venok/core";
+import { InstanceWrapper, ModulesContainer } from "@venok/core/injector/index.js";
 
 export class MetaHostStorage {
   /**
@@ -85,7 +85,7 @@ export class MetaHostStorage {
       // But since calling `wrapper.instance` could degrade overall performance
       // we must defer it as much we can.
       instanceWrapper.metatype || instanceWrapper.inject
-        ? instanceWrapper.instance?.constructor ?? instanceWrapper.metatype
+        ? (instanceWrapper.instance?.constructor ?? instanceWrapper.metatype)
         : instanceWrapper.metatype,
     );
   }

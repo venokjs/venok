@@ -1,7 +1,7 @@
-import { ExceptionFilter, FILTER_CATCH_EXCEPTIONS, Type, VenokContainer } from "@venok/core";
-import { InstanceWrapper, STATIC_CONTEXT } from "@venok/core/injector";
-import { isEmpty, isFunction } from "@venok/core/helpers";
-import { ContextCreator } from "@venok/core/context/creator";
+import { type ExceptionFilter, FILTER_CATCH_EXCEPTIONS, type Type, VenokContainer } from "@venok/core";
+import { InstanceWrapper, STATIC_CONTEXT } from "@venok/core/injector/index.js";
+import { isEmpty, isFunction } from "@venok/core/helpers/index.js";
+import { ContextCreator } from "@venok/core/context/creator.js";
 
 export class ExceptionFilterContextCreator extends ContextCreator {
   protected moduleContext!: string;

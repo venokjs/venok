@@ -1,5 +1,5 @@
-import { CATCH_WATERMARK, FILTER_CATCH_EXCEPTIONS } from "@venok/core/constants";
-import { Abstract, Type } from "@venok/core/interfaces";
+import { CATCH_WATERMARK, FILTER_CATCH_EXCEPTIONS } from "@venok/core/constants.js";
+import type { Abstract, Type } from "@venok/core/interfaces/index.js";
 
 /**
  * Decorator that marks a class as a Venok exception filter. An exception filter

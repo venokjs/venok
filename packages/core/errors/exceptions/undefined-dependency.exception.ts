@@ -1,7 +1,7 @@
-import { InjectorDependencyContext } from "../../injector/injector";
-import { UNKNOWN_DEPENDENCIES_MESSAGE } from "../messages";
-import { RuntimeException } from "./runtime.exception";
-import { Module } from "../../injector/module/module";
+import type { InjectorDependencyContext } from "../../injector/injector.js";
+import { UNKNOWN_DEPENDENCIES_MESSAGE } from "../messages.js";
+import { RuntimeException } from "./runtime.exception.js";
+import { Module } from "../../injector/module/module.js";
 
 export class UndefinedDependencyException extends RuntimeException {
   constructor(type: string, undefinedDependencyContext: InjectorDependencyContext, module: Module) {

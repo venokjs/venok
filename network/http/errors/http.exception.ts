@@ -1,5 +1,5 @@
-import { isObject, isString } from "@venok/core/helpers/shared.helper";
-import { HttpExceptionBody, HttpExceptionBodyMessage } from "../interfaces/http/exception.interface";
+import { isObject, isString } from "@venok/core/helpers/shared.helper.js";
+import type { HttpExceptionBody, HttpExceptionBodyMessage } from "../interfaces/http/exception.interface.js";
 
 export interface HttpExceptionOptions {
   /** original cause of the error */

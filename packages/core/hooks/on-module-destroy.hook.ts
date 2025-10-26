@@ -1,9 +1,9 @@
-import { InjectionToken } from "@venok/core/interfaces";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import { getNonTransientInstances, getTransientInstances } from "@venok/core/helpers/transient.helper";
-import { Module } from "@venok/core/injector/module/module";
-import { isFunction, isNull } from "@venok/core/helpers/shared.helper";
-import { OnModuleDestroy } from "@venok/core/interfaces/hooks";
+import type { InjectionToken } from "@venok/core/interfaces/index.js";
+import { InstanceWrapper } from "@venok/core/injector/instance/wrapper.js";
+import { getNonTransientInstances, getTransientInstances } from "@venok/core/helpers/transient.helper.js";
+import { Module } from "@venok/core/injector/module/module.js";
+import { isFunction, isNull } from "@venok/core/helpers/shared.helper.js";
+import type { OnModuleDestroy } from "@venok/core/interfaces/hooks/index.js";
 
 /**
  * Returns true or false if the given instance has a `onModuleDestroy` function

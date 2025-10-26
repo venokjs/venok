@@ -1,13 +1,13 @@
-import { Injector } from "@venok/core/injector/injector";
-import { Scope, Type } from "@venok/core/interfaces";
-import { ContextId, InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import { IntrospectionResult } from "@venok/core/interfaces/modules";
-import { Module } from "@venok/core/injector/module/module";
-import { AbstractInstanceResolver } from "@venok/core/injector/instance/resolver";
-import { InstanceLinksHost } from "@venok/core/injector/instance/links-host";
-import { VenokContainer } from "@venok/core/injector/container";
-import { getClassScope } from "@venok/core/injector/helpers/class-scope.helper";
-import { isDurable } from "@venok/core/injector/helpers/is-durable.helper";
+import { Injector } from "@venok/core/injector/injector.js";
+import { Scope, type Type } from "@venok/core/interfaces/index.js";
+import { type ContextId, InstanceWrapper } from "@venok/core/injector/instance/wrapper.js";
+import type { IntrospectionResult } from "@venok/core/interfaces/modules/index.js";
+import { Module } from "@venok/core/injector/module/module.js";
+import { AbstractInstanceResolver } from "@venok/core/injector/instance/resolver.js";
+import { InstanceLinksHost } from "@venok/core/injector/instance/links-host.js";
+import { VenokContainer } from "@venok/core/injector/container.js";
+import { getClassScope } from "@venok/core/injector/helpers/class-scope.helper.js";
+import { isDurable } from "@venok/core/injector/helpers/is-durable.helper.js";
 
 export interface ModuleRefGetOrResolveOpts {
   /**

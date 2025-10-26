@@ -1,31 +1,31 @@
 import { isObservable, lastValueFrom, Observable } from "rxjs";
 
 import {
-  ArgumentMetadata,
-  ContextType,
+  type ArgumentMetadata,
+  type ContextType,
   CUSTOM_ROUTE_ARGS_METADATA,
   FORBIDDEN_MESSAGE,
-  GetParamsMetadata,
-  ParamProperties,
-  VenokParamsFactoryInterface,
-  ParamsMetadata,
-  PipeTransform,
+  type GetParamsMetadata,
+  type ParamProperties,
+  type VenokParamsFactoryInterface,
+  type ParamsMetadata,
+  type PipeTransform,
   Reflector,
   VenokContainer,
-  VenokContextCreatorInterface,
+  type VenokContextCreatorInterface,
 } from "@venok/core";
 
-import { ModulesContainer, STATIC_CONTEXT } from "@venok/core/injector";
-import { ContextUtils, isEmpty } from "@venok/core/helpers";
-import { VenokProxy } from "@venok/core/context/proxy";
+import { ModulesContainer, STATIC_CONTEXT } from "@venok/core/injector/index.js";
+import { ContextUtils, isEmpty } from "@venok/core/helpers/index.js";
+import { VenokProxy } from "@venok/core/context/proxy.js";
 
-import { InterceptorsConsumer, InterceptorsContextCreator } from "@venok/core/interceptors";
-import { GuardsConsumer, GuardsContextCreator } from "@venok/core/guards";
-import { PipesConsumer, PipesContextCreator } from "@venok/core/pipes";
-import { VenokExceptionFilterContext } from "@venok/core/filters";
+import { InterceptorsConsumer, InterceptorsContextCreator } from "@venok/core/interceptors/index.js";
+import { GuardsConsumer, GuardsContextCreator } from "@venok/core/guards/index.js";
+import { PipesConsumer, PipesContextCreator } from "@venok/core/pipes/index.js";
+import { VenokExceptionFilterContext } from "@venok/core/filters/index.js";
 
-import { RuntimeException } from "@venok/core/errors/exceptions";
-import { HandlerMetadataStorage } from "@venok/core/storage/handler-metadata.storage";
+import { RuntimeException } from "@venok/core/errors/exceptions/index.js";
+import { HandlerMetadataStorage } from "@venok/core/storage/handler-metadata.storage.js";
 
 export interface ExternalHandlerMetadata {
   argsLength: number;

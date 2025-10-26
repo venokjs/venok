@@ -1,14 +1,14 @@
-import { UnknownDependenciesException } from "../errors/exceptions/unknown-dependencies.exception";
-import { VenokContainer } from "../injector/container";
-import { Module } from "../injector/module/module";
-import { EnhancerMetadataCacheEntry } from "./interfaces/enhancer-metadata-cache-entry.interface";
-import { Entrypoint } from "./interfaces/entrypoint.interface";
-import { OrphanedEnhancerDefinition } from "./interfaces/extras.interface";
-import { ClassNode, Node } from "./interfaces/node.interface";
-import { PartialGraphHost } from "./partial-graph.host";
-import { SerializedGraph } from "./serialized-graph";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import { DeterministicUuidRegistry } from "@venok/core/helpers/uuid.helper";
+import { UnknownDependenciesException } from "../errors/exceptions/unknown-dependencies.exception.js";
+import { VenokContainer } from "../injector/container.js";
+import { Module } from "../injector/module/module.js";
+import type { EnhancerMetadataCacheEntry } from "./interfaces/enhancer-metadata-cache-entry.interface.js";
+import type { Entrypoint } from "./interfaces/entrypoint.interface.js";
+import type { OrphanedEnhancerDefinition } from "./interfaces/extras.interface.js";
+import type { ClassNode, Node } from "./interfaces/node.interface.js";
+import { PartialGraphHost } from "./partial-graph.host.js";
+import { SerializedGraph } from "./serialized-graph.js";
+import { InstanceWrapper } from "@venok/core/injector/instance/wrapper.js";
+import { DeterministicUuidRegistry } from "@venok/core/helpers/uuid.helper.js";
 
 export class GraphInspector {
   private readonly graph: SerializedGraph;

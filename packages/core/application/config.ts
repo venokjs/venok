@@ -1,5 +1,5 @@
-import { CanActivate, ExceptionFilter, PipeTransform, VenokInterceptor } from "@venok/core/interfaces";
-import { InstanceWrapper } from "@venok/core/injector";
+import type { CanActivate, ExceptionFilter, PipeTransform, VenokInterceptor } from "@venok/core/interfaces/index.js";
+import { InstanceWrapper } from "@venok/core/injector/index.js";
 
 export class ApplicationConfig {
   private globalPipes: Array<PipeTransform> = [];

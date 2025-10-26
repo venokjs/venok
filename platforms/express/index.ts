@@ -1,8 +1,8 @@
-import { ExpressAdapter } from "@venok/express/adapters";
+import { ExpressAdapter } from "@venok/express/adapters/index.js";
 
-export * from "./adapters";
-export * from "./interfaces";
-export * from "./multer";
+export * from "./adapters/index.js";
+export * from "./interfaces/index.js";
+export * from "./multer/index.js";
 
 declare global {
   interface HttpAppOptions {

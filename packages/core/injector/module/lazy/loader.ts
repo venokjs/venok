@@ -1,14 +1,14 @@
-import { InstanceLoader } from "@venok/core/injector/instance/loader";
-import { ModuleCompiler } from "@venok/core/injector/module/compiler";
-import { ModulesContainer } from "@venok/core/injector/module/container";
-import { DynamicModule } from "@venok/core/interfaces/modules";
-import { Type } from "@venok/core/interfaces";
-import { ModuleRef } from "@venok/core/injector/module/ref";
-import { LazyModuleLoaderLoadOptions } from "@venok/core/injector/module/lazy/options";
-import { Module } from "@venok/core/injector/module/module";
-import { ModuleOverride } from "@venok/core/interfaces/modules/override.interface";
-import { SilentLogger } from "@venok/core/helpers/silent.helper";
-import { DependenciesScanner } from "@venok/core/scanner";
+import { InstanceLoader } from "@venok/core/injector/instance/loader.js";
+import { ModuleCompiler } from "@venok/core/injector/module/compiler.js";
+import { ModulesContainer } from "@venok/core/injector/module/container.js";
+import type { DynamicModule } from "@venok/core/interfaces/modules/index.js";
+import type { Type } from "@venok/core/interfaces/index.js";
+import { ModuleRef } from "@venok/core/injector/module/ref.js";
+import type { LazyModuleLoaderLoadOptions } from "@venok/core/injector/module/lazy/options.js";
+import { Module } from "@venok/core/injector/module/module.js";
+import type { ModuleOverride } from "@venok/core/interfaces/modules/override.interface.js";
+import { SilentLogger } from "@venok/core/helpers/silent.helper.js";
+import { DependenciesScanner } from "@venok/core/scanner.js";
 
 export class LazyModuleLoader {
   constructor(

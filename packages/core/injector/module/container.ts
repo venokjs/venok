@@ -1,6 +1,6 @@
 import { uid } from "uid";
 
-import { Module } from "./module";
+import { Module } from "./module.js";
 
 export class ModulesContainer extends Map<string, Module> {
   readonly #applicationId = uid(21);

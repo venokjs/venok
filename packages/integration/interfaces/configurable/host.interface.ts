@@ -1,5 +1,5 @@
-import { ConfigurableModuleCls } from "@venok/integration/interfaces/configurable/cls.interface";
-import { ConfigurableModuleAsyncOptions } from "@venok/integration/interfaces/configurable/async-options.interface";
+import type { ConfigurableModuleCls } from "@venok/integration/interfaces/configurable/cls.interface.js";
+import type { ConfigurableModuleAsyncOptions } from "@venok/integration/interfaces/configurable/async-options.interface.js";
 
 /**
  * Configurable module host. See properties for more details

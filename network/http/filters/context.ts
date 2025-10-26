@@ -1,5 +1,5 @@
-import { HttpExceptionFilter } from "./filter";
-import { VenokExceptionFilterContext } from "@venok/core/filters/context";
+import { HttpExceptionFilter } from "./filter.js";
+import { VenokExceptionFilterContext } from "@venok/core/filters/context.js";
 
 export class RouterExceptionFiltersContext extends VenokExceptionFilterContext {
   public override getExceptionFilter() {

@@ -1,8 +1,8 @@
-import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
-import { isFunction } from "@venok/core/helpers/shared.helper";
-import { PIPES_METADATA } from "@venok/core/constants";
-import { extendArrayMetadata } from "@venok/core/helpers/metadata.helper";
-import { validateEach } from "@venok/core/helpers/validate-each.helper";
+import type { PipeTransform } from "@venok/core/interfaces/features/pipes.interface.js";
+import { isFunction } from "@venok/core/helpers/shared.helper.js";
+import { PIPES_METADATA } from "@venok/core/constants.js";
+import { extendArrayMetadata } from "@venok/core/helpers/metadata.helper.js";
+import { validateEach } from "@venok/core/helpers/validate-each.helper.js";
 
 /**
  * Decorator that binds pipes to the scope of the provider or method,

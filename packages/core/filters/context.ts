@@ -1,15 +1,15 @@
 import {
   ApplicationConfig,
   EXCEPTION_FILTERS_METADATA,
-  ExceptionFilter,
-  ExceptionFilterMetadata,
+  type ExceptionFilter,
+  type ExceptionFilterMetadata,
   VenokContainer,
 } from "@venok/core";
-import { ExceptionFilterContextCreator } from "@venok/core/filters/context-creator";
-import { InstanceWrapper, STATIC_CONTEXT } from "@venok/core/injector";
-import { VenokExceptionFilter } from "@venok/core/filters/filter";
-import { VenokExceptionsHandler } from "@venok/core/exceptions";
-import { isEmpty } from "@venok/core/helpers";
+import { ExceptionFilterContextCreator } from "@venok/core/filters/context-creator.js";
+import { InstanceWrapper, STATIC_CONTEXT } from "@venok/core/injector/index.js";
+import { VenokExceptionFilter } from "@venok/core/filters/filter.js";
+import { VenokExceptionsHandler } from "@venok/core/exceptions/index.js";
+import { isEmpty } from "@venok/core/helpers/index.js";
 
 export class VenokExceptionFilterContext extends ExceptionFilterContextCreator {
   constructor(

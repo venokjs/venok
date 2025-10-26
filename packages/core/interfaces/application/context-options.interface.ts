@@ -1,4 +1,4 @@
-import { LoggerService, LogLevel } from "@venok/core/services/logger.service";
+import type { LoggerService, LogLevel } from "@venok/core/services/logger.service.js";
 
 /**
  * @publicApi

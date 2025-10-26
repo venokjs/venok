@@ -1,4 +1,4 @@
-import { RequestMethod } from "../../enums";
+import { RequestMethod } from "../../enums/index.js";
 
 export interface ExcludeRouteMetadata {
   /**

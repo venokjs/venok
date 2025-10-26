@@ -1,5 +1,5 @@
-import { AbstractHttpAdapter } from "../adapter/adapter";
-import { HttpAdapterHost } from "../adapter/host";
+import { AbstractHttpAdapter } from "../adapter/adapter.js";
+import { HttpAdapterHost } from "../adapter/host.js";
 
 export class HttpInstanceStorage {
   private readonly _httpAdapterHost = new HttpAdapterHost();

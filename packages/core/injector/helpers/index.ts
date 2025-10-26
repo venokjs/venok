@@ -1,3 +1,3 @@
-export * from "./class-scope.helper";
-export * from "./classifier.helper";
-export * from "./is-durable.helper";
+export * from "./class-scope.helper.js";
+export * from "./classifier.helper.js";
+export * from "./is-durable.helper.js";

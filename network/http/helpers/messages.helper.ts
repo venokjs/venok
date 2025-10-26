@@ -1,5 +1,5 @@
-import { RequestMethod } from "../enums";
-import { VERSION_NEUTRAL, VersionValue } from "../interfaces/router/version-options.interface";
+import { RequestMethod } from "../enums/index.js";
+import { VERSION_NEUTRAL, type VersionValue } from "../interfaces/router/version-options.interface.js";
 
 export const ROUTE_MAPPED_MESSAGE = (path: string, method: string | number) =>
   `Mapped {${path}, ${RequestMethod[method as any]}} route`;

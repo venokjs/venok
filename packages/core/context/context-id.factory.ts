@@ -1,6 +1,6 @@
 import { REQUEST_CONTEXT_ID } from "@venok/core";
-import { createContextId, isObject } from "@venok/core/helpers";
-import { ContextId, HostComponentInfo } from "@venok/core/injector";
+import { createContextId, isObject } from "@venok/core/helpers/index.js";
+import type { ContextId, HostComponentInfo } from "@venok/core/injector/index.js";
 
 export type ContextIdResolverFn = (info: HostComponentInfo) => ContextId;
 

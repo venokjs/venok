@@ -1,5 +1,5 @@
-import { Type } from "@venok/core";
-import { MiddlewareConfigProxy } from "./config-proxy.interface";
+import type { Type } from "@venok/core";
+import type { MiddlewareConfigProxy } from "./config-proxy.interface.js";
 
 /**
  * Interface defining method for applying user defined middleware to routes.

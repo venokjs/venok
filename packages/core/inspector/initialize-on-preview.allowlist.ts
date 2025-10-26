@@ -1,4 +1,4 @@
-import { Type } from "@venok/core/interfaces";
+import type { Type } from "@venok/core/interfaces/index.js";
 
 export class InitializeOnPreviewAllowlist {
   private static readonly allowlist = new WeakMap<Type, boolean>();

@@ -1,4 +1,4 @@
-import { ArgumentMetadata, PipeTransform } from "@venok/core";
+import type { ArgumentMetadata, PipeTransform } from "@venok/core";
 
 export class PipesConsumer {
   public async apply<TInput = unknown>(value: TInput, metadata: ArgumentMetadata, pipes: PipeTransform[]) {

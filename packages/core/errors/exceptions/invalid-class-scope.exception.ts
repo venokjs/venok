@@ -1,7 +1,7 @@
-import { INVALID_CLASS_SCOPE_MESSAGE } from "../messages";
-import { RuntimeException } from "./runtime.exception";
-import { Abstract, Type } from "@venok/core/interfaces";
-import { isFunction } from "@venok/core/helpers/shared.helper";
+import { INVALID_CLASS_SCOPE_MESSAGE } from "../messages.js";
+import { RuntimeException } from "./runtime.exception.js";
+import type { Abstract, Type } from "@venok/core/interfaces/index.js";
+import { isFunction } from "@venok/core/helpers/shared.helper.js";
 
 export class InvalidClassScopeException extends RuntimeException {
   constructor(metatypeOrToken: Type | Abstract<any> | string | symbol) {

@@ -1,6 +1,6 @@
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import { EnhancerSubtype } from "@venok/core/constants";
-import { Type } from "@venok/core/interfaces";
+import { InstanceWrapper } from "@venok/core/injector/instance/wrapper.js";
+import type { EnhancerSubtype } from "@venok/core/constants.js";
+import type { Type } from "@venok/core/interfaces/index.js";
 
 export interface EnhancerMetadataCacheEntry {
   targetNodeId?: string;

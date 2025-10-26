@@ -1,22 +1,22 @@
 import {
   ApplicationConfig,
-  CanActivate,
-  ClassProvider,
-  DynamicModule,
-  ExceptionFilter,
-  ExistingProvider,
-  FactoryProvider,
-  ForwardReference,
-  InjectionToken,
+  type CanActivate,
+  type ClassProvider,
+  type DynamicModule,
+  type ExceptionFilter,
+  type ExistingProvider,
+  type FactoryProvider,
+  type ForwardReference,
+  type InjectionToken,
   MetadataScanner,
-  ModuleDefinition,
-  PipeTransform,
-  Provider,
+  type ModuleDefinition,
+  type PipeTransform,
+  type Provider,
   Scope,
-  Type,
-  ValueProvider,
+  type Type,
+  type ValueProvider,
   VenokContainer,
-  VenokInterceptor,
+  type VenokInterceptor,
 } from "@venok/core";
 import {
   APP_FILTER,
@@ -26,7 +26,7 @@ import {
   CATCH_WATERMARK,
   ENHANCER_KEY_TO_SUBTYPE_MAP,
   ENHANCER_TOKEN_TO_SUBTYPE_MAP,
-  EnhancerSubtype,
+  type EnhancerSubtype,
   EXCEPTION_FILTERS_METADATA,
   GUARDS_METADATA,
   INJECTABLE_WATERMARK,
@@ -34,19 +34,19 @@ import {
   MODULE_METADATA,
   PIPES_METADATA,
   ROUTE_ARGS_METADATA,
-} from "@venok/core/constants";
+} from "@venok/core/constants.js";
 
-import { InternalCoreModuleFactory } from "@venok/core/injector/internal-core-module/internal-core-module-factory";
-import { InvalidClassModuleException } from "@venok/core/errors/exceptions/invalid-class-module.exception";
-import { UndefinedModuleException } from "@venok/core/errors/exceptions/undefined-module.exception";
-import { InvalidModuleException } from "@venok/core/errors/exceptions/invalid-module.exception";
-import { ModuleOverride } from "@venok/core/interfaces/modules/override.interface";
-import { flatten, isFunction, isNull, isUndefined } from "@venok/core/helpers";
-import { getClassScope, InstanceWrapper, Module } from "@venok/core/injector";
-import { CircularDependencyException } from "@venok/core/errors/exceptions";
-import { Injectable } from "@venok/core/interfaces/injectable.interface";
-import { GraphInspector } from "@venok/core/inspector/graph-inspector";
-import { UuidFactory } from "@venok/core/helpers/uuid.helper";
+import { InternalCoreModuleFactory } from "@venok/core/injector/internal-core-module/internal-core-module-factory.js";
+import { InvalidClassModuleException } from "@venok/core/errors/exceptions/invalid-class-module.exception.js";
+import { UndefinedModuleException } from "@venok/core/errors/exceptions/undefined-module.exception.js";
+import { InvalidModuleException } from "@venok/core/errors/exceptions/invalid-module.exception.js";
+import type { ModuleOverride } from "@venok/core/interfaces/modules/override.interface.js";
+import { flatten, isFunction, isNull, isUndefined } from "@venok/core/helpers/index.js";
+import { getClassScope, InstanceWrapper, Module } from "@venok/core/injector/index.js";
+import { CircularDependencyException } from "@venok/core/errors/exceptions/index.js";
+import type { Injectable } from "@venok/core/interfaces/injectable.interface.js";
+import { GraphInspector } from "@venok/core/inspector/graph-inspector.js";
+import { UuidFactory } from "@venok/core/helpers/uuid.helper.js";
 
 interface ApplicationProviderWrapper {
   moduleKey: string;

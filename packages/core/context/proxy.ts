@@ -1,8 +1,8 @@
 import { catchError, isObservable } from "rxjs";
 
-import { ContextType } from "@venok/core/interfaces";
-import { ExecutionContextHost } from "@venok/core/context/execution-host";
-import { VenokExceptionsHandler } from "@venok/core/exceptions/handler";
+import type { ContextType } from "@venok/core/interfaces/index.js";
+import { ExecutionContextHost } from "@venok/core/context/execution-host.js";
+import { VenokExceptionsHandler } from "@venok/core/exceptions/handler.js";
 
 export class VenokProxy {
   public createProxy<TContext extends string = ContextType>(

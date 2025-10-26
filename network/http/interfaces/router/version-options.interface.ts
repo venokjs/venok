@@ -1,4 +1,4 @@
-import { VersioningType } from "@venok/http/enums";
+import { VersioningType } from "@venok/http/enums/index.js";
 
 /**
  * Indicates that this will work for any version passed in the request, or no version.

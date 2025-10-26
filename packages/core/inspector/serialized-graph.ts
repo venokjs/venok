@@ -1,19 +1,20 @@
-import { SerializedGraphMetadata } from "@venok/core/inspector/interfaces/serialized-graph-metadata.interface";
-import { Edge } from "@venok/core/inspector/interfaces/edge.interface";
-import { Entrypoint } from "@venok/core/inspector/interfaces/entrypoint.interface";
-import { Extras, OrphanedEnhancerDefinition } from "@venok/core/inspector/interfaces/extras.interface";
-import { InjectionToken } from "@venok/core/interfaces/modules";
-import { ApplicationConfig } from "@venok/core/application/config";
-import { ModuleRef } from "@venok/core/injector/module/ref";
-import { LazyModuleLoader } from "@venok/core/injector/module/lazy/loader";
-import { ModulesContainer } from "@venok/core/injector/module/container";
-import { Reflector } from "@venok/core/services";
-import { INQUIRER, REQUEST } from "@venok/core/constants";
-import { Node } from "@venok/core/inspector/interfaces/node.interface";
-import { SerializedGraphJson } from "@venok/core/inspector/interfaces/serialized-graph-json.interface";
-import { DeterministicUuidRegistry } from "@venok/core/helpers/uuid.helper";
-
-export type SerializedGraphStatus = "partial" | "complete";
+import type { SerializedGraphMetadata } from "@venok/core/inspector/interfaces/serialized-graph-metadata.interface.js";
+import type { Edge } from "@venok/core/inspector/interfaces/edge.interface.js";
+import type { Entrypoint } from "@venok/core/inspector/interfaces/entrypoint.interface.js";
+import type { Extras, OrphanedEnhancerDefinition } from "@venok/core/inspector/interfaces/extras.interface.js";
+import type { InjectionToken } from "@venok/core/interfaces/modules/index.js";
+import { ApplicationConfig } from "@venok/core/application/config.js";
+import { ModuleRef } from "@venok/core/injector/module/ref.js";
+import { LazyModuleLoader } from "@venok/core/injector/module/lazy/loader.js";
+import { ModulesContainer } from "@venok/core/injector/module/container.js";
+import { Reflector } from "@venok/core/services/index.js";
+import { INQUIRER, REQUEST } from "@venok/core/constants.js";
+import type { Node } from "@venok/core/inspector/interfaces/node.interface.js";
+import type {
+  SerializedGraphJson,
+  SerializedGraphStatus,
+} from "@venok/core/inspector/interfaces/serialized-graph-json.interface.js";
+import { DeterministicUuidRegistry } from "@venok/core/helpers/uuid.helper.js";
 type WithOptionalId<T extends Record<"id", string>> = Omit<T, "id"> & Partial<Pick<T, "id">>;
 
 export class SerializedGraph {
@@ -34,8 +35,7 @@ export class SerializedGraph {
     LazyModuleLoader,
     // VenokContextCreator,
     ModulesContainer,
-    Reflector,
-    SerializedGraph,
+    // Reflector,
     // HttpAdapterHost.name,
     // Reflector.name,
     REQUEST,
@@ -132,7 +132,7 @@ export class SerializedGraph {
       if (typeof value === "symbol") {
         return value.toString();
       }
-      return typeof value === "function" ? value.name ?? "Function" : value;
+      return typeof value === "function" ? (value.name ?? "Function") : value;
     };
     return JSON.stringify(this.toJSON(), replacer, 2);
   }

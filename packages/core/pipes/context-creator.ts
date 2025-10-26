@@ -1,7 +1,7 @@
-import { ApplicationConfig, PIPES_METADATA, PipeTransform, Type, VenokContainer } from "@venok/core";
-import { InstanceWrapper, STATIC_CONTEXT } from "@venok/core/injector";
-import { isEmpty, isFunction } from "@venok/core/helpers";
-import { ContextCreator } from "@venok/core/context/creator";
+import { ApplicationConfig, PIPES_METADATA, type PipeTransform, type Type, VenokContainer } from "@venok/core";
+import { InstanceWrapper, STATIC_CONTEXT } from "@venok/core/injector/index.js";
+import { isEmpty, isFunction } from "@venok/core/helpers/index.js";
+import { ContextCreator } from "@venok/core/context/creator.js";
 
 export class PipesContextCreator extends ContextCreator {
   private moduleContext!: string;

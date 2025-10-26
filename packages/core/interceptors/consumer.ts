@@ -1,9 +1,9 @@
 import { defer, mergeAll, Observable, switchMap, from } from "rxjs";
 import { AsyncResource } from "node:async_hooks";
 
-import { CallHandler, ContextType, Type, VenokInterceptor } from "@venok/core";
-import { ExecutionContextHost } from "@venok/core/context";
-import { isEmpty } from "@venok/core/helpers";
+import type { CallHandler, ContextType, Type, VenokInterceptor } from "@venok/core";
+import { ExecutionContextHost } from "@venok/core/context/index.js";
+import { isEmpty } from "@venok/core/helpers/index.js";
 
 export class InterceptorsConsumer {
   public async intercept<TContext extends string = ContextType>(
