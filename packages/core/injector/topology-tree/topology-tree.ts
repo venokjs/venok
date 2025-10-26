@@ -3,23 +3,15 @@ import { TreeNode } from "./tree-node.js";
 
 export class TopologyTree {
   private root: TreeNode<Module>;
-  private links: Map<
-    Module,
-    {
-      node: TreeNode<Module>;
-      depth: number;
-    }
-  > = new Map();
+  private links: Map<Module, TreeNode<Module>> = new Map();
 
-  static from(root: Module) {
-    const tree = new TopologyTree();
-    tree.root = new TreeNode<Module>({
-      value: root,
+  constructor(moduleRef: Module) {
+    this.root = new TreeNode<Module>({
+      value: moduleRef,
       parent: null,
     });
-
-    tree.traverseAndCloneTree(tree.root);
-    return tree;
+    this.links.set(moduleRef, this.root);
+    this.traverseAndMapToTree(this.root);
   }
 
   public walk(callback: (value: Module, depth: number) => void) {
@@ -30,17 +22,21 @@ export class TopologyTree {
     walkNode(this.root);
   }
 
-  private traverseAndCloneTree(node: TreeNode<Module>, depth = 1) {
+  private traverseAndMapToTree(node: TreeNode<Module>, depth = 1) {
+    if (!node.value?.imports) return;
+
     node.value.imports.forEach((child) => {
       if (!child) {
         return;
       }
       if (this.links.has(child)) {
         const existingSubtree = this.links.get(child)!;
-        if (existingSubtree.depth < depth) {
-          existingSubtree.node.relink(node);
-          existingSubtree.depth = depth;
-        }
+
+        if (node.hasCycleWith(child)) return;
+
+        const existingDepth = existingSubtree.getDepth();
+        if (existingDepth < depth) existingSubtree.relink(node);
+
         return;
       }
 
@@ -49,12 +45,10 @@ export class TopologyTree {
         parent: node,
       });
       node.addChild(childNode);
-      this.links.set(child, {
-        node: childNode,
-        depth,
-      });
 
-      this.traverseAndCloneTree(childNode, depth + 1);
+      this.links.set(child, childNode);
+
+      this.traverseAndMapToTree(childNode, depth + 1);
     });
   }
 }
