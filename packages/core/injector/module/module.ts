@@ -385,18 +385,18 @@ export class Module {
     );
   }
 
-  public addExportedProvider(provider: Provider | string | symbol | DynamicModule) {
+  public addExportedProviderOrModule(toExport: Provider | string | symbol | DynamicModule) {
     const addExportedUnit = (token: InjectionToken) => this._exports.add(this.validateExportedProvider(token));
 
-    if (this.isCustomProvider(provider as any)) {
-      return this.addCustomExportedProvider(provider as any);
-    } else if (isString(provider) || isSymbol(provider)) {
-      return addExportedUnit(provider);
-    } else if (this.isDynamicModule(provider)) {
-      const { module: moduleClassRef } = provider;
+    if (this.isCustomProvider(toExport as any)) {
+      return this.addCustomExportedProvider(toExport as any);
+    } else if (isString(toExport) || isSymbol(toExport)) {
+      return addExportedUnit(toExport);
+    } else if (this.isDynamicModule(toExport)) {
+      const { module: moduleClassRef } = toExport;
       return addExportedUnit(moduleClassRef);
     }
-    addExportedUnit(provider as Type);
+    addExportedUnit(toExport as Type);
   }
 
   public addCustomExportedProvider(provider: FactoryProvider | ValueProvider | ClassProvider | ExistingProvider) {
@@ -426,13 +426,6 @@ export class Module {
 
   public addImport(moduleRef: Module) {
     this._imports.add(moduleRef);
-  }
-
-  /**
-   * @deprecated
-   */
-  public addRelatedModule(module: Module) {
-    this._imports.add(module);
   }
 
   public replace(toReplace: InjectionToken, options: any) {

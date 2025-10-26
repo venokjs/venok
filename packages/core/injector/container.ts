@@ -125,6 +125,11 @@ export class VenokContainer {
 
     if (this.isGlobalModule(type, dynamicMetadata)) {
       moduleRef.isGlobal = true;
+      /*
+       * Set global module distance to MAX_VALUE to ensure their lifecycle hooks
+       * are always executed first (when initializing the application)
+       */
+      moduleRef.distance = Number.MAX_VALUE;
       this.addGlobalModule(moduleRef);
     }
 
@@ -213,12 +218,12 @@ export class VenokContainer {
     return moduleRef.addInjectable(injectable, enhancerSubtype, host);
   }
 
-  public addExportedProvider(provider: Type, token: string) {
+  public addExportedProviderOrModule(provider: Type, token: string) {
     if (!this.modules.has(token)) {
       throw new UnknownModuleException();
     }
     const moduleRef = this.modules.get(token) as Module;
-    moduleRef.addExportedProvider(provider);
+    moduleRef.addExportedProviderOrModule(provider);
   }
 
   public clear() {

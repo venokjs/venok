@@ -4,6 +4,7 @@ import type {
   OptionalFactoryDependency,
   Provider,
 } from "@venok/core/interfaces/index.js";
+import { isUndefined } from "@venok/core/helpers/index.js";
 
 /**
  * check if x is OptionalFactoryDependency, based on prototype presence
@@ -11,8 +12,14 @@ import type {
  * @param x
  * @returns x is OptionalFactoryDependency
  */
-function isOptionalFactoryDependency(x: InjectionToken | OptionalFactoryDependency): x is OptionalFactoryDependency {
-  return !!((x as any)?.token && !(x as any)?.prototype);
+function isOptionalFactoryDependency(
+  value: InjectionToken | OptionalFactoryDependency,
+): value is OptionalFactoryDependency {
+  return (
+    !isUndefined((value as OptionalFactoryDependency).token) &&
+    !isUndefined((value as OptionalFactoryDependency).optional) &&
+    !(value as any).prototype
+  );
 }
 
 const mapInjectToTokens = (t: InjectionToken | OptionalFactoryDependency) =>

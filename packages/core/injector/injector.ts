@@ -24,6 +24,7 @@ import { UndefinedDependencyException } from "@venok/core/errors/exceptions/unde
 import { UnknownDependenciesException } from "@venok/core/errors/exceptions/unknown-dependencies.exception.js";
 import { colors } from "@venok/core/helpers/color.helper.js";
 import type { Injectable } from "@venok/core/interfaces/injectable.interface.js";
+import { Barrier } from "@venok/core/injector/helpers/index.js";
 
 /**
  * The type of injectable dependency
@@ -146,6 +147,8 @@ export class Injector {
         inquirer,
       );
     } catch (err) {
+      wrapper.removeInstanceByContextId(this.getContextId(contextId, wrapper), inquirerId);
+
       settlementSignal.error(err);
       throw err;
     }
@@ -203,15 +206,27 @@ export class Injector {
       ? this.getFactoryProviderDependencies(wrapper)
       : this.getClassDependencies(wrapper);
 
+    const paramBarrier = new Barrier(dependencies.length);
+
     let isResolved = true;
     const resolveParam = async (param: unknown, index: number) => {
       try {
         if (this.isInquirer(param, parentInquirer)) {
+          /*
+           * Signal the barrier to make sure other dependencies do not get stuck waiting forever.
+           */
+
+          paramBarrier.signal();
           return parentInquirer && parentInquirer.instance;
         }
         if (inquirer?.isTransient && parentInquirer) {
-          inquirer = parentInquirer;
-          inquirerId = this.getInquirerId(parentInquirer);
+          /*
+           * When `inquirer` is transient too, inherit the parent inquirer
+           * This is required to ensure that transient providers are only resolved
+           * when requested
+           */
+
+          inquirer.attachRootInquirer(parentInquirer);
         }
         const paramWrapper = await this.resolveSingleParam<T>(
           wrapper,
@@ -222,15 +237,32 @@ export class Injector {
           inquirer,
           index,
         );
-        const instanceHost = paramWrapper.getInstanceByContextId(
-          this.getContextId(contextId, paramWrapper),
+
+        /*
+         * Ensure that all instance wrappers are resolved at this point before we continue.
+         * Otherwise the staticity of `wrapper`'s dependency tree may be evaluated incorrectly
+         * and result in undefined / null injection.
+         */
+        await paramBarrier.signalAndWait();
+
+        const paramWrapperWithInstance = await this.resolveComponentHost(moduleRef, paramWrapper, contextId, inquirer);
+
+        const instanceHost = paramWrapperWithInstance.getInstanceByContextId(
+          this.getContextId(contextId, paramWrapperWithInstance),
           inquirerId,
         );
-        if (!instanceHost.isResolved && !paramWrapper.forwardRef) {
+        if (!instanceHost.isResolved && !paramWrapperWithInstance.forwardRef) {
           isResolved = false;
         }
         return instanceHost?.instance;
       } catch (err) {
+        /*
+         * Signal the barrier to make sure other dependencies do not get stuck waiting forever. We
+         * do not care if this occurs after `Barrier.signalAndWait()` is called in the `try` block
+         * because the barrier will always have been resolved by then.
+         */
+        paramBarrier.signal();
+
         const isOptional = optionalDependenciesIds.includes(index);
         if (!isOptional) {
           throw err;
@@ -249,11 +281,20 @@ export class Injector {
 
   public getFactoryProviderDependencies<T>(wrapper: InstanceWrapper<T>): [InjectorDependency[], number[]] {
     const optionalDependenciesIds: number[] = [];
-    const isOptionalFactoryDep = (
-      item: InjectionToken | OptionalFactoryDependency,
-    ): item is OptionalFactoryDependency =>
-      !isUndefined((item as OptionalFactoryDependency).token) &&
-      !isUndefined((item as OptionalFactoryDependency).optional);
+
+    /**
+     * Same as the internal utility function `isOptionalFactoryDependency` from `@venokjs/integration`.
+     * We are duplicating it here because that one is not supposed to be exported.
+     */
+    function isOptionalFactoryDependency(
+      value: InjectionToken | OptionalFactoryDependency,
+    ): value is OptionalFactoryDependency {
+      return (
+        !isUndefined((value as OptionalFactoryDependency).token) &&
+        !isUndefined((value as OptionalFactoryDependency).optional) &&
+        !(value as any).prototype
+      );
+    }
 
     const mapFactoryProviderInjectArray = (
       item: InjectionToken | OptionalFactoryDependency,
@@ -262,7 +303,7 @@ export class Injector {
       if (typeof item !== "object") {
         return item;
       }
-      if (isOptionalFactoryDep(item)) {
+      if (isOptionalFactoryDependency(item)) {
         if (item.optional) optionalDependenciesIds.push(index);
 
         return item?.token;
@@ -305,7 +346,7 @@ export class Injector {
       throw new UndefinedDependencyException(wrapper.name, dependencyContext, moduleRef);
     }
     const token = this.resolveParamToken(wrapper, param);
-    return this.resolveComponentInstance<T>(
+    return this.resolveComponentWrapper<T>(
       moduleRef,
       token,
       dependencyContext,
@@ -324,7 +365,7 @@ export class Injector {
     return param.forwardRef();
   }
 
-  public async resolveComponentInstance<T>(
+  public async resolveComponentWrapper<T>(
     moduleRef: Module,
     token: InjectionToken,
     dependencyContext: InjectorDependencyContext,
@@ -336,7 +377,7 @@ export class Injector {
     this.printResolvingDependenciesLog(token, inquirer);
     this.printLookingForProviderLog(token, moduleRef);
     const providers = moduleRef.providers;
-    const instanceWrapper = await this.lookupComponent(
+    return this.lookupComponent(
       providers,
       moduleRef,
       { ...dependencyContext, name: token },
@@ -345,8 +386,6 @@ export class Injector {
       inquirer,
       keyOrIndex,
     );
-
-    return this.resolveComponentHost(moduleRef, instanceWrapper, contextId, inquirer);
   }
 
   public async resolveComponentHost<T>(
@@ -488,9 +527,11 @@ export class Injector {
         inquirerId,
       );
       if (!instanceHost.isResolved && !instanceWrapperRef.forwardRef) {
-        wrapper.settlementSignal?.insertRef(instanceWrapperRef.id);
-
-        await this.loadProvider(instanceWrapperRef, relatedModule, contextId, wrapper);
+        /*
+         * Provider will be loaded shortly in resolveComponentHost() once we pass the current
+         * Barrier. We cannot load it here because doing so could incorrectly evaluate the
+         * staticity of the dependency tree and lead to undefined / null injection.
+         */
         break;
       }
     }
@@ -513,6 +554,7 @@ export class Injector {
       return this.loadPropertiesMetadata(metadata, contextId, inquirer);
     }
     const properties = this.reflectProperties(wrapper.metatype as Type);
+    const propertyBarrier = new Barrier(properties.length);
     const instances = await Promise.all(
       properties.map(async (item: PropertyDependency) => {
         try {
@@ -521,6 +563,10 @@ export class Injector {
             name: item.name as Function | string | symbol,
           };
           if (this.isInquirer(item.name, parentInquirer)) {
+            /*
+             * Signal the barrier to make sure other dependencies do not get stuck waiting forever.
+             */
+            propertyBarrier.signal();
             return parentInquirer && parentInquirer.instance;
           }
           const paramWrapper = await this.resolveSingleParam<T>(
@@ -532,16 +578,37 @@ export class Injector {
             inquirer,
             item.key,
           );
-          if (!paramWrapper) {
-            return undefined;
-          }
+
+          /*
+           * Ensure that all instance wrappers are resolved at this point before we continue.
+           * Otherwise the staticity of `wrapper`'s dependency tree may be evaluated incorrectly
+           * and result in undefined / null injection.
+           */
+          await propertyBarrier.signalAndWait();
+
+          const paramWrapperWithInstance = await this.resolveComponentHost(
+            moduleRef,
+            paramWrapper,
+            contextId,
+            inquirer,
+          );
+
+          if (!paramWrapperWithInstance) return undefined;
+
           const inquirerId = this.getInquirerId(inquirer);
-          const instanceHost = paramWrapper.getInstanceByContextId(
-            this.getContextId(contextId, paramWrapper),
+          const instanceHost = paramWrapperWithInstance.getInstanceByContextId(
+            this.getContextId(contextId, paramWrapperWithInstance),
             inquirerId,
           );
           return instanceHost.instance;
         } catch (err) {
+          /*
+           * Signal the barrier to make sure other dependencies do not get stuck waiting forever. We
+           * do not care if this occurs after `Barrier.signalAndWait()` is called in the `try` block
+           * because the barrier will always have been resolved by then.
+           */
+          propertyBarrier.signal();
+
           if (!item.isOptional) {
             throw err;
           }
@@ -604,17 +671,14 @@ export class Injector {
     }
 
     if (isNull(inject) && isInContext) {
-      console.log(
-        metatype,
-        instances.map((i) => i.constructor),
-      );
-
       instanceHost.instance = wrapper.forwardRef
         ? Object.assign(instanceHost.instance, new (metatype as Type)(...instances))
         : new (metatype as Type)(...instances);
+      instanceHost.isConstructorCalled = true;
     } else if (isInContext) {
       const factoryReturnValue = (targetMetatype.metatype as any as Function)(...instances);
       instanceHost.instance = await factoryReturnValue;
+      instanceHost.isConstructorCalled = true;
     }
     instanceHost.isResolved = true;
     return instanceHost.instance;

@@ -36,6 +36,7 @@ export interface InstancePerContext<T> {
   isResolved?: boolean;
   isPending?: boolean;
   donePromise?: Promise<unknown>;
+  isConstructorCalled?: boolean;
   [INSTANCE_ID_SYMBOL]?: string;
 }
 
@@ -74,6 +75,11 @@ export class InstanceWrapper<T = any> {
   private transientMap: Map<string, WeakMap<ContextId, InstancePerContext<T>>> = new Map();
   private isTreeStatic: boolean | undefined;
   private isTreeDurable: boolean | undefined;
+  /**
+   * The root inquirer reference. Present only if child instance wrapper
+   * is transient and has a parent inquirer.
+   */
+  private rootInquirer: InstanceWrapper | undefined;
 
   constructor(metadata: Partial<InstanceWrapper<T>> & Partial<InstancePerContext<T>> = {}) {
     this.initialize(metadata);
@@ -110,7 +116,15 @@ export class InstanceWrapper<T = any> {
       return this.getInstanceByInquirerId(contextId, inquirerId);
     }
     const instancePerContext = this.values.get(contextId);
-    return instancePerContext ? instancePerContext : this.cloneStaticInstance(contextId);
+    return instancePerContext
+      ? instancePerContext
+      : contextId !== STATIC_CONTEXT
+        ? this.cloneStaticInstance(contextId)
+        : {
+            instance: null as T,
+            isResolved: true,
+            isPending: false,
+          };
   }
 
   public getInstanceByInquirerId(contextId: ContextId, inquirerId: string): InstancePerContext<T> {
@@ -137,6 +151,20 @@ export class InstanceWrapper<T = any> {
       this.transientMap.set(inquirerId, collection);
     }
     collection.set(contextId, value);
+  }
+
+  public removeInstanceByContextId(contextId: ContextId, inquirerId?: string) {
+    if (this.scope === Scope.TRANSIENT && inquirerId) {
+      return this.removeInstanceByInquirerId(contextId, inquirerId);
+    }
+    this.values.delete(contextId);
+  }
+
+  public removeInstanceByInquirerId(contextId: ContextId, inquirerId: string) {
+    const collection = this.transientMap.get(inquirerId);
+    if (!collection) return;
+
+    collection.delete(contextId);
   }
 
   public addCtorMetadata(index: number, wrapper: InstanceWrapper) {
@@ -311,19 +339,41 @@ export class InstanceWrapper<T = any> {
   public isStatic(contextId: ContextId, inquirer: InstanceWrapper | undefined): boolean {
     const isInquirerRequestScoped = inquirer && !inquirer.isDependencyTreeStatic();
     const isStaticTransient = this.isTransient && !isInquirerRequestScoped;
+    const rootInquirer = inquirer?.getRootInquirer();
 
     return (
       this.isDependencyTreeStatic() &&
       contextId === STATIC_CONTEXT &&
-      (!this.isTransient || (isStaticTransient && !!inquirer && !inquirer.isTransient))
+      (!this.isTransient ||
+        (isStaticTransient && !!inquirer && !inquirer.isTransient) ||
+        (isStaticTransient && !!rootInquirer && !rootInquirer.isTransient))
     );
+  }
+
+  public attachRootInquirer(inquirer: InstanceWrapper) {
+    /* Only attach root inquirer if the instance wrapper is transient */
+    if (!this.isTransient) return;
+
+    this.rootInquirer = inquirer.getRootInquirer() ?? inquirer;
+  }
+
+  public getRootInquirer(): InstanceWrapper | undefined {
+    return this.rootInquirer;
   }
 
   public getStaticTransientInstances() {
     if (!this.transientMap) return [];
 
     const instances = [...this.transientMap.values()];
-    return instances.map((item) => item.get(STATIC_CONTEXT)).filter(Boolean) as InstancePerContext<T>[];
+    return instances
+      .map((item) => item.get(STATIC_CONTEXT))
+      .filter((item) => {
+        /*
+         * Only return items where constructor has been actually called
+         * This prevents calling lifecycle hooks on non-instantiated transient services
+         */
+        return !!(item && item.isConstructorCalled);
+      }) as InstancePerContext<T>[];
   }
 
   public mergeWith(provider: Provider) {

@@ -1,5 +1,6 @@
 import { isUndefined } from "@venok/core/helpers/shared.helper.js";
 import { PARAMTYPES_METADATA, PROPERTY_DEPS_METADATA, SELF_DECLARED_DEPS_METADATA } from "@venok/core/constants.js";
+import type { ForwardReference, InjectionToken } from "@venok/core/interfaces/index.js";
 
 /**
  * Decorator that marks a constructor parameter as a target for
@@ -26,7 +27,7 @@ import { PARAMTYPES_METADATA, PROPERTY_DEPS_METADATA, SELF_DECLARED_DEPS_METADAT
  *
  * @publicApi
  */
-export function Inject<T = any>(token?: T): PropertyDecorator & ParameterDecorator {
+export function Inject(token?: InjectionToken | ForwardReference): PropertyDecorator & ParameterDecorator {
   const injectCallHasArguments = arguments.length > 0;
 
   return (target: object, key: string | symbol | undefined, index?: number) => {

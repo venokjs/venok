@@ -17,7 +17,10 @@ import {
   callModuleInitHook,
 } from "@venok/core/hooks/index.js";
 
-import { ApplicationContextOptions } from "@venok/core/interfaces/application/context-options.interface.js";
+import {
+  ApplicationContextOptions,
+  type SelectOptions,
+} from "@venok/core/interfaces/application/context-options.interface.js";
 import { Logger, type LoggerService, type LogLevel } from "@venok/core/services/logger.service.js";
 import { type ContextId, Injector, Module, VenokContainer } from "@venok/core/injector/index.js";
 import { AbstractInstanceResolver } from "@venok/core/injector/instance/resolver.js";
@@ -66,6 +69,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
   private shutdownCleanupRef?: (...args: unknown[]) => unknown;
   private _instanceLinksHost!: InstanceLinksHost;
   private _moduleRefsForHooksByDistance?: Array<Module>;
+  private initializationPromise?: Promise<void>;
 
   protected get instanceLinksHost() {
     if (!this._instanceLinksHost) {
@@ -89,14 +93,14 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
 
   public selectContextModule() {
     const modules = this.container.getModules().values();
-    this.contextModule = modules.next().value;
+    this.contextModule = modules.next().value!;
   }
 
   /**
    * Allows navigating through the modules tree, for example, to pull out a specific instance from the selected module.
    * @returns {VenokApplicationContext}
    */
-  public select<T>(moduleType: Type<T> | DynamicModule): VenokApplicationContext {
+  public select<T>(moduleType: Type<T> | DynamicModule, selectOptions?: SelectOptions): VenokApplicationContext {
     const modulesContainer = this.container.getModules();
     const contextModuleCtor = this.contextModule.metatype;
     const scope = this.scope.concat(contextModuleCtor);
@@ -106,10 +110,12 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
     const token = moduleTokenFactory.create(type, dynamicMetadata);
 
     const selectedModule = modulesContainer.get(token);
-    if (!selectedModule) {
-      throw new UnknownModuleException();
-    }
-    return new ApplicationContext(this.container, this.config, this.appOptions, selectedModule, scope);
+    if (!selectedModule) throw new UnknownModuleException(type.name);
+
+    const options =
+      typeof selectOptions?.abortOnError !== "undefined" ? { ...this.appOptions, ...selectOptions } : this.appOptions;
+
+    return new ApplicationContext(this.container, this.config, options, selectedModule, scope);
   }
 
   /**
@@ -214,8 +220,16 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
   public async init(): Promise<this> {
     if (this.isInitialized) return this;
 
-    await this.callInitHook();
-    await this.callBootstrapHook();
+    this.initializationPromise = this.initializationPromise = new Promise(async (resolve, reject) => {
+      try {
+        await this.callInitHook();
+        await this.callBootstrapHook();
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+    await this.initializationPromise;
 
     this.isInitialized = true;
     return this;
@@ -226,6 +240,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
    * @returns {Promise<void>}
    */
   public async close(signal?: string): Promise<void> {
+    await this.initializationPromise;
     await this.callDestroyHook();
     await this.callBeforeShutdownHook(signal);
     await this.dispose();
@@ -328,6 +343,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
         if (receivedSignal) return;
 
         receivedSignal = true;
+        await this.initializationPromise;
         await this.callDestroyHook();
         await this.callBeforeShutdownHook(signal);
         await this.dispose();
@@ -374,7 +390,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
    * modules and its children.
    */
   protected async callDestroyHook(): Promise<void> {
-    const modulesSortedByDistance = this.getModulesToTriggerHooksOn();
+    const modulesSortedByDistance = [...this.getModulesToTriggerHooksOn()].reverse();
     for (const module of modulesSortedByDistance) {
       await callModuleDestroyHook(module);
     }
@@ -396,7 +412,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
    * modules and children.
    */
   protected async callShutdownHook(signal?: string): Promise<void> {
-    const modulesSortedByDistance = this.getModulesToTriggerHooksOn();
+    const modulesSortedByDistance = [...this.getModulesToTriggerHooksOn()].reverse();
     for (const module of modulesSortedByDistance) {
       await callAppShutdownHook(module, signal);
     }
@@ -407,7 +423,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
    * modules and children.
    */
   protected async callBeforeShutdownHook(signal?: string): Promise<void> {
-    const modulesSortedByDistance = this.getModulesToTriggerHooksOn();
+    const modulesSortedByDistance = [...this.getModulesToTriggerHooksOn()].reverse();
     for (const module of modulesSortedByDistance) {
       await callBeforeAppShutdownHook(module, signal);
     }

@@ -17,20 +17,27 @@ const getInstanceName = (instance: unknown): string => {
 };
 
 /**
- * Returns the name of the dependency
+ * Returns the name of the dependency.
  * Tries to get the class name, otherwise the string value
- * (= injection token). As fallback, it returns '+'
+ * (= injection token). As fallback to any falsy value for `dependency`, it
+ * returns `fallbackValue`
  * @param dependency The name of the dependency to be displayed
+ * @param fallbackValue The fallback value if the dependency is falsy
+ * @param disambiguated Whether dependency's name is disambiguated with double quotes
  */
-const getDependencyName = (dependency: InjectorDependency): string =>
+const getDependencyName = (
+  dependency: InjectorDependency | undefined,
+  fallbackValue: string,
+  disambiguated = true,
+): string =>
   // use class name
   getInstanceName(dependency) ||
   // use injection token (symbol)
   (isSymbol(dependency) && dependency.toString()) ||
   // use string directly
-  (dependency as string) ||
+  (dependency ? (disambiguated ? `"${dependency as string}"` : (dependency as string)) : undefined) ||
   // otherwise
-  "+";
+  fallbackValue;
 
 /**
  * Returns the name of the module
@@ -48,28 +55,47 @@ export const UNKNOWN_DEPENDENCIES_MESSAGE = (
 ) => {
   const { index, name = "dependency", dependencies, key } = unknownDependencyContext;
   const moduleName = getModuleName(module);
-  const dependencyName = getDependencyName(name);
+  const dependencyName = getDependencyName(name, "dependency");
 
-  const potentialSolutions =
-    // If module's name is well-defined
-    moduleName !== "current"
-      ? `\n
+  const isImportTypeIssue =
+    !isNull(index) &&
+    dependencies &&
+    (dependencies[index] === undefined ||
+      dependencies[index] === Object ||
+      (typeof dependencies[index] === "function" && (dependencies[index] as any).name === "Object"));
+
+  let potentialSolutions: string;
+
+  if (isImportTypeIssue) {
+    potentialSolutions = `\n
+Potential solutions:
+- The dependency at index [${index}] appears to be undefined at runtime
+- This commonly occurs when using 'import type' instead of 'import' for injectable classes
+- Check your imports and change:
+  ❌ import type { SomeService } from './some.service';
+  ✅ import { SomeService } from './some.service';
+- Ensure the imported class is decorated with @Injectable() or is a valid provider
+- If using dynamic imports, ensure the class is available at runtime, not just for type checking`;
+  } else {
+    potentialSolutions =
+      // If module's name is well-defined
+      moduleName !== "current"
+        ? `\n
 Potential solutions:
 - Is ${moduleName} a valid Venok module?
 - If ${dependencyName} is a provider, is it part of the current ${moduleName}?
 - If ${dependencyName} is exported from a separate @Module, is that module imported within ${moduleName}?
   @Module({
     imports: [ /* the Module containing ${dependencyName} */ ]
-  })
-`
-      : `\n
+  })`
+        : `\n
 Potential solutions:
 - If ${dependencyName} is a provider, is it part of the current Module?
 - If ${dependencyName} is exported from a separate @Module, is that module imported within Module?
   @Module({
     imports: [ /* the Module containing ${dependencyName} */ ]
-  })
-`;
+  })`;
+  }
 
   let message = `Venok can't resolve dependencies of the ${type.toString()}`;
 
@@ -77,13 +103,13 @@ Potential solutions:
     message += `. Please make sure that the "${key.toString()}" property is available in the current context.${potentialSolutions}`;
     return message;
   }
-  const dependenciesName = (dependencies || []).map(getDependencyName);
+  const dependenciesName = (dependencies || []).map((dependencyName) => getDependencyName(dependencyName, "+", false));
   // @ts-ignore
   dependenciesName[index] = "?";
 
   message += ` (`;
   message += dependenciesName.join(", ");
-  message += `). Please make sure that the argument ${dependencyName} at index [${index}] is available in the ${moduleName} context.`;
+  message += `). Please make sure that the argument ${isImportTypeIssue ? "dependency" : dependencyName} at index [${index}] is available in the ${isImportTypeIssue ? "current" : moduleName} context.`;
   message += potentialSolutions;
 
   return message;

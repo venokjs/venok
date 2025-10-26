@@ -47,6 +47,7 @@ import { CircularDependencyException } from "@venok/core/errors/exceptions/index
 import type { Injectable } from "@venok/core/interfaces/injectable.interface.js";
 import { GraphInspector } from "@venok/core/inspector/graph-inspector.js";
 import { UuidFactory } from "@venok/core/helpers/uuid.helper.js";
+import { TopologyTree } from "@venok/core/injector/topology-tree/topology-tree.js";
 
 interface ApplicationProviderWrapper {
   moduleKey: string;
@@ -80,9 +81,15 @@ export class DependenciesScanner {
       overrides: options?.overrides,
     });
     await this.scanModulesForDependencies();
-    this.calculateModulesDistance();
 
     this.addScopedEnhancersMetadata();
+    /*
+     * Modules distance calculation should be done after all modules are scanned
+     * but before global modules are registered (linked to all modules).
+     * Global modules have their distance set to MAX anyway.
+     */
+    this.calculateModulesDistance();
+
     this.container.bindGlobalScope();
   }
 
@@ -203,7 +210,7 @@ export class DependenciesScanner {
       ...(this.container.getDynamicMetadataByToken(token, MODULE_METADATA.EXPORTS as "exports") as any[]),
     ];
 
-    exports.forEach((exportedProvider) => this.insertExportedProvider(exportedProvider, token));
+    exports.forEach((exportedProvider) => this.insertExportedProviderOrModule(exportedProvider, token));
   }
 
   public reflectInjectables(
@@ -282,27 +289,21 @@ export class DependenciesScanner {
   public calculateModulesDistance() {
     const modulesGenerator = this.container.getModules().values();
 
-    // Skip "InternalCoreModule" from calculating distance
+    /*
+     * Skip "InternalCoreModule" from calculating distance
+     * The second element is the actual root module
+     */
     modulesGenerator.next();
+    const rootModule = modulesGenerator.next().value! as Module;
+    if (!rootModule) return;
 
-    const modulesStack: any[] = [];
-    const calculateDistance = (moduleRef: Module, distance = 1) => {
-      if (!moduleRef || modulesStack.includes(moduleRef)) return;
+    /* Convert modules to an acyclic connected graph */
+    const tree = new TopologyTree(rootModule);
 
-      modulesStack.push(moduleRef);
-
-      const moduleImports = moduleRef.imports;
-      moduleImports.forEach((importedModuleRef) => {
-        if (importedModuleRef) {
-          if (distance > importedModuleRef.distance) importedModuleRef.distance = distance;
-
-          calculateDistance(importedModuleRef, distance + 1);
-        }
-      });
-    };
-
-    const rootModule = modulesGenerator.next().value as Module;
-    calculateDistance(rootModule);
+    tree.walk((moduleRef, depth) => {
+      if (moduleRef.isGlobal) return;
+      moduleRef.distance = depth;
+    });
   }
 
   public async insertImport(related: any, token: string, context: string) {
@@ -392,12 +393,10 @@ export class DependenciesScanner {
     }
   }
 
-  /* TODO: improve the type definition bellow because it doesn't reflects the real usage of this method */
-  public insertExportedProvider(exportedProvider: Type<Injectable> | ForwardReference, token: string) {
-    const fulfilledProvider = this.isForwardReference(exportedProvider)
-      ? exportedProvider.forwardRef()
-      : exportedProvider;
-    this.container.addExportedProvider(fulfilledProvider, token);
+  public insertExportedProviderOrModule(toExport: ForwardReference | DynamicModule | Type<unknown>, token: string) {
+    const fulfilledProvider = this.isForwardReference(toExport) ? toExport.forwardRef() : toExport;
+
+    this.container.addExportedProviderOrModule(fulfilledProvider, token);
   }
 
   private insertOrOverrideModule(
