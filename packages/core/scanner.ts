@@ -209,7 +209,7 @@ export class DependenciesScanner {
       ...(this.container.getDynamicMetadataByToken(token, MODULE_METADATA.EXPORTS as "exports") as any[]),
     ];
 
-    exports.forEach((exportedProvider) => this.insertExportedProvider(exportedProvider, token));
+    exports.forEach((exportedProvider) => this.insertExportedProviderOrModule(exportedProvider, token));
   }
 
   public reflectInjectables(
@@ -399,12 +399,10 @@ export class DependenciesScanner {
     }
   }
 
-  /* TODO: improve the type definition bellow because it doesn't reflects the real usage of this method */
-  public insertExportedProvider(exportedProvider: Type<Injectable> | ForwardReference, token: string) {
-    const fulfilledProvider = this.isForwardReference(exportedProvider)
-      ? exportedProvider.forwardRef()
-      : exportedProvider;
-    this.container.addExportedProvider(fulfilledProvider, token);
+  public insertExportedProviderOrModule(toExport: ForwardReference | DynamicModule | Type<unknown>, token: string) {
+    const fulfilledProvider = this.isForwardReference(toExport) ? toExport.forwardRef() : toExport;
+
+    this.container.addExportedProviderOrModule(fulfilledProvider, token);
   }
 
   private insertOrOverrideModule(

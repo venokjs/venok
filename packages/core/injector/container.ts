@@ -218,12 +218,12 @@ export class VenokContainer {
     return moduleRef.addInjectable(injectable, enhancerSubtype, host);
   }
 
-  public addExportedProvider(provider: Type, token: string) {
+  public addExportedProviderOrModule(provider: Type, token: string) {
     if (!this.modules.has(token)) {
       throw new UnknownModuleException();
     }
     const moduleRef = this.modules.get(token) as Module;
-    moduleRef.addExportedProvider(provider);
+    moduleRef.addExportedProviderOrModule(provider);
   }
 
   public clear() {
