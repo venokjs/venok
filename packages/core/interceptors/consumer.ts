@@ -42,7 +42,7 @@ export class InterceptorsConsumer {
 
   public transformDeferred(next: () => Promise<any>): Observable<any> {
     return from(next()).pipe(
-      switchMap((res) => {
+      switchMap((res: any) => {
         const isDeferred = res instanceof Promise || res instanceof Observable;
         return isDeferred ? res : Promise.resolve(res);
       }),
