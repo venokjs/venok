@@ -17,7 +17,10 @@ import {
   callModuleInitHook,
 } from "@venok/core/hooks/index.js";
 
-import { ApplicationContextOptions } from "@venok/core/interfaces/application/context-options.interface.js";
+import {
+  ApplicationContextOptions,
+  type SelectOptions,
+} from "@venok/core/interfaces/application/context-options.interface.js";
 import { Logger, type LoggerService, type LogLevel } from "@venok/core/services/logger.service.js";
 import { type ContextId, Injector, Module, VenokContainer } from "@venok/core/injector/index.js";
 import { AbstractInstanceResolver } from "@venok/core/injector/instance/resolver.js";
@@ -96,7 +99,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
    * Allows navigating through the modules tree, for example, to pull out a specific instance from the selected module.
    * @returns {VenokApplicationContext}
    */
-  public select<T>(moduleType: Type<T> | DynamicModule): VenokApplicationContext {
+  public select<T>(moduleType: Type<T> | DynamicModule, selectOptions?: SelectOptions): VenokApplicationContext {
     const modulesContainer = this.container.getModules();
     const contextModuleCtor = this.contextModule.metatype;
     const scope = this.scope.concat(contextModuleCtor);
@@ -106,10 +109,12 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
     const token = moduleTokenFactory.create(type, dynamicMetadata);
 
     const selectedModule = modulesContainer.get(token);
-    if (!selectedModule) {
-      throw new UnknownModuleException(type.name);
-    }
-    return new ApplicationContext(this.container, this.config, this.appOptions, selectedModule, scope);
+    if (!selectedModule) throw new UnknownModuleException(type.name);
+
+    const options =
+      typeof selectOptions?.abortOnError !== "undefined" ? { ...this.appOptions, ...selectOptions } : this.appOptions;
+
+    return new ApplicationContext(this.container, this.config, options, selectedModule, scope);
   }
 
   /**

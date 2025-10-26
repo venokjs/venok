@@ -1,5 +1,7 @@
 import type { LoggerService, LogLevel } from "@venok/core/services/logger.service.js";
 
+export type SelectOptions = Pick<ApplicationContextOptions, "abortOnError">;
+
 /**
  * @publicApi
  */
