@@ -146,6 +146,8 @@ export class Injector {
         inquirer,
       );
     } catch (err) {
+      wrapper.removeInstanceByContextId(this.getContextId(contextId, wrapper), inquirerId);
+
       settlementSignal.error(err);
       throw err;
     }
@@ -604,11 +606,6 @@ export class Injector {
     }
 
     if (isNull(inject) && isInContext) {
-      console.log(
-        metatype,
-        instances.map((i) => i.constructor),
-      );
-
       instanceHost.instance = wrapper.forwardRef
         ? Object.assign(instanceHost.instance, new (metatype as Type)(...instances))
         : new (metatype as Type)(...instances);
