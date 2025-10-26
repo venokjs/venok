@@ -47,6 +47,7 @@ import { CircularDependencyException } from "@venok/core/errors/exceptions/index
 import type { Injectable } from "@venok/core/interfaces/injectable.interface.js";
 import { GraphInspector } from "@venok/core/inspector/graph-inspector.js";
 import { UuidFactory } from "@venok/core/helpers/uuid.helper.js";
+import { TopologyTree } from "@venok/core/injector/topology-tree/topology-tree.js";
 
 interface ApplicationProviderWrapper {
   moduleKey: string;
@@ -290,26 +291,15 @@ export class DependenciesScanner {
 
     // Skip "InternalCoreModule" from calculating distance
     modulesGenerator.next();
+    const rootModule = modulesGenerator.next().value! as Module;
 
-    const modulesStack: any[] = [];
-    const calculateDistance = (moduleRef: Module, distance = 1) => {
-      if (!moduleRef || modulesStack.includes(moduleRef)) return;
+    /* Convert modules to an acyclic connected graph */
+    const tree = TopologyTree.from(rootModule);
 
-      modulesStack.push(moduleRef);
-
-      const moduleImports = moduleRef.imports;
-      moduleImports.forEach((importedModuleRef) => {
-        if (importedModuleRef) {
-          if (distance > importedModuleRef.distance && !importedModuleRef.isGlobal)
-            importedModuleRef.distance = distance;
-
-          calculateDistance(importedModuleRef, distance + 1);
-        }
-      });
-    };
-
-    const rootModule = modulesGenerator.next().value as Module;
-    calculateDistance(rootModule);
+    tree.walk((moduleRef, depth) => {
+      if (moduleRef.isGlobal) return;
+      moduleRef.distance = depth;
+    });
   }
 
   public async insertImport(related: any, token: string, context: string) {
