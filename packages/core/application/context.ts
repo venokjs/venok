@@ -374,7 +374,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
    * modules and its children.
    */
   protected async callDestroyHook(): Promise<void> {
-    const modulesSortedByDistance = this.getModulesToTriggerHooksOn();
+    const modulesSortedByDistance = [...this.getModulesToTriggerHooksOn()].reverse();
     for (const module of modulesSortedByDistance) {
       await callModuleDestroyHook(module);
     }
