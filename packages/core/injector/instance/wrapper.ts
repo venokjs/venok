@@ -36,6 +36,7 @@ export interface InstancePerContext<T> {
   isResolved?: boolean;
   isPending?: boolean;
   donePromise?: Promise<unknown>;
+  isConstructorCalled?: boolean;
   [INSTANCE_ID_SYMBOL]?: string;
 }
 
@@ -364,7 +365,15 @@ export class InstanceWrapper<T = any> {
     if (!this.transientMap) return [];
 
     const instances = [...this.transientMap.values()];
-    return instances.map((item) => item.get(STATIC_CONTEXT)).filter(Boolean) as InstancePerContext<T>[];
+    return instances
+      .map((item) => item.get(STATIC_CONTEXT))
+      .filter((item) => {
+        /*
+         * Only return items where constructor has been actually called
+         * This prevents calling lifecycle hooks on non-instantiated transient services
+         */
+        return !!(item && item.isConstructorCalled);
+      }) as InstancePerContext<T>[];
   }
 
   public mergeWith(provider: Provider) {

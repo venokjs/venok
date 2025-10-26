@@ -674,9 +674,11 @@ export class Injector {
       instanceHost.instance = wrapper.forwardRef
         ? Object.assign(instanceHost.instance, new (metatype as Type)(...instances))
         : new (metatype as Type)(...instances);
+      instanceHost.isConstructorCalled = true;
     } else if (isInContext) {
       const factoryReturnValue = (targetMetatype.metatype as any as Function)(...instances);
       instanceHost.instance = await factoryReturnValue;
+      instanceHost.isConstructorCalled = true;
     }
     instanceHost.isResolved = true;
     return instanceHost.instance;
