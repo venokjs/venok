@@ -220,7 +220,15 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
   public async init(): Promise<this> {
     if (this.isInitialized) return this;
 
-    this.initializationPromise = this.internalInit();
+    this.initializationPromise = this.initializationPromise = new Promise(async (resolve, reject) => {
+      try {
+        await this.callInitHook();
+        await this.callBootstrapHook();
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
     await this.initializationPromise;
 
     this.isInitialized = true;
@@ -427,11 +435,6 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
       this.logger.error(error);
       throw new Error(error);
     }
-  }
-
-  private async internalInit() {
-    await this.callInitHook();
-    await this.callBootstrapHook();
   }
 
   private getModulesToTriggerHooksOn(): Module[] {
