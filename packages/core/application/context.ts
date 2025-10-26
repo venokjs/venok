@@ -107,7 +107,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
 
     const selectedModule = modulesContainer.get(token);
     if (!selectedModule) {
-      throw new UnknownModuleException();
+      throw new UnknownModuleException(type.name);
     }
     return new ApplicationContext(this.container, this.config, this.appOptions, selectedModule, scope);
   }
