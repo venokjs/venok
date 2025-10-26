@@ -1,6 +1,6 @@
-import { Routes, RouteTree } from "../interfaces/http/routes.interface";
-import { isString } from "@venok/core/helpers/shared.helper";
-import { normalizePath } from "./path.helper";
+import type { Routes } from "../interfaces/http/routes.interface.js";
+import { isString } from "@venok/core/helpers/shared.helper.js";
+import { normalizePath } from "./path.helper.js";
 
 export function flattenRoutePaths(routes: Routes) {
   const result: { module: any; path: string }[] = [];

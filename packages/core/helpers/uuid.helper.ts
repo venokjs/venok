@@ -1,4 +1,4 @@
-import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper";
+import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper.js";
 
 export enum UuidFactoryMode {
   Random = "random",

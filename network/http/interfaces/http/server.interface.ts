@@ -1,7 +1,7 @@
-import { VersioningOptions, VersionValue } from "../router/version-options.interface";
-import { CorsOptions, CorsOptionsDelegate } from "./cors.interface";
-import { RequestMethod } from "../../enums";
-import { VenokApplicationOptions } from "./options.interface";
+import type { VersioningOptions, VersionValue } from "../router/version-options.interface.js";
+import type { CorsOptions, CorsOptionsDelegate } from "./cors.interface.js";
+import { RequestMethod } from "../../enums/index.js";
+import type { VenokApplicationOptions } from "./options.interface.js";
 
 export type ErrorHandler<TRequest = any, TResponse = any> = (
   error: any,

@@ -1,4 +1,4 @@
-import { Type } from "../type.interface";
+import type { Type } from "../type.interface.js";
 
 export type Transform<T = any> = (value: T, metadata: ArgumentMetadata) => any;
 

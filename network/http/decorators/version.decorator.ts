@@ -1,7 +1,7 @@
 import { Reflector } from "@venok/core";
 
-import { VersionValue } from "@venok/http/interfaces";
-import { VERSION_METADATA } from "@venok/http/constants";
+import type { VersionValue } from "@venok/http/interfaces/index.js";
+import { VERSION_METADATA } from "@venok/http/constants.js";
 
 /**
  * Sets the version of the endpoint to the passed version

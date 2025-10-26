@@ -1,4 +1,4 @@
-import { ContextId } from "@venok/core/injector/instance/wrapper";
+import type { ContextId } from "@venok/core/injector/instance/wrapper.js";
 
 export function createContextId(): ContextId {
   /**

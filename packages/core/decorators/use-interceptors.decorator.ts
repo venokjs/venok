@@ -1,8 +1,8 @@
-import { VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface";
-import { isFunction } from "@venok/core/helpers/shared.helper";
-import { INTERCEPTORS_METADATA } from "@venok/core/constants";
-import { validateEach } from "@venok/core/helpers/validate-each.helper";
-import { extendArrayMetadata } from "@venok/core/helpers/metadata.helper";
+import type { VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface.js";
+import { isFunction } from "@venok/core/helpers/shared.helper.js";
+import { INTERCEPTORS_METADATA } from "@venok/core/constants.js";
+import { validateEach } from "@venok/core/helpers/validate-each.helper.js";
+import { extendArrayMetadata } from "@venok/core/helpers/metadata.helper.js";
 
 /**
  * Decorator that binds interceptors to the scope of the provider or method,

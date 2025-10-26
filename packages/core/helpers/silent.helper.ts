@@ -1,5 +1,5 @@
-import { Logger } from "@venok/core/services/logger.service";
-import { noop } from "@venok/core/helpers/noop.helper";
+import { Logger } from "@venok/core/services/logger.service.js";
+import { noop } from "@venok/core/helpers/noop.helper.js";
 
 export class SilentLogger extends Logger {
   log = noop;

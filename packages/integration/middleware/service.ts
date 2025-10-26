@@ -1,16 +1,16 @@
-import { Injectable, InjectionToken, Type, VenokContainer } from "@venok/core";
+import { Injectable, type InjectionToken, type Type, VenokContainer } from "@venok/core";
 
-import { Injector, InstanceWrapper, Module, STATIC_CONTEXT } from "@venok/core/injector";
-import { ExecutionContextHost, VenokProxy } from "@venok/core/context";
-import { VenokExceptionFilterContext } from "@venok/core/filters";
-import { RuntimeException } from "@venok/core/errors/exceptions";
-import { Logger } from "@venok/core/services/logger.service";
-import { isUndefined } from "@venok/core/helpers";
+import { Injector, InstanceWrapper, Module, STATIC_CONTEXT } from "@venok/core/injector/index.js";
+import { ExecutionContextHost, VenokProxy } from "@venok/core/context/index.js";
+import { VenokExceptionFilterContext } from "@venok/core/filters/index.js";
+import { RuntimeException } from "@venok/core/errors/exceptions/index.js";
+import { Logger } from "@venok/core/services/logger.service.js";
+import { isUndefined } from "@venok/core/helpers/index.js";
 
-import { BaseMiddlewareConfiguration, VenokMiddleware } from "@venok/integration/interfaces";
-import { MiddlewareContainer } from "@venok/integration/middleware/container";
-import { MiddlewareResolver } from "@venok/integration/middleware/resolver";
-import { InvalidMiddlewareException } from "@venok/integration/exceptions";
+import type { BaseMiddlewareConfiguration, VenokMiddleware } from "@venok/integration/interfaces/index.js";
+import { MiddlewareContainer } from "@venok/integration/middleware/container.js";
+import { MiddlewareResolver } from "@venok/integration/middleware/resolver.js";
+import { InvalidMiddlewareException } from "@venok/integration/exceptions/index.js";
 
 type VenokContextCallback = (...args: any[]) => void | Promise<void>;
 
@@ -19,10 +19,7 @@ export abstract class MiddlewareService<MiddlewareConfiguration extends BaseMidd
   protected index: number = 0;
   protected type: string = "native";
 
-  protected readonly exceptionsFilter: VenokExceptionFilterContext = new VenokExceptionFilterContext(
-    this.container,
-    this.container.applicationConfig,
-  );
+  protected readonly exceptionsFilter: VenokExceptionFilterContext;
 
   private readonly venokProxy: VenokProxy = new VenokProxy();
   private readonly exceptionFiltersCache = new WeakMap();
@@ -32,7 +29,10 @@ export abstract class MiddlewareService<MiddlewareConfiguration extends BaseMidd
   protected readonly middlewareContainer: MiddlewareContainer = new MiddlewareContainer();
   protected readonly resolver: MiddlewareResolver = new MiddlewareResolver(this.middlewareContainer, this.injector);
 
-  constructor(protected readonly container: VenokContainer) {}
+  constructor(readonly container: VenokContainer) {
+    console.log("initialized");
+    this.exceptionsFilter = new VenokExceptionFilterContext(this.container, this.container.applicationConfig);
+  }
 
   public async explore(middlewareClass: any) {
     const modules = this.container.getModules();

@@ -1,8 +1,8 @@
 import { uid } from "uid";
 
-import { DecoratorsType, SetMetadata } from "@venok/core/decorators";
-import { isEmpty, isObject } from "@venok/core/helpers";
-import { Type } from "@venok/core/interfaces";
+import { type DecoratorsType, SetMetadata } from "@venok/core/decorators/index.js";
+import { isEmpty, isObject } from "@venok/core/helpers/index.js";
+import type { Type } from "@venok/core/interfaces/index.js";
 
 interface DecoratorOptions<Options = any, Transformed = Options> {
   /**
@@ -134,6 +134,8 @@ export class Reflector {
     decoratorFn.KEY = metadataKey;
     return decoratorFn as ReflectableDecorators<Options, Transformed>;
   }
+
+  constructor() {}
 
   /**
    * Check if metadata exist for a metadata decorator for a specified target.

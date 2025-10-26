@@ -1,6 +1,6 @@
-import { RuntimeException } from "@venok/core/errors/exceptions";
-import { ArgumentsHost, ExceptionFilter } from "@venok/core";
-import { Logger } from "@venok/core/services/logger.service";
+import { RuntimeException } from "@venok/core/errors/exceptions/index.js";
+import type { ArgumentsHost, ExceptionFilter } from "@venok/core";
+import { Logger } from "@venok/core/services/logger.service.js";
 
 export class VenokExceptionFilter<T = any, R = any> implements ExceptionFilter {
   private static readonly logger = new Logger("ExternalExceptionsHandler");

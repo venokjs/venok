@@ -1,5 +1,5 @@
-import { ClassProvider, FactoryProvider, Provider, ValueProvider } from "@venok/core";
-import { isUndefined } from "@venok/core/helpers/shared.helper";
+import type { ClassProvider, FactoryProvider, Provider, ValueProvider } from "@venok/core";
+import { isUndefined } from "@venok/core/helpers/shared.helper.js";
 
 export function isClassProvider<T = any>(provider: Provider): provider is ClassProvider<T> {
   return Boolean((provider as ClassProvider<T>)?.useClass);

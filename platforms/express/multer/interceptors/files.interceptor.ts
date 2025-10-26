@@ -1,10 +1,18 @@
 import multer from "multer";
 import { Observable } from "rxjs";
-import { MulterOptions } from "../interfaces/multer-options.interface";
-import { CallHandler, ExecutionContext, Inject, mixin, Optional, Type, VenokInterceptor } from "@venok/core";
-import { MULTER_MODULE_OPTIONS } from "../files.constants";
-import { MulterModuleOptions } from "../interfaces";
-import { transformException } from "../multer/multer.utils";
+import type { MulterOptions } from "../interfaces/multer-options.interface.js";
+import {
+  type CallHandler,
+  type ExecutionContext,
+  Inject,
+  mixin,
+  Optional,
+  type Type,
+  type VenokInterceptor,
+} from "@venok/core";
+import { MULTER_MODULE_OPTIONS } from "../files.constants.js";
+import type { MulterModuleOptions } from "../interfaces/index.js";
+import { transformException } from "../multer/multer.utils.js";
 
 type MulterInstance = any;
 

@@ -1,5 +1,5 @@
-import { PipeTransform } from "@venok/core";
-import { ContextId } from "@venok/core/injector";
+import type { PipeTransform } from "@venok/core";
+import type { ContextId } from "@venok/core/injector/index.js";
 
 export type ParamData = object | string | number;
 

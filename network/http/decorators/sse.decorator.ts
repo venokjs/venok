@@ -1,6 +1,6 @@
 import { Reflector } from "@venok/core";
-import { METHOD_METADATA, PATH_METADATA } from "@venok/http/constants";
-import { RequestMethod } from "@venok/http/enums";
+import { METHOD_METADATA, PATH_METADATA } from "@venok/http/constants.js";
+import { RequestMethod } from "@venok/http/enums/index.js";
 
 type SseDecorator = {
   [PATH_METADATA]: string;

@@ -1,6 +1,6 @@
-import { flatten } from "@venok/core/helpers/flatten.helper";
-import { InjectionToken } from "@venok/core/interfaces";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
+import { flatten } from "@venok/core/helpers/flatten.helper.js";
+import type { InjectionToken } from "@venok/core/interfaces/index.js";
+import { InstanceWrapper } from "@venok/core/injector/instance/wrapper.js";
 
 /**
  * Returns the instances which are transient

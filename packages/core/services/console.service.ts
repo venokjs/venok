@@ -1,8 +1,8 @@
-import { isLogLevelEnabled, LoggerService, LogLevel } from "@venok/core/services/logger.service";
-import { Injectable } from "@venok/core/decorators/injectable.decorator";
-import { Optional } from "@venok/core/decorators/optional.decorator";
-import { colors, yellow } from "@venok/core/helpers/color.helper";
-import { isFunction, isPlainObject, isString, isUndefined } from "@venok/core/helpers/shared.helper";
+import { isLogLevelEnabled, type LoggerService, type LogLevel } from "@venok/core/services/logger.service.js";
+import { Injectable } from "@venok/core/decorators/injectable.decorator.js";
+import { Optional } from "@venok/core/decorators/optional.decorator.js";
+import { colors, yellow } from "@venok/core/helpers/color.helper.js";
+import { isFunction, isPlainObject, isString, isUndefined } from "@venok/core/helpers/shared.helper.js";
 
 export interface ConsoleLoggerOptions {
   /**
@@ -222,12 +222,12 @@ export class ConsoleLogger implements LoggerService {
     return isFunction(message)
       ? this.stringifyMessage(message(), logLevel)
       : isPlainObject(message) || Array.isArray(message)
-      ? `${this.colorize("Object:", logLevel)}\n${JSON.stringify(
-          message,
-          (key, value) => (typeof value === "bigint" ? value.toString() : value),
-          2,
-        )}\n`
-      : this.colorize(message as string, logLevel);
+        ? `${this.colorize("Object:", logLevel)}\n${JSON.stringify(
+            message,
+            (key, value) => (typeof value === "bigint" ? value.toString() : value),
+            2,
+          )}\n`
+        : this.colorize(message as string, logLevel);
   }
 
   protected colorize(message: string, logLevel: LogLevel) {

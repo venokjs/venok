@@ -1,9 +1,9 @@
-import { Reflector, ScopeOptions } from "@venok/core";
-import { SCOPE_OPTIONS_METADATA } from "@venok/core/constants";
-import { isString, isUndefined } from "@venok/core/helpers/shared.helper";
-import { HOST_METADATA, PATH_METADATA, VERSION_METADATA } from "@venok/http/constants";
-import { VersionOptions, VersionValue } from "@venok/http/interfaces";
-import { ControllerDiscovery } from "@venok/http/discovery/controller.discovery";
+import { Reflector, type ScopeOptions } from "@venok/core";
+import { SCOPE_OPTIONS_METADATA } from "@venok/core/constants.js";
+import { isString, isUndefined } from "@venok/core/helpers/shared.helper.js";
+import { HOST_METADATA, PATH_METADATA, VERSION_METADATA } from "@venok/http/constants.js";
+import type { VersionOptions, VersionValue } from "@venok/http/interfaces/index.js";
+import { ControllerDiscovery } from "@venok/http/discovery/controller.discovery.js";
 
 /**
  * Interface defining options that can be passed to `@Controller()` decorator
@@ -128,13 +128,13 @@ export const Controller = Reflector.createDecorator<string | string[] | Controll
     const [path, host, scopeOptions, versionOptions] = isUndefined(options)
       ? [defaultPath, undefined, undefined, undefined]
       : isString(options) || Array.isArray(options)
-      ? [options, undefined, undefined, undefined]
-      : [
-          options!.path || defaultPath,
-          options!.host,
-          { scope: options!.scope, durable: options!.durable },
-          (Array.isArray(options.version) ? Array.from(new Set(options.version)) : options.version) as VersionValue,
-        ];
+        ? [options, undefined, undefined, undefined]
+        : [
+            options!.path || defaultPath,
+            options!.host,
+            { scope: options!.scope, durable: options!.durable },
+            (Array.isArray(options.version) ? Array.from(new Set(options.version)) : options.version) as VersionValue,
+          ];
 
     return new ControllerDiscovery({
       [PATH_METADATA]: path,

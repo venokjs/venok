@@ -1,8 +1,8 @@
 import { Readable } from "node:stream";
 import { types } from "util";
 
-import { isFunction } from "@venok/core/helpers";
-import { HttpStatus, StreamableFileOptions, StreamableHandlerResponse } from "@venok/http";
+import { isFunction } from "@venok/core/helpers/index.js";
+import { HttpStatus, type StreamableFileOptions, type StreamableHandlerResponse } from "@venok/http";
 
 /**
  *

@@ -1,9 +1,9 @@
 import { uid } from "uid";
 
-import { assignCustomParameterMetadata } from "@venok/core/helpers/metadata.helper";
-import { PipeTransform, Type } from "@venok/core/interfaces";
-import { ROUTE_ARGS_METADATA } from "@venok/core/constants";
-import { isFunction, isNull } from "@venok/core/helpers";
+import { assignCustomParameterMetadata } from "@venok/core/helpers/metadata.helper.js";
+import type { PipeTransform, Type } from "@venok/core/interfaces/index.js";
+import { ROUTE_ARGS_METADATA } from "@venok/core/constants.js";
+import { isFunction, isNull } from "@venok/core/helpers/index.js";
 
 export type ParamDecoratorEnhancer = ParameterDecorator;
 

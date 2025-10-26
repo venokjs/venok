@@ -1,19 +1,19 @@
-import { DynamicModule, InjectionToken, Provider } from "@venok/core";
-import { Logger } from "@venok/core/services/logger.service";
-import {
+import type { DynamicModule, InjectionToken, Provider } from "@venok/core";
+import { Logger } from "@venok/core/services/logger.service.js";
+import type {
   ConfigurableModuleAsyncOptions,
   ConfigurableModuleCls,
   ConfigurableModuleHost,
   ConfigurableModuleOptionsFactory,
-} from "@venok/integration/interfaces/configurable";
-import { generateOptionsInjectionToken, getInjectionProviders } from "@venok/integration/configurable/helpers";
-import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper";
+} from "@venok/integration/interfaces/configurable/index.js";
+import { generateOptionsInjectionToken, getInjectionProviders } from "@venok/integration/configurable/helpers/index.js";
+import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper.js";
 import {
   ASYNC_METHOD_SUFFIX,
   CONFIGURABLE_MODULE_ID,
   DEFAULT_FACTORY_CLASS_METHOD_KEY,
   DEFAULT_METHOD_KEY,
-} from "@venok/integration/configurable/constants";
+} from "@venok/integration/configurable/constants.js";
 
 /**
  * @publicApi

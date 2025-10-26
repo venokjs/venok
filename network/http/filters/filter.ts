@@ -1,19 +1,19 @@
 import {
   ApplicationContext,
-  ArgumentsHost,
-  ExceptionFilter,
+  type ArgumentsHost,
+  type ExceptionFilter,
   Inject,
   MESSAGES,
   Optional,
   VenokContainer,
 } from "@venok/core";
-import { Logger } from "@venok/core/services/logger.service";
+import { Logger } from "@venok/core/services/logger.service.js";
 
-import { AbstractHttpAdapter } from "@venok/http/adapter/adapter";
-import { HttpConfig, HttpServer, HttpStatus } from "@venok/http";
-import { HttpAdapterHost } from "@venok/http/adapter/host";
-import { HttpException } from "@venok/http/errors";
-import { isObject } from "@venok/core/helpers";
+import { AbstractHttpAdapter } from "@venok/http/adapter/adapter.js";
+import { HttpConfig, type HttpServer, HttpStatus } from "@venok/http";
+import { HttpAdapterHost } from "@venok/http/adapter/host.js";
+import { HttpException } from "@venok/http/errors/index.js";
+import { isObject } from "@venok/core/helpers/index.js";
 
 export class HttpExceptionFilter<T = any> implements ExceptionFilter<T> {
   private static readonly logger = new Logger("ExceptionsHandler");

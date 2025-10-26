@@ -1,8 +1,8 @@
-import { Provider } from "@venok/core/interfaces/modules";
-import { Reflector } from "@venok/core/services";
-import { INQUIRER, REQUEST } from "@venok/core/constants";
-import { Scope } from "@venok/core/interfaces";
-import { noop } from "@venok/core/helpers/noop.helper";
+import type { Provider } from "@venok/core/interfaces/modules/index.js";
+import { Reflector } from "@venok/core/services/index.js";
+import { INQUIRER, REQUEST } from "@venok/core/constants.js";
+import { Scope } from "@venok/core/interfaces/index.js";
+import { noop } from "@venok/core/helpers/noop.helper.js";
 
 export const ReflectorAliasProvider: Provider = {
   provide: Reflector.name,

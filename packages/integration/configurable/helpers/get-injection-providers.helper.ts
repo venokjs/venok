@@ -1,4 +1,9 @@
-import { FactoryProvider, InjectionToken, OptionalFactoryDependency, Provider } from "@venok/core/interfaces";
+import type {
+  FactoryProvider,
+  InjectionToken,
+  OptionalFactoryDependency,
+  Provider,
+} from "@venok/core/interfaces/index.js";
 
 /**
  * check if x is OptionalFactoryDependency, based on prototype presence

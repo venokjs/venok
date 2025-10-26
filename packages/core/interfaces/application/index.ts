@@ -1,1 +1,1 @@
-export * from "./context.interface";
+export * from "./context.interface.js";

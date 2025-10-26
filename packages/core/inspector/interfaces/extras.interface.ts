@@ -1,4 +1,4 @@
-import { EnhancerSubtype } from "@venok/core/constants";
+import type { EnhancerSubtype } from "@venok/core/constants.js";
 
 /**
  * Enhancers attached through APP_PIPE, APP_GUARD, APP_INTERCEPTOR, and APP_FILTER tokens.

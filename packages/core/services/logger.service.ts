@@ -1,7 +1,7 @@
-import { ConsoleLogger } from "@venok/core/services/console.service";
-import { Injectable } from "@venok/core/decorators/injectable.decorator";
-import { Optional } from "@venok/core/decorators/optional.decorator";
-import { isObject } from "@venok/core/helpers/shared.helper";
+import { ConsoleLogger } from "@venok/core/services/console.service.js";
+import { Injectable } from "@venok/core/decorators/injectable.decorator.js";
+import { Optional } from "@venok/core/decorators/optional.decorator.js";
+import { isObject } from "@venok/core/helpers/shared.helper.js";
 
 /**
  * @publicApi

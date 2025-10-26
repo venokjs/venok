@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { ExecutionContext } from "@venok/core/interfaces/context/execution.interface";
+import type { ExecutionContext } from "@venok/core/interfaces/context/execution.interface.js";
 
 /**
  * Interface providing access to the response stream.

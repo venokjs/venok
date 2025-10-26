@@ -1,16 +1,16 @@
-import { VenokContainer } from "@venok/core/injector/container";
-import { DependenciesScanner } from "@venok/core/scanner";
-import { ModuleCompiler } from "@venok/core/injector/module/compiler";
-import { GraphInspector } from "@venok/core/inspector/graph-inspector";
-import { ModuleOverride } from "@venok/core/interfaces/modules/override.interface";
-import { Logger } from "@venok/core/services/logger.service";
-import { LazyModuleLoader } from "@venok/core/injector/module/lazy/loader";
-import { Injector } from "@venok/core/injector/injector";
-import { InstanceLoader } from "@venok/core/injector/instance/loader";
-import { InternalCoreModule } from "@venok/core/injector/internal-core-module/internal-core-module";
-import { ModulesContainer } from "@venok/core/injector/module/container";
-import { SerializedGraph } from "@venok/core/inspector/serialized-graph";
-import { VenokContextCreator } from "@venok/core/context/context";
+import { VenokContainer } from "@venok/core/injector/container.js";
+import { DependenciesScanner } from "@venok/core/scanner.js";
+import { ModuleCompiler } from "@venok/core/injector/module/compiler.js";
+import { GraphInspector } from "@venok/core/inspector/graph-inspector.js";
+import type { ModuleOverride } from "@venok/core/interfaces/modules/override.interface.js";
+import { Logger } from "@venok/core/services/logger.service.js";
+import { LazyModuleLoader } from "@venok/core/injector/module/lazy/loader.js";
+import { Injector } from "@venok/core/injector/injector.js";
+import { InstanceLoader } from "@venok/core/injector/instance/loader.js";
+import { InternalCoreModule } from "@venok/core/injector/internal-core-module/internal-core-module.js";
+import { ModulesContainer } from "@venok/core/injector/module/container.js";
+import { SerializedGraph } from "@venok/core/inspector/serialized-graph.js";
+import { VenokContextCreator } from "@venok/core/context/context.js";
 
 export class InternalCoreModuleFactory {
   static create(

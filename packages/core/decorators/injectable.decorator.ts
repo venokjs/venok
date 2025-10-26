@@ -1,6 +1,6 @@
 import { uid } from "uid";
-import { ScopeOptions, Type } from "@venok/core/interfaces";
-import { INJECTABLE_WATERMARK, SCOPE_OPTIONS_METADATA } from "@venok/core/constants";
+import type { ScopeOptions, Type } from "@venok/core/interfaces/index.js";
+import { INJECTABLE_WATERMARK, SCOPE_OPTIONS_METADATA } from "@venok/core/constants.js";
 
 /**
  * Defines the injection scope.

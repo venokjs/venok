@@ -1,5 +1,5 @@
-import { ContextId, InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import {
+import { type ContextId, InstanceWrapper } from "@venok/core/injector/instance/wrapper.js";
+import type {
   ClassProvider,
   DynamicModule,
   ExistingProvider,
@@ -8,21 +8,25 @@ import {
   Provider,
   ValueProvider,
   VenokModule,
-} from "@venok/core/interfaces/modules";
-import { Type } from "@venok/core/interfaces";
-import { InvalidClassException, RuntimeException, UnknownExportException } from "@venok/core/errors/exceptions";
-import { EnhancerSubtype, ENTRY_PROVIDER_WATERMARK } from "@venok/core/constants";
-import { isFunction, isNull, isObject, isString, isSymbol, isUndefined } from "@venok/core/helpers/shared.helper";
-import { UuidFactory } from "@venok/core/helpers/uuid.helper";
-import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper";
-import { ModuleRef, ModuleRefGetOrResolveOpts } from "@venok/core/injector/module/ref";
-import { VenokContainer } from "@venok/core/injector/container";
-import { getClassScope } from "@venok/core/injector/helpers/class-scope.helper";
-import { isDurable } from "@venok/core/injector/helpers/is-durable.helper";
-import { ApplicationConfig } from "@venok/core/application/config";
-import { createContextId } from "@venok/core/helpers/context-id-factory.helper";
-import { Injectable } from "@venok/core/interfaces/injectable.interface";
-import { PROVIDER_ID_KEY } from "@venok/core/injector";
+} from "@venok/core/interfaces/modules/index.js";
+import type { Type } from "@venok/core/interfaces/index.js";
+import {
+  InvalidClassException,
+  RuntimeException,
+  UnknownExportException,
+} from "@venok/core/errors/exceptions/index.js";
+import { type EnhancerSubtype, ENTRY_PROVIDER_WATERMARK } from "@venok/core/constants.js";
+import { isFunction, isNull, isObject, isString, isSymbol, isUndefined } from "@venok/core/helpers/shared.helper.js";
+import { UuidFactory } from "@venok/core/helpers/uuid.helper.js";
+import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper.js";
+import { ModuleRef, type ModuleRefGetOrResolveOpts } from "@venok/core/injector/module/ref.js";
+import { VenokContainer } from "@venok/core/injector/container.js";
+import { getClassScope } from "@venok/core/injector/helpers/class-scope.helper.js";
+import { isDurable } from "@venok/core/injector/helpers/is-durable.helper.js";
+import { ApplicationConfig } from "@venok/core/application/config.js";
+import { createContextId } from "@venok/core/helpers/context-id-factory.helper.js";
+import type { Injectable } from "@venok/core/interfaces/injectable.interface.js";
+import { PROVIDER_ID_KEY } from "@venok/core/injector/index.js";
 
 export class Module {
   private readonly _id: string;

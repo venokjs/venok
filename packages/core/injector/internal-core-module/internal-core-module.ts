@@ -1,18 +1,17 @@
-import { Reflector } from "@venok/core/services";
-import { Global } from "@venok/core/decorators/global.decorator";
-import { Module } from "@venok/core/decorators/module.decorator";
-import {
+import { Reflector } from "@venok/core/services/index.js";
+import { Global } from "@venok/core/decorators/global.decorator.js";
+import { Module } from "@venok/core/decorators/module.decorator.js";
+import type {
   DynamicModule,
   ExistingProvider,
   FactoryProvider,
-  Provider,
   ValueProvider,
-} from "@venok/core/interfaces/modules";
+} from "@venok/core/interfaces/modules/index.js";
 import {
   inquirerProvider,
   ReflectorAliasProvider,
   requestProvider,
-} from "@venok/core/injector/internal-core-module/core-providers";
+} from "@venok/core/injector/internal-core-module/core-providers.js";
 
 @Global()
 @Module({

@@ -1,5 +1,5 @@
-import { BadRequestException, HttpException } from "@venok/http/errors";
-import { busboyExceptions, multerExceptions } from "./multer.constants";
+import { BadRequestException, HttpException } from "@venok/http/errors/index.js";
+import { busboyExceptions, multerExceptions } from "./multer.constants.js";
 
 export function transformException(error: Error | undefined) {
   if (!error || error instanceof HttpException) {

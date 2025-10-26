@@ -1,5 +1,5 @@
-import { Type } from "@venok/core/interfaces";
-import { ArgumentsHost } from "@venok/core/interfaces/context/arguments-host.interface";
+import type { Type } from "@venok/core/interfaces/index.js";
+import type { ArgumentsHost } from "@venok/core/interfaces/context/arguments-host.interface.js";
 
 /**
  * Interface describing implementation of an exception filter.

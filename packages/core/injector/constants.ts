@@ -1,4 +1,4 @@
-import { ContextId } from "@venok/core/injector/instance/wrapper";
+import type { ContextId } from "@venok/core/injector/instance/wrapper.js";
 
 const STATIC_CONTEXT_ID = 1;
 export const STATIC_CONTEXT: ContextId = Object.freeze({

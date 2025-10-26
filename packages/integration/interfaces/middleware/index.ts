@@ -1,2 +1,2 @@
-export * from "./configuration.interface";
-export * from "./middleware.interface";
+export * from "./configuration.interface.js";
+export * from "./middleware.interface.js";

@@ -1,23 +1,23 @@
-import { DynamicModule, Provider } from "@venok/core/interfaces/modules";
-import { Type } from "@venok/core/interfaces";
-import { Module } from "@venok/core/injector/module/module";
-import { TokenFactory } from "@venok/core/injector/module/token-factory";
-import { ModuleCompiler, ModuleFactory } from "@venok/core/injector/module/compiler";
-import { ModulesContainer } from "@venok/core/injector/module/container";
+import type { DynamicModule, Provider } from "@venok/core/interfaces/modules/index.js";
+import type { Type } from "@venok/core/interfaces/index.js";
+import { Module } from "@venok/core/injector/module/module.js";
+import { TokenFactory } from "@venok/core/injector/module/token-factory.js";
+import { ModuleCompiler, type ModuleFactory } from "@venok/core/injector/module/compiler.js";
+import { ModulesContainer } from "@venok/core/injector/module/container.js";
 import {
   CircularDependencyException,
   UndefinedForwardRefException,
   UnknownModuleException,
-} from "@venok/core/errors/exceptions";
-import { EnhancerSubtype, GLOBAL_MODULE_METADATA, REQUEST, REQUEST_CONTEXT_ID } from "@venok/core/constants";
-import { ContextId } from "@venok/core/injector/instance/wrapper";
-import { ApplicationConfig } from "@venok/core/application/config";
-import { InitializeOnPreviewAllowlist } from "@venok/core/inspector/initialize-on-preview.allowlist";
-import { SerializedGraph } from "@venok/core/inspector/serialized-graph";
-import { InternalCoreModule } from "@venok/core/injector/internal-core-module/internal-core-module";
-import { Injectable } from "@venok/core/interfaces/injectable.interface";
-import { MetaHostStorage } from "@venok/core/storage/meta-host.storage";
-import { ContextIdFactory } from "@venok/core/context/context-id.factory";
+} from "@venok/core/errors/exceptions/index.js";
+import { type EnhancerSubtype, GLOBAL_MODULE_METADATA, REQUEST, REQUEST_CONTEXT_ID } from "@venok/core/constants.js";
+import { type ContextId } from "@venok/core/injector/instance/wrapper.js";
+import { ApplicationConfig } from "@venok/core/application/config.js";
+import { InitializeOnPreviewAllowlist } from "@venok/core/inspector/initialize-on-preview.allowlist.js";
+import { SerializedGraph } from "@venok/core/inspector/serialized-graph.js";
+import { InternalCoreModule } from "@venok/core/injector/internal-core-module/internal-core-module.js";
+import { type Injectable } from "@venok/core/interfaces/injectable.interface.js";
+import { MetaHostStorage } from "@venok/core/storage/meta-host.storage.js";
+import { ContextIdFactory } from "@venok/core/context/context-id.factory.js";
 
 type ModuleMetatype = Type | DynamicModule | Promise<DynamicModule>;
 type ModuleScope = Type[];
@@ -251,7 +251,7 @@ export class VenokContainer {
   ): DynamicModule[K];
   public getDynamicMetadataByToken(token: string, metadataKey?: Exclude<keyof DynamicModule, "global" | "module">) {
     const metadata = this.dynamicModulesMetadata.get(token);
-    return metadataKey ? metadata?.[metadataKey] ?? [] : metadata;
+    return metadataKey ? (metadata?.[metadataKey] ?? []) : metadata;
   }
 
   public registerCoreModuleRef(moduleRef: Module) {

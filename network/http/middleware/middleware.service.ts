@@ -1,10 +1,10 @@
-import { BaseMiddlewareConfiguration, MiddlewareService } from "@venok/integration";
-import { ApplicationContext, Inject, Injectable, OnModuleInit, Type } from "@venok/core";
-import { HttpConfig, RequestMethod, RouteInfo } from "@venok/http";
+import { type BaseMiddlewareConfiguration, MiddlewareService } from "@venok/integration";
+import { ApplicationContext, Injectable, type OnModuleInit, type Type } from "@venok/core";
+import { HttpConfig, RequestMethod, type RouteInfo } from "@venok/http";
 
-import { MiddlewareBuilder, RouteInfoPathExtractor, RoutesMapper } from "@venok/http/middleware";
-import { RouterExceptionFiltersContext } from "@venok/http/filters/context";
-import { isRequestMethodAll } from "@venok/http/helpers";
+import { MiddlewareBuilder, RouteInfoPathExtractor, RoutesMapper } from "@venok/http/middleware/index.js";
+import { RouterExceptionFiltersContext } from "@venok/http/filters/context.js";
+import { isRequestMethodAll } from "@venok/http/helpers/index.js";
 
 @Injectable()
 export class HttpMiddlewareService

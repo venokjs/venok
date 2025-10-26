@@ -1,11 +1,11 @@
-import { DynamicModule, Type } from "@venok/core/interfaces";
-import { LoggerService, LogLevel } from "@venok/core/services/logger.service";
-import { ShutdownSignal } from "@venok/core/application/context";
-import { VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface";
-import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
-import { ExceptionFilter } from "@venok/core/interfaces/features/exception-filter.interface";
-import { CanActivate } from "@venok/core/interfaces/features/guards.interface";
-import { VenokContainer } from "@venok/core/injector";
+import type { DynamicModule, Type } from "@venok/core/interfaces/index.js";
+import type { LoggerService, LogLevel } from "@venok/core/services/logger.service.js";
+import { ShutdownSignal } from "@venok/core/application/context.js";
+import type { VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface.js";
+import type { PipeTransform } from "@venok/core/interfaces/features/pipes.interface.js";
+import type { ExceptionFilter } from "@venok/core/interfaces/features/exception-filter.interface.js";
+import type { CanActivate } from "@venok/core/interfaces/features/guards.interface.js";
+import { VenokContainer } from "@venok/core/injector/index.js";
 
 export interface GetOrResolveOptions {
   /**

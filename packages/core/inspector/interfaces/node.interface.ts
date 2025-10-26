@@ -1,6 +1,6 @@
-import { EnhancerSubtype } from "@venok/core/constants";
-import { Scope } from "@venok/core/interfaces";
-import { InjectionToken } from "@venok/core/interfaces/modules";
+import type { EnhancerSubtype } from "@venok/core/constants.js";
+import { Scope } from "@venok/core/interfaces/index.js";
+import type { InjectionToken } from "@venok/core/interfaces/modules/index.js";
 
 export type ModuleNode = {
   metadata: {

@@ -1,2 +1,2 @@
-export * from "./consumer";
-export * from "./context-creator";
+export * from "./consumer.js";
+export * from "./context-creator.js";

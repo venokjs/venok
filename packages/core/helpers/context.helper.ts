@@ -1,6 +1,6 @@
-import { ContextType, ParamProperties, PARAMTYPES_METADATA, Type } from "@venok/core";
-import { isFunction } from "@venok/core/helpers/shared.helper";
-import { ExecutionContextHost } from "@venok/core/context";
+import { type ContextType, type ParamProperties, PARAMTYPES_METADATA, type Type } from "@venok/core";
+import { isFunction } from "@venok/core/helpers/shared.helper.js";
+import { ExecutionContextHost } from "@venok/core/context/index.js";
 
 export class ContextUtils {
   public mapParamType(key: string): string {

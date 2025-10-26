@@ -1,4 +1,4 @@
-import { Type } from "@venok/core";
+import type { Type } from "@venok/core";
 
 export const UNKNOWN_REQUEST_MAPPING = (metatype: Type) => {
   const className = metatype.name;

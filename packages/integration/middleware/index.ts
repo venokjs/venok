@@ -1,3 +1,3 @@
-export * from "./container";
-export * from "./resolver";
-export * from "./service";
+export * from "./container.js";
+export * from "./resolver.js";
+export * from "./service.js";

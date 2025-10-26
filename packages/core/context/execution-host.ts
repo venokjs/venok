@@ -1,6 +1,6 @@
-import { Type } from "@venok/core/interfaces";
-import { ExecutionContext } from "@venok/core/interfaces/context/execution.interface";
-import { ContextType } from "@venok/core/interfaces/context/arguments-host.interface";
+import type { Type } from "@venok/core/interfaces/index.js";
+import type { ExecutionContext } from "@venok/core/interfaces/context/execution.interface.js";
+import type { ContextType } from "@venok/core/interfaces/context/arguments-host.interface.js";
 
 export class ExecutionContextHost implements ExecutionContext {
   private contextType: string = "native";

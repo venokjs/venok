@@ -1,9 +1,9 @@
 import { MetadataScanner } from "@venok/core";
-import { RouteDefinition, VersionValue } from "../interfaces";
-import { isString, isUndefined } from "@venok/core/helpers/shared.helper";
-import { METHOD_METADATA, PATH_METADATA, VERSION_METADATA } from "../constants";
-import { RequestMethod } from "../enums";
-import { addLeadingSlash } from "../helpers";
+import type { RouteDefinition, VersionValue } from "../interfaces/index.js";
+import { isString, isUndefined } from "@venok/core/helpers/shared.helper.js";
+import { METHOD_METADATA, PATH_METADATA, VERSION_METADATA } from "../constants.js";
+import { RequestMethod } from "../enums/index.js";
+import { addLeadingSlash } from "../helpers/index.js";
 
 export class PathsExplorer {
   constructor(private readonly metadataScanner: MetadataScanner) {}

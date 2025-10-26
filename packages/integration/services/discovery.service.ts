@@ -1,9 +1,9 @@
-import { CustomDecorator, Injectable } from "@venok/core";
+import { type CustomDecorator, Injectable } from "@venok/core";
 
-import { InstanceWrapper, Module, ModulesContainer } from "@venok/core/injector";
-import { MetaHostStorage } from "@venok/core/storage/meta-host.storage";
-import { DiscoveryOptions } from "@venok/integration/interfaces";
-import { flatten } from "@venok/core/helpers";
+import { InstanceWrapper, Module, ModulesContainer } from "@venok/core/injector/index.js";
+import { MetaHostStorage } from "@venok/core/storage/meta-host.storage.js";
+import type { DiscoveryOptions } from "@venok/integration/interfaces/index.js";
+import { flatten } from "@venok/core/helpers/index.js";
 
 /**
  * @publicApi

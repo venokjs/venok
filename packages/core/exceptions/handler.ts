@@ -1,6 +1,6 @@
-import { InvalidExceptionFilterException } from "@venok/core/errors/exceptions/invalid-exception-filter.exception";
-import { isEmpty } from "@venok/core/helpers/shared.helper";
-import { ArgumentsHost, ExceptionFilter, ExceptionFilterMetadata } from "@venok/core";
+import { InvalidExceptionFilterException } from "@venok/core/errors/exceptions/invalid-exception-filter.exception.js";
+import { isEmpty } from "@venok/core/helpers/shared.helper.js";
+import type { ArgumentsHost, ExceptionFilter, ExceptionFilterMetadata } from "@venok/core";
 
 export class VenokExceptionsHandler {
   private filters: ExceptionFilterMetadata[] = [];

@@ -1,4 +1,4 @@
-import { VersioningOptions, VersionValue } from "../router/version-options.interface";
+import type { VersioningOptions, VersionValue } from "../router/version-options.interface.js";
 
 export interface RoutePathMetadata {
   /**

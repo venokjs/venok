@@ -1,2 +1,2 @@
-export * from "./constants";
-export * from "./module.builder";
+export * from "./constants.js";
+export * from "./module.builder.js";

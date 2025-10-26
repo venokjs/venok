@@ -1,1 +1,1 @@
-export * from "./discovery.interface";
+export * from "./discovery.interface.js";

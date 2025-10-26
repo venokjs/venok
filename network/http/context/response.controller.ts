@@ -1,12 +1,12 @@
 import { catchError, debounce, EMPTY, isObservable, lastValueFrom, map, Observable } from "rxjs";
 import { IncomingMessage } from "http";
 
-import { AdditionalHeaders, SseStream, WritableHeaderStream } from "@venok/http/helpers";
-import { HttpStatus, RequestMethod } from "@venok/http/enums";
-import { HttpServer } from "@venok/http/interfaces";
+import { type AdditionalHeaders, SseStream, type WritableHeaderStream } from "@venok/http/helpers/index.js";
+import { HttpStatus, RequestMethod } from "@venok/http/enums/index.js";
+import type { HttpServer } from "@venok/http/interfaces/index.js";
 
-import { Logger } from "@venok/core/services/logger.service";
-import { isObject } from "@venok/core/helpers";
+import { Logger } from "@venok/core/services/logger.service.js";
+import { isObject } from "@venok/core/helpers/index.js";
 
 export interface CustomHeader {
   name: string;
@@ -37,8 +37,8 @@ export class RouterResponseController {
       result && result.statusCode
         ? result.statusCode
         : redirectResponse.statusCode
-        ? redirectResponse.statusCode
-        : HttpStatus.FOUND;
+          ? redirectResponse.statusCode
+          : HttpStatus.FOUND;
     const url = result && result.url ? result.url : redirectResponse.url;
     this.applicationRef.redirect(response, statusCode, url);
   }

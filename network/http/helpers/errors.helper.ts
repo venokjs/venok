@@ -1,9 +1,9 @@
 import { VenokContainer } from "@venok/core";
-import { VenokProxy } from "@venok/core/context";
+import { VenokProxy } from "@venok/core/context/index.js";
 
-import { RouterExceptionFiltersContext } from "@venok/http/filters/context";
-import { BadRequestException, NotFoundException } from "@venok/http/errors";
-import { HttpConfig } from "@venok/http/application/config";
+import { RouterExceptionFiltersContext } from "@venok/http/filters/context.js";
+import { BadRequestException, NotFoundException } from "@venok/http/errors/index.js";
+import { HttpConfig } from "@venok/http/application/config.js";
 
 export class AdapterErrorsHelper {
   private readonly venokProxy: VenokProxy = new VenokProxy();

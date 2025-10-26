@@ -1,5 +1,5 @@
-import { ApplicationContextOptions } from "@venok/core/interfaces/application/context-options.interface";
-import { CorsOptions, CorsOptionsDelegate } from "./cors.interface";
+import { ApplicationContextOptions } from "@venok/core/interfaces/application/context-options.interface.js";
+import type { CorsOptions, CorsOptionsDelegate } from "./cors.interface.js";
 
 /**
  * Interface describing Https Options that can be set.

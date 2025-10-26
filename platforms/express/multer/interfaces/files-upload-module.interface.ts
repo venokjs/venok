@@ -1,5 +1,5 @@
-import { ModuleMetadata, Type } from "@venok/core";
-import { MulterOptions } from "./multer-options.interface";
+import type { ModuleMetadata, Type } from "@venok/core";
+import type { MulterOptions } from "./multer-options.interface.js";
 
 export type MulterModuleOptions = MulterOptions;
 

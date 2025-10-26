@@ -1,5 +1,5 @@
-import { OPTIONAL_DEPS_METADATA, OPTIONAL_PROPERTY_DEPS_METADATA } from "@venok/core/constants";
-import { isUndefined } from "@venok/core/helpers/shared.helper";
+import { OPTIONAL_DEPS_METADATA, OPTIONAL_PROPERTY_DEPS_METADATA } from "@venok/core/constants.js";
+import { isUndefined } from "@venok/core/helpers/shared.helper.js";
 
 /**
  * Parameter decorator for an injected dependency marking the

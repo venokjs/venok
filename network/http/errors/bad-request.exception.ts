@@ -1,5 +1,6 @@
-import { HttpStatus } from "../enums";
-import { HttpException, HttpExceptionOptions } from "./http.exception";
+import { HttpStatus } from "../enums/index.js";
+import { HttpException } from "./http.exception.js";
+import type { HttpExceptionOptions } from "./http.exception.js";
 
 /**
  * Defines an HTTP exception for *Bad Request* type errors.

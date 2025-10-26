@@ -1,13 +1,13 @@
-import { HttpServer, MiddlewareConfigProxy, MiddlewareConsumer, RouteInfo } from "@venok/http";
-import { BaseMiddlewareConfiguration } from "@venok/integration";
-import { Type } from "@venok/core";
+import type { HttpServer, MiddlewareConfigProxy, MiddlewareConsumer, RouteInfo } from "@venok/http";
+import type { BaseMiddlewareConfiguration } from "@venok/integration";
+import type { Type } from "@venok/core";
 
-import { RouteInfoPathExtractor } from "@venok/http/middleware/extractor";
-import { RoutesMapper } from "@venok/http/middleware/routes-mapper";
-import { filterMiddleware } from "@venok/http/middleware/utils";
-import { stripEndSlash } from "@venok/http/helpers";
+import { RouteInfoPathExtractor } from "@venok/http/middleware/extractor.js";
+import { RoutesMapper } from "@venok/http/middleware/routes-mapper.js";
+import { filterMiddleware } from "@venok/http/middleware/utils.js";
+import { stripEndSlash } from "@venok/http/helpers/index.js";
 
-import { flatten } from "@venok/core/helpers";
+import { flatten } from "@venok/core/helpers/index.js";
 
 export class MiddlewareBuilder implements MiddlewareConsumer {
   private readonly middlewareCollection = new Set<BaseMiddlewareConfiguration<Type[], RouteInfo>>();

@@ -1,5 +1,5 @@
-import { VenokBaseDiscovery } from "@venok/http/discovery/base.discovery";
-import { RequestMethod } from "@venok/http/enums";
+import { VenokBaseDiscovery } from "@venok/http/discovery/base.discovery.js";
+import { RequestMethod } from "@venok/http/enums/index.js";
 
 type RouteDiscoveryMeta = {
   method: RequestMethod;

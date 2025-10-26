@@ -1,4 +1,10 @@
-import { CUSTOM_ROUTE_ARGS_METADATA, CustomParamFactory, ParamData, PipeTransform, Type } from "@venok/core";
+import {
+  CUSTOM_ROUTE_ARGS_METADATA,
+  type CustomParamFactory,
+  type ParamData,
+  type PipeTransform,
+  type Type,
+} from "@venok/core";
 
 export function extendArrayMetadata<T extends Array<unknown>>(key: string, metadata: T, target: Function) {
   const previousValue = Reflect.getMetadata(key, target) || [];

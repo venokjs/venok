@@ -1,2 +1,2 @@
-export * from "./handler";
-export * from "./zone";
+export * from "./handler.js";
+export * from "./zone.js";

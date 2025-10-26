@@ -1,5 +1,5 @@
-import { AbstractHttpAdapter } from "@venok/http/adapter/adapter";
-import { RequestMethod, VersioningOptions, VersionValue } from "@venok/http";
+import { AbstractHttpAdapter } from "@venok/http/adapter/adapter.js";
+import { RequestMethod, type VersioningOptions, type VersionValue } from "@venok/http";
 
 export class NoopHttpAdapter extends AbstractHttpAdapter {
   constructor(instance: any) {

@@ -1,5 +1,5 @@
-import { RequestMethod } from "../enums";
-import {
+import { RequestMethod } from "../enums/index.js";
+import type {
   CorsOptions,
   CorsOptionsDelegate,
   HttpServer,
@@ -7,7 +7,7 @@ import {
   VenokApplicationOptions,
   VersioningOptions,
   VersionValue,
-} from "@venok/http/interfaces";
+} from "@venok/http/interfaces/index.js";
 
 /**
  * @publicApi

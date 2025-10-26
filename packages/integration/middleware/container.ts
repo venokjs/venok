@@ -1,9 +1,9 @@
-import { InjectionToken, Type } from "@venok/core";
+import type { InjectionToken, Type } from "@venok/core";
 
-import { getClassScope, InstanceWrapper, isDurable } from "@venok/core/injector";
-import { Injectable } from "@venok/core/interfaces/injectable.interface";
+import { getClassScope, InstanceWrapper, isDurable } from "@venok/core/injector/index.js";
+import type { Injectable } from "@venok/core/interfaces/injectable.interface.js";
 
-import { BaseMiddlewareConfiguration } from "@venok/integration/interfaces";
+import type { BaseMiddlewareConfiguration } from "@venok/integration/interfaces/index.js";
 
 export class MiddlewareContainer {
   private readonly middleware = new Map<string, Map<InjectionToken, InstanceWrapper>>();

@@ -1,4 +1,4 @@
-import { Type } from "@venok/core";
+import type { Type } from "@venok/core";
 
 export interface RouteTree {
   path: string;

@@ -1,4 +1,4 @@
-import { REDIRECT_METADATA } from "../constants";
+import { REDIRECT_METADATA } from "../constants.js";
 import { Reflector } from "@venok/core";
 
 export type RedirectOptions = { url: string; statusCode?: number };

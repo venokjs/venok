@@ -1,8 +1,8 @@
-import { InjectorDependency, InjectorDependencyContext } from "@venok/core/injector/injector";
-import { DynamicModule, ForwardReference } from "@venok/core/interfaces/modules";
-import { isNull, isSymbol } from "@venok/core/helpers/shared.helper";
-import { Module } from "@venok/core/injector/module/module";
-import { Type } from "@venok/core/interfaces";
+import type { InjectorDependency, InjectorDependencyContext } from "@venok/core/injector/injector.js";
+import type { DynamicModule, ForwardReference } from "@venok/core/interfaces/modules/index.js";
+import { isNull, isSymbol } from "@venok/core/helpers/shared.helper.js";
+import { Module } from "@venok/core/injector/module/module.js";
+import type { Type } from "@venok/core/interfaces/index.js";
 
 /**
  * Returns the name of an instance or `undefined`

@@ -1,4 +1,4 @@
-import { AbstractHttpAdapter } from "./adapter";
+import { AbstractHttpAdapter } from "./adapter.js";
 
 /**
  * Defines the `HttpAdapterHost` object.

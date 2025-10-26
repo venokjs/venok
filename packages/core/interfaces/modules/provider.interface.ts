@@ -1,5 +1,5 @@
-import { Scope, Type } from "@venok/core/interfaces";
-import { InjectionToken, OptionalFactoryDependency } from "@venok/core/interfaces/modules";
+import { Scope, type Type } from "@venok/core/interfaces/index.js";
+import type { InjectionToken, OptionalFactoryDependency } from "@venok/core/interfaces/modules/index.js";
 
 /**
  *

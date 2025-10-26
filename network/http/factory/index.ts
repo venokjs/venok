@@ -1,3 +1,3 @@
-export * from "./method.factory";
-export * from "./params.factory";
-export * from "./path.factory";
+export * from "./method.factory.js";
+export * from "./params.factory.js";
+export * from "./path.factory.js";

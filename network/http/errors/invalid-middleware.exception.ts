@@ -1,5 +1,5 @@
-import { RuntimeException } from "@venok/core/errors/exceptions";
-import { INVALID_MIDDLEWARE_MESSAGE } from "../exceptions/messages";
+import { RuntimeException } from "@venok/core/errors/exceptions/index.js";
+import { INVALID_MIDDLEWARE_MESSAGE } from "../exceptions/messages.js";
 
 export class InvalidMiddlewareException extends RuntimeException {
   constructor(name: string) {

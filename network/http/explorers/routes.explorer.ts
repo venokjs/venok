@@ -1,28 +1,28 @@
-import { Inject, Injectable, Type } from "@venok/core";
-import { ExplorerService } from "@venok/integration/services/explorer.service";
-import { RouteDiscovery } from "@venok/http/discovery/route.discovery";
-import { VenokContextCreator } from "@venok/core/context";
-import { RouteParamsFactory, RoutePathFactory } from "@venok/http/factory";
-import { RouterExceptionFiltersContext } from "@venok/http/filters/context";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
-import { ControllerDiscovery } from "@venok/http/discovery/controller.discovery";
+import { Inject, Injectable, type Type } from "@venok/core";
+import { ExplorerService } from "@venok/integration/services/explorer.service.js";
+import { RouteDiscovery } from "@venok/http/discovery/route.discovery.js";
+import { VenokContextCreator } from "@venok/core/context/index.js";
+import { RouteParamsFactory, RoutePathFactory } from "@venok/http/factory/index.js";
+import { RouterExceptionFiltersContext } from "@venok/http/filters/context.js";
+import { InstanceWrapper } from "@venok/core/injector/instance/wrapper.js";
+import { ControllerDiscovery } from "@venok/http/discovery/controller.discovery.js";
 import {
   addLeadingSlash,
   CONTROLLER_MAPPING_MESSAGE,
   ROUTE_MAPPED_MESSAGE,
   VERSIONED_CONTROLLER_MAPPING_MESSAGE,
   VERSIONED_ROUTE_MAPPED_MESSAGE,
-} from "@venok/http/helpers";
-import { MODULE_PATH } from "@venok/core/constants";
-import { HttpServer, RoutePathMetadata, VersionValue } from "@venok/http/interfaces";
-import { PathsExplorer } from "@venok/http/explorers/path.explorer";
-import { VersioningType } from "@venok/http/enums";
+} from "@venok/http/helpers/index.js";
+import { MODULE_PATH } from "@venok/core/constants.js";
+import type { HttpServer, RoutePathMetadata, VersionValue } from "@venok/http/interfaces/index.js";
+import { PathsExplorer } from "@venok/http/explorers/path.explorer.js";
+import { VersioningType } from "@venok/http/enums/index.js";
 import { pathToRegexp } from "path-to-regexp";
-import { InternalServerErrorException } from "@venok/http/errors";
-import { Logger } from "@venok/core/services/logger.service";
-import { HttpConfig } from "@venok/http/application/config";
-import { OnModuleInit } from "@venok/core";
-import { HttpContextCreator } from "@venok/http/context/context";
+import { InternalServerErrorException } from "@venok/http/errors/index.js";
+import { Logger } from "@venok/core/services/logger.service.js";
+import { HttpConfig } from "@venok/http/application/config.js";
+import type { OnModuleInit } from "@venok/core";
+import { HttpContextCreator } from "@venok/http/context/context.js";
 
 @Injectable()
 export class RoutesExplorer extends ExplorerService<ControllerDiscovery> implements OnModuleInit {

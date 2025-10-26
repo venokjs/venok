@@ -1,9 +1,9 @@
-import { Type } from "@venok/core";
-import { PipeTransform } from "@venok/core/interfaces/features/pipes.interface";
-import { ROUTE_ARGS_METADATA } from "@venok/core/constants";
-import { isNull, isString } from "@venok/core/helpers/shared.helper";
-import { RouteParamtypes } from "../enums";
-import { RESPONSE_PASSTHROUGH_METADATA } from "../constants";
+import type { Type } from "@venok/core";
+import type { PipeTransform } from "@venok/core/interfaces/features/pipes.interface.js";
+import { ROUTE_ARGS_METADATA } from "@venok/core/constants.js";
+import { isNull, isString } from "@venok/core/helpers/shared.helper.js";
+import { RouteParamtypes } from "../enums/index.js";
+import { RESPONSE_PASSTHROUGH_METADATA } from "../constants.js";
 
 /**
  * The `@Response()`/`@Res` parameter decorator options.

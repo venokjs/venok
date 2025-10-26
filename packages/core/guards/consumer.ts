@@ -1,8 +1,8 @@
 import { lastValueFrom, Observable } from "rxjs";
 
-import { ExecutionContextHost } from "@venok/core/context";
-import { CanActivate, ContextType } from "@venok/core";
-import { isEmpty } from "@venok/core/helpers";
+import { ExecutionContextHost } from "@venok/core/context/index.js";
+import type { CanActivate, ContextType } from "@venok/core";
+import { isEmpty } from "@venok/core/helpers/index.js";
 
 export class GuardsConsumer {
   public async tryActivate<TContext extends string = ContextType>(

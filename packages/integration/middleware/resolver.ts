@@ -1,9 +1,9 @@
-import { InjectionToken } from "@venok/core";
+import type { InjectionToken } from "@venok/core";
 
-import { Injector, InstanceWrapper, Module, STATIC_CONTEXT } from "@venok/core/injector";
-import { isUndefined } from "@venok/core/helpers";
+import { Injector, InstanceWrapper, Module, STATIC_CONTEXT } from "@venok/core/injector/index.js";
+import { isUndefined } from "@venok/core/helpers/index.js";
 
-import { MiddlewareContainer } from "@venok/integration/middleware/container";
+import { MiddlewareContainer } from "@venok/integration/middleware/container.js";
 
 export class MiddlewareResolver {
   constructor(
