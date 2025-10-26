@@ -5,7 +5,7 @@ import { GraphInspector } from "@venok/core/inspector/graph-inspector.js";
 import { InstanceLoader } from "@venok/core/injector/instance/loader.js";
 import { ApplicationContext } from "@venok/core/application/context.js";
 import { ApplicationConfig } from "@venok/core/application/config.js";
-import type { VenokApplicationContext } from "@venok/core/interfaces/index.js";
+import type { DynamicModule, ForwardReference, Type, VenokApplicationContext } from "@venok/core/interfaces/index.js";
 import { Injector, VenokContainer } from "@venok/core/injector/index.js";
 import { MetadataScanner } from "@venok/core/metadata-scanner.js";
 import { Logger } from "@venok/core/services/logger.service.js";
@@ -14,6 +14,11 @@ import { DependenciesScanner } from "@venok/core/scanner.js";
 import { isFunction, isNull } from "@venok/core/helpers/index.js";
 import { ExceptionsZone } from "@venok/core/exceptions/index.js";
 import { MESSAGES } from "@venok/core/constants.js";
+
+/**
+ * A valid Venok entry (or 'root') module reference.
+ */
+type IEntryVenokModule = Type<any> | DynamicModule | ForwardReference | Promise<IEntryVenokModule>;
 
 /**
  * @publicApi
@@ -35,7 +40,7 @@ export class VenokFactoryStatic {
    * contains a reference to the VenokApplicationContext instance.
    */
   public async createApplicationContext(
-    moduleCls: any,
+    moduleCls: IEntryVenokModule,
     options?: ApplicationContextOptions,
   ): Promise<VenokApplicationContext> {
     const applicationConfig = new ApplicationConfig();
