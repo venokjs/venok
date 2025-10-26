@@ -115,7 +115,15 @@ export class InstanceWrapper<T = any> {
       return this.getInstanceByInquirerId(contextId, inquirerId);
     }
     const instancePerContext = this.values.get(contextId);
-    return instancePerContext ? instancePerContext : this.cloneStaticInstance(contextId);
+    return instancePerContext
+      ? instancePerContext
+      : contextId !== STATIC_CONTEXT
+        ? this.cloneStaticInstance(contextId)
+        : {
+            instance: null as T,
+            isResolved: true,
+            isPending: false,
+          };
   }
 
   public getInstanceByInquirerId(contextId: ContextId, inquirerId: string): InstancePerContext<T> {
