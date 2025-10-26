@@ -125,6 +125,11 @@ export class VenokContainer {
 
     if (this.isGlobalModule(type, dynamicMetadata)) {
       moduleRef.isGlobal = true;
+      /*
+       * Set global module distance to -1 to ensure their lifecycle hooks
+       * are always executed first (when initializing the application)
+       */
+      moduleRef.distance = -1;
       this.addGlobalModule(moduleRef);
     }
 
