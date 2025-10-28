@@ -1,7 +1,21 @@
 {
-    "extends": "../../tsconfig.json",
-    "compilerOptions": {
-        "rootDir": "./",
-        "outDir": "../../dist/core"
+  "compilerOptions": {
+    "target": "ES2021",
+    "baseUrl": "./",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "NodeNext",
+    "verbatimModuleSyntax": true,
+    "moduleResolution": "nodenext",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "rootDir": "./",
+    "outDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"]
     }
+  },
+  "include": ["./src/*.ts", "./src/**/*.ts"]
 }
