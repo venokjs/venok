@@ -1,9 +1,10 @@
-import { expect } from "chai";
-import sinon from "sinon";
-import { VenokContainer } from "@venok/core/injector/container";
-import { OnModuleDestroy } from "@venok/core/interfaces/hooks";
-import { Module } from "@venok/core/injector/module/module";
-import { callModuleDestroyHook } from "@venok/core/hooks";
+import type { OnModuleDestroy } from "~/interfaces/index.js";
+
+import { beforeEach, describe, expect, it, spyOn } from "bun:test";
+
+import { VenokContainer } from "~/injector/container.js";
+import { CoreModule } from "~/index.js";
+import { callModuleDestroyHook } from "~/hooks/on-module-destroy.hook.js";
 
 class SampleProvider implements OnModuleDestroy {
   onModuleDestroy() {}
@@ -16,12 +17,12 @@ class SampleModule implements OnModuleDestroy {
 class WithoutHookProvider {}
 
 describe("OnModuleDestroy", () => {
-  let moduleRef: Module;
+  let moduleRef: CoreModule;
   let sampleProvider: SampleProvider;
 
   beforeEach(() => {
     sampleProvider = new SampleProvider();
-    moduleRef = new Module(SampleModule, new VenokContainer());
+    moduleRef = new CoreModule(SampleModule, new VenokContainer());
 
     const moduleWrapperRef = moduleRef.getProviderByKey(SampleModule);
     moduleWrapperRef.instance = new SampleModule();
@@ -38,10 +39,10 @@ describe("OnModuleDestroy", () => {
 
   describe("callModuleDestroyHook", () => {
     it('should call "onModuleDestroy" hook for the entire module', async () => {
-      const hookSpy = sinon.spy(sampleProvider, "onModuleDestroy");
+      const hookSpy = spyOn(sampleProvider, "onModuleDestroy");
       await callModuleDestroyHook(moduleRef);
 
-      expect(hookSpy.called).to.be.true;
+      expect(hookSpy).toHaveBeenCalled();
     });
   });
 });

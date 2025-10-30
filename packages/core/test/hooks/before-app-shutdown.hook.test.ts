@@ -1,9 +1,10 @@
-import { expect } from "chai";
-import sinon from "sinon";
-import { BeforeApplicationShutdown } from "@venok/core/interfaces/hooks";
-import { Module } from "@venok/core/injector/module/module";
-import { VenokContainer } from "@venok/core/injector/container";
-import { callBeforeAppShutdownHook } from "@venok/core/hooks";
+import type { BeforeApplicationShutdown } from "~/interfaces/index.js";
+
+import { beforeEach, describe, expect, it, spyOn } from "bun:test";
+
+import { VenokContainer } from "~/injector/container.js";
+import { CoreModule } from "~/index.js";
+import { callBeforeAppShutdownHook } from "~/hooks/before-app-shutdown.hook.js";
 
 class SampleProvider implements BeforeApplicationShutdown {
   beforeApplicationShutdown(signal?: string) {}
@@ -16,12 +17,12 @@ class SampleModule implements BeforeApplicationShutdown {
 class WithoutHookProvider {}
 
 describe("BeforeAppShutdown", () => {
-  let moduleRef: Module;
+  let moduleRef: CoreModule;
   let sampleProvider: SampleProvider;
 
   beforeEach(() => {
     sampleProvider = new SampleProvider();
-    moduleRef = new Module(SampleModule, new VenokContainer());
+    moduleRef = new CoreModule(SampleModule, new VenokContainer());
 
     const moduleWrapperRef = moduleRef.getProviderByKey(SampleModule);
     moduleWrapperRef.instance = new SampleModule();
@@ -40,10 +41,10 @@ describe("BeforeAppShutdown", () => {
     it('should call "beforeApplicationShutdown" hook for the entire module', async () => {
       const signal = "SIGTERM";
 
-      const hookSpy = sinon.spy(sampleProvider, "beforeApplicationShutdown");
+      const hookSpy = spyOn(sampleProvider, "beforeApplicationShutdown");
       await callBeforeAppShutdownHook(moduleRef, signal);
 
-      expect(hookSpy.calledWith(signal)).to.be.true;
+      expect(hookSpy).toHaveBeenCalledWith(signal);
     });
   });
 });
