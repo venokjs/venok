@@ -55,6 +55,6 @@
     "rxjs": "catalog:"
   },
   "dependencies": {
-    "path-to-regexp": "^6.2.1"
+    "path-to-regexp": "^8.3.0"
   }
 }
