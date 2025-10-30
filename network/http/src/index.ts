@@ -1,4 +1,5 @@
-
+// eslint-disable-next-line
+import "reflect-metadata"
 
 export * from "./adapter/adapter.js";
 export * from "./adapter/host.js";
