@@ -1,13 +1,13 @@
-import { build as TsupBuild, type Options as TsupOptions } from "tsup";
-import path, { join } from "path";
-import type { BunPlugin } from "bun"; // Если нужно, импортируйте типы
+import type { Options as TsupOptions } from "tsup";
+import type { BunPlugin } from "bun";
 
-import dts from "bun-plugin-dts";
+import { build as TsupBuild } from "tsup";
+import path, { join } from "path";
 
 import BunLock from "../../bun.lock";
 
 const banner = `/**
-* Thanks for using Venloc SVM <3
+* Thanks for using Venloc Venok <3
 * https://github.com/venloc-tech/svm
 */`;
 
@@ -23,6 +23,7 @@ function resolveTsConfigPaths(dir: string): BunPlugin {
 
         // Regex для поиска import/require с путями вида "~/something"
         contents = contents.replace(/(from\s+|require\()(['"])~\/([^'"]+)\2/g, (match, prefix, quote, innerPath) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           const targetPath = path.join(absoluteDir, innerPath);
           let relativePath = path.relative(fileDir, targetPath);
 
@@ -43,23 +44,18 @@ function resolveTsConfigPaths(dir: string): BunPlugin {
           if (relativePath.endsWith("index.js")) {
             if (!relativePath.includes("interfaces"))
               throw new Error(
-                `[CRITICAL ERROR]: Don't use imports from index.js. This import type only allowed from interfaces dir. ${match}`,
+                `[CRITICAL ERROR]: Don't use imports from index.js. This import type only allowed from interfaces dir. ${match}`
               );
           }
 
-          // console.log(1, relativePath);
-
           // Нормализуем к POSIX стилю (с / вместо \)
-          relativePath = relativePath.replace(/\\/g, "/") /*.replace("\/index.js", "")*/;
+          relativePath = relativePath.replace(/\\/g, "/");
           // Если relativePath не начинается с ./ или ../, добавляем ./
           if (!relativePath.startsWith(".") && !relativePath.startsWith("/")) {
             relativePath = "./" + relativePath;
           }
-          // console.log(prefix, quote, relativePath, quote);
           return `${prefix}${quote}${relativePath}${quote}`;
         });
-
-        // contents = contents.replace("/\/index.js/g", "");
 
         // if (build.config.format === "cjs") {
         //   const regexCjs = /require\((?<quote>['"])(?<import>\.[^'"]+)\.js['"]\)/g;
@@ -78,61 +74,8 @@ function resolveTsConfigPaths(dir: string): BunPlugin {
   };
 }
 
-function fixCjsImportsPlugin(): BunPlugin {
-  return {
-    name: "fix-cjs-imports",
-    setup(build) {
-      build.onLoad({ filter: /\.(js|ts|jsx|tsx)$/ }, async (args) => {
-        const contents = await Bun.file(args.path).text();
-
-        // Проверяем, если формат сборки — cjs
-        // if (build.config.format === "cjs") {
-        // Регулярные выражения для поиска require и import
-        const regexCjs = /require\((?<quote>['"])(?<import>\.[^'"]+)\.js['"]\)/g;
-        const regexEsm = /from(?<space>[\s]*)(?<quote>['"])(?<import>\.[^'"]+)\.js['"]/g;
-
-        console.log(contents.match(regexCjs), contents);
-
-        // Заменяем .js на .cjs в импортах
-        const modifiedContents = contents
-          .replace(regexCjs, "require($<quote>$<import>.cjs$<quote>)")
-          .replace(regexEsm, "from$<space>$<quote>$<import>.cjs$<quote>");
-
-        return { contents: modifiedContents };
-        // }
-
-        // return { contents };
-      });
-    },
-  };
-}
 
 export const normalizePath = (str: string) => str.split("\\").join("/");
-
-type ValueTypeFromArray<T> = T extends Array<infer U> ? U : never;
-type TsupPlugin = ValueTypeFromArray<Exclude<TsupOptions["plugins"], null | undefined>>;
-
-const fixCJS: TsupPlugin = {
-  // https://github.com/egoist/tsup/issues/953#issuecomment-2294998890
-  // Maybe use: https://github.com/aymericzip/esbuild-fix-imports-plugin
-  // ensuring that all local requires/imports in `.cjs` files import from `.cjs` files.
-  // require('./path') → require('./path.cjs') in `.cjs` files
-  // require('../path') → require('../path.cjs') in `.cjs` files
-  // from './path' → from './path.cjs' in `.cjs` files
-  // from '../path' → from '../path.cjs' in `.cjs` files
-  name: "fix-cjs-imports",
-  renderChunk(code) {
-    if (this.format === "cjs") {
-      const regexCjs = /require\((?<quote>['"])(?<import>\.[^'"]+)\.js['"]\)/g;
-      const regexEsm = /from(?<space>[\s]*)(?<quote>['"])(?<import>\.[^'"]+)\.js['"]/g;
-      return {
-        code: code
-          .replace(regexCjs, "require($<quote>$<import>.cjs$<quote>)")
-          .replace(regexEsm, "from$<space>$<quote>$<import>.cjs$<quote>"),
-      };
-    }
-  },
-};
 
 const main = async () => {
   // const entries = Object.keys(BunLock.workspaces).slice(1);
@@ -171,50 +114,6 @@ const main = async () => {
       },
     };
 
-    // await TsupBuild({
-    //   entry: entry,
-    //   platform: "node",
-    //   ...base,
-    //   sourcemap: true,
-    //   splitting: false,
-    //   bundle: true,
-    //   banner: { js: banner },
-    //   esbuildOptions(options) {
-    //     options.packages = "external";
-    //   },
-    //   plugins: [fixCJS],
-    // });
-
-    // await TsupBuild({
-    //   entry: allEntry,
-    //   outDir: dist,
-    //   format: ["esm"],
-    //   target: "ES2021",
-    //   minifySyntax: true,
-    //   minifyWhitespace: false,
-    //   minifyIdentifiers: false,
-    //   splitting: false,
-    //   sourcemap: false,
-    //   cjsInterop: false,
-    //   clean: true,
-    //   bundle: false,
-    //   tsconfig: tsconfig,
-    //   external: workspacePackages,
-    //   esbuildPlugins: [
-    //     /*resolveTsConfigPaths(dir)*/
-    //     fixAliasPlugin(),
-    //     fixFolderImportsPlugin(),
-    //     fixExtensionsPlugin(),
-    //   ],
-    // });
-
-    // await TsupBuild({
-    //   entry: allEntry,
-    //   dts: { only: true, banner },
-    //   bundle: false,
-    //   ...base,
-    // });
-
     await Bun.build({
       entrypoints: allEntries,
       outdir: dist,
@@ -224,18 +123,6 @@ const main = async () => {
       tsconfig: tsconfig,
       plugins: [resolveTsConfigPaths(dir)],
     });
-
-    //
-    // await Bun.build({
-    //   entrypoints: allEntries,
-    //   outdir: dist,
-    //   target: "node",
-    //   format: "cjs",
-    //   external: ["*"],
-    //   naming: "[dir]/[name].cjs",
-    //   tsconfig: tsconfig,
-    //   plugins: [resolveTsConfigPaths(dir)],
-    // });
 
     // Post-build step: Move files from nestedDist to dist and delete nestedDist
     try {
@@ -251,23 +138,6 @@ const main = async () => {
       console.error(`Error during post-build file move: ${error}`);
       process.exit(1);
     }
-
-    // await Bun.build({
-    //   entrypoints: entry,
-    //   outdir: "./dist",
-    //   tsconfig: tsconfig,
-    //   plugins: [dts()],
-    // });
-
-    // for (const entryy of allEntries.map(normalizePath)) {
-    //   await TsupBuild({
-    //     entry: [entryy],
-    //     dts: { only: true, banner },
-    //     bundle: false,
-    //     ...base,
-    //     format: ["esm"],
-    //   });
-    // }
 
     await TsupBuild({
       entry: entry,
