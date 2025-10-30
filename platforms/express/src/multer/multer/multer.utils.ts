@@ -1,5 +1,5 @@
-import { BadRequestException, HttpException } from "@venok/http/errors/index.js";
-import { busboyExceptions, multerExceptions } from "./multer.constants.js";
+import { BadRequestException, HttpException } from "@venok/http";
+import { busboyExceptions, multerExceptions } from "~/multer/multer/multer.constants.js";
 
 export function transformException(error: Error | undefined) {
   if (!error || error instanceof HttpException) {
@@ -8,6 +8,7 @@ export function transformException(error: Error | undefined) {
   switch (error.message) {
     case multerExceptions.LIMIT_FILE_SIZE:
     // return new PayloadTooLargeException(error.message);
+    // eslint-disable-next-line no-fallthrough
     case multerExceptions.LIMIT_FILE_COUNT:
     case multerExceptions.LIMIT_FIELD_KEY:
     case multerExceptions.LIMIT_FIELD_VALUE:

@@ -1,35 +1,23 @@
+import type { CorsOptions, CorsOptionsDelegate, VenokApplicationOptions, VersioningOptions, VersionValue } from "@venok/http";
 import type { Server } from "http";
-import { AbstractHttpAdapter } from "@venok/http/adapter/adapter.js";
+
+import type { ServeStaticOptions, VenokExpressBodyParserOptions, VenokExpressBodyParserType } from "~/interfaces/index.js";
+
+import { AbstractHttpAdapter, HttpStatus, InternalServerErrorException, RequestMethod, RouterMethodFactory, StreamableFile, VERSION_NEUTRAL, VersioningType } from "@venok/http";
 import http from "http";
 import https from "https";
 import express from "express";
 import { Duplex, pipeline } from "stream";
 import bodyparser, { json as bodyParserJson, urlencoded as bodyParserUrlencoded } from "body-parser";
 import cors from "cors";
+import { isFunction, isNull, isObject, isString, isUndefined, Logger } from "@venok/core";
 
-import { RouterMethodFactory } from "@venok/http/factory/index.js";
-import { Logger } from "@venok/core/services/logger.service.js";
-
-import { isFunction, isNull, isObject, isString, isUndefined } from "@venok/core/helpers/shared.helper.js";
-import { HttpStatus, RequestMethod, VersioningType } from "@venok/http/enums/index.js";
-import type { ServeStaticOptions } from "../interfaces/express/serve-static-options.interface.js";
-import {
-  type CorsOptions,
-  type CorsOptionsDelegate,
-  type VenokApplicationOptions,
-  VERSION_NEUTRAL,
-  type VersioningOptions,
-  type VersionValue,
-} from "@venok/http/interfaces/index.js";
-import { InternalServerErrorException } from "@venok/http/errors/index.js";
-import { getBodyParserOptions } from "./utils/get-body-parser-options.util.js";
-import type { VenokExpressBodyParserOptions, VenokExpressBodyParserType } from "../interfaces/index.js";
-import { StreamableFile } from "@venok/http/stream/index.js";
+import { getBodyParserOptions } from "~/utils/get-body-parser-options.util.js";
 
 type VersionedRoute = <TRequest extends Record<string, any> = any, TResponse = any>(
   req: TRequest,
   res: TResponse,
-  next: () => void,
+  next: () => void
 ) => any;
 
 /**
@@ -64,6 +52,7 @@ export class ExpressAdapter extends AbstractHttpAdapter<http.Server | https.Serv
       }
       return pipeline(
         body.getStream().once("error", (err: Error) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           body.errorHandler(err, response);
         }),
         response,
@@ -71,7 +60,7 @@ export class ExpressAdapter extends AbstractHttpAdapter<http.Server | https.Serv
           if (err) {
             this.logger.error(err.message, err.stack);
           }
-        },
+        }
       );
     }
     if (
@@ -80,7 +69,7 @@ export class ExpressAdapter extends AbstractHttpAdapter<http.Server | https.Serv
       body?.statusCode >= HttpStatus.BAD_REQUEST
     ) {
       this.logger.warn(
-        "Content-Type doesn't match Reply body, you might need a custom ExceptionFilter for non-JSON responses",
+        "Content-Type doesn't match Reply body, you might need a custom ExceptionFilter for non-JSON responses"
       );
       response.setHeader("Content-Type", "application/json");
     }
@@ -103,10 +92,12 @@ export class ExpressAdapter extends AbstractHttpAdapter<http.Server | https.Serv
     return response.redirect(statusCode, url);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public setErrorHandler(handler: Function, prefix?: string) {
     return this.use(handler);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public setNotFoundHandler(handler: Function, prefix?: string) {
     return this.use(handler);
   }
@@ -122,6 +113,7 @@ export class ExpressAdapter extends AbstractHttpAdapter<http.Server | https.Serv
   public listen(port: string | number, callback?: () => void): Server;
   public listen(port: string | number, hostname: string, callback?: () => void): Server;
   public listen(port: any, ...args: any[]): Server {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.httpServer.listen(port, ...args);
   }
 
@@ -182,6 +174,7 @@ export class ExpressAdapter extends AbstractHttpAdapter<http.Server | https.Serv
   }
 
   public createMiddlewareFactory(requestMethod: RequestMethod): (path: string, callback: Function) => any {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.routerMethodFactory.get(this.instance, requestMethod).bind(this.instance);
   }
 
@@ -212,14 +205,14 @@ export class ExpressAdapter extends AbstractHttpAdapter<http.Server | https.Serv
     };
     Object.keys(parserMiddleware)
       .filter((parser) => !this.isMiddlewareApplied(parser))
-      // @ts-ignore
+      // @ts-expect-error Mismatch types
       .forEach((parserKey) => this.use(parserMiddleware[parserKey]));
   }
 
   public useBodyParser<Options = VenokExpressBodyParserOptions>(
     type: VenokExpressBodyParserType,
     rawBody: boolean,
-    options?: Omit<Options, "verify">,
+    options?: Omit<Options, "verify">
   ): this {
     const parserOptions = getBodyParserOptions<Options>(rawBody, options);
     const parser = bodyparser[type](parserOptions as bodyparser.Options);
@@ -241,8 +234,8 @@ export class ExpressAdapter extends AbstractHttpAdapter<http.Server | https.Serv
   public applyVersionFilter(
     handler: Function,
     version: VersionValue,
-    versioningOptions: VersioningOptions,
-    //   @ts-ignore
+    versioningOptions: VersioningOptions
+    // @ts-expect-error Mismatch types
   ): VersionedRoute {
     const callNextHandler: VersionedRoute = (req, res, next) => {
       if (!next) {

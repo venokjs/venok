@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "http";
-import type { VenokExpressBodyParserOptions } from "../../interfaces/index.js";
-import type { RawBodyRequest } from "@venok/http/interfaces/http/raw-request.js";
+import type { RawBodyRequest } from "@venok/http";
+
+import type { VenokExpressBodyParserOptions } from "~/interfaces/index.js";
 
 const rawBodyParser = (req: RawBodyRequest<IncomingMessage>, _res: ServerResponse, buffer: Buffer) => {
   if (Buffer.isBuffer(buffer)) {
@@ -11,7 +12,7 @@ const rawBodyParser = (req: RawBodyRequest<IncomingMessage>, _res: ServerRespons
 
 export function getBodyParserOptions<Options = VenokExpressBodyParserOptions>(
   rawBody: boolean,
-  options?: Omit<Options, "verify"> | undefined,
+  options?: Omit<Options, "verify">  
 ): Options {
   let parserOptions: Options = (options || {}) as Options;
 

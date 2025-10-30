@@ -1,8 +1,11 @@
-import { type DynamicModule, type InjectionToken, Module, type Provider, type Type } from "@venok/core";
-import type { MulterModuleAsyncOptions, MulterModuleOptions, MulterOptionsFactory } from "./interfaces/index.js";
-import { MULTER_MODULE_OPTIONS } from "./files.constants.js";
-import { MULTER_MODULE_ID } from "./multer.constants.js";
-import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper.js";
+import type { DynamicModule, InjectionToken, Provider, Type } from "@venok/core";
+
+import type { MulterModuleAsyncOptions, MulterModuleOptions, MulterOptionsFactory } from "~/interfaces/index.js";
+
+import { Module, randomStringGenerator } from "@venok/core";
+
+import { MULTER_MODULE_OPTIONS } from "~/multer/files.constants.js";
+import { MULTER_MODULE_ID } from "~/multer/multer.constants.js";
 
 /**
  * @publicApi

@@ -1,35 +1,29 @@
-import multer from "multer";
+import type { CallHandler, ExecutionContext, Type, VenokInterceptor } from "@venok/core";
+
+import type { MulterModuleOptions, MulterOptions } from "~/interfaces/index.js";
+
+import { Inject, mixin, Optional } from "@venok/core";
 import { Observable } from "rxjs";
-import type { MulterOptions } from "../interfaces/multer-options.interface.js";
-import {
-  type CallHandler,
-  type ExecutionContext,
-  Inject,
-  mixin,
-  Optional,
-  type Type,
-  type VenokInterceptor,
-} from "@venok/core";
-import { MULTER_MODULE_OPTIONS } from "../files.constants.js";
-import type { MulterModuleOptions } from "../interfaces/index.js";
-import { transformException } from "../multer/multer.utils.js";
+import multer from "multer";
+
+import { MULTER_MODULE_OPTIONS } from "~/multer/files.constants.js";
+import { transformException } from "~/multer/multer/multer.utils.js";
 
 type MulterInstance = any;
 
 /**
- * @param fieldName
  * @param localOptions
  *
  * @publicApi
  */
-export function FileInterceptor(fieldName: string, localOptions?: MulterOptions): Type<VenokInterceptor> {
+export function AnyFilesInterceptor(localOptions?: MulterOptions): Type<VenokInterceptor> {
   class MixinInterceptor implements VenokInterceptor {
     protected multer: MulterInstance;
 
     constructor(
       @Optional()
       @Inject(MULTER_MODULE_OPTIONS)
-      options: MulterModuleOptions = {},
+      options: MulterModuleOptions = {}
     ) {
       this.multer = (multer as any)({
         ...options,
@@ -41,13 +35,15 @@ export function FileInterceptor(fieldName: string, localOptions?: MulterOptions)
       const [req, res] = context.getArgs();
 
       await new Promise<void>((resolve, reject) =>
-        this.multer.single(fieldName)(req, res, (err: any) => {
+        this.multer.any()(req, res, (err: any) => {
           if (err) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             const error = transformException(err);
+            // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
             return reject(error);
           }
           resolve();
-        }),
+        })
       );
       return next.handle();
     }

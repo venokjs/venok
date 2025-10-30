@@ -1,4 +1,4 @@
-import { ExpressAdapter } from "@venok/express/adapters/index.js";
+import { ExpressAdapter } from "~/adapters/express.js";
 
 export * from "./adapters/index.js";
 export * from "./interfaces/index.js";
