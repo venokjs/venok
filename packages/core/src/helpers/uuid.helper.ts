@@ -2,7 +2,7 @@ import { randomStringGenerator } from "~/helpers/random-string-generator.helper.
 
 export enum UuidFactoryMode {
   Random = "random",
-  Deterministic = "deterministic",
+  Deterministic = "deterministic"
 }
 
 export class DeterministicUuidRegistry {

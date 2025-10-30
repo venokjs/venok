@@ -38,7 +38,7 @@ export class MetaHostStorage {
   public static insertByMetaKey(
     metaKey: string,
     instanceWrapper: InstanceWrapper,
-    collection: Map<string, Set<InstanceWrapper>>,
+    collection: Map<string, Set<InstanceWrapper>>
   ) {
     if (collection.has(metaKey)) {
       const wrappers = collection.get(metaKey) as Set<InstanceWrapper>;
@@ -58,7 +58,7 @@ export class MetaHostStorage {
   private static inspectInstanceWrapper(
     hostContainerRef: ModulesContainer,
     instanceWrapper: InstanceWrapper,
-    wrapperByMetaKeyMap: WeakMap<ModulesContainer, Map<string, Set<InstanceWrapper>>>,
+    wrapperByMetaKeyMap: WeakMap<ModulesContainer, Map<string, Set<InstanceWrapper>>>
   ) {
     const metaKey = MetaHostStorage.getMetaKeyByInstanceWrapper(instanceWrapper);
 
@@ -86,9 +86,10 @@ export class MetaHostStorage {
       // of `wrapper.metatype` to resolve processor's class properly.
       // But since calling `wrapper.instance` could degrade overall performance
       // we must defer it as much we can.
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       instanceWrapper.metatype || instanceWrapper.inject
         ? (instanceWrapper.instance?.constructor ?? instanceWrapper.metatype)
-        : instanceWrapper.metatype,
+        : instanceWrapper.metatype
     );
   }
 }

@@ -1,10 +1,8 @@
+// eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
 type CustomClassDecorator = <TFunction extends Object | Function>(target: TFunction, ...args: any) => TFunction | void;
-
 export type CustomDecorator<TKey = string> = MethodDecorator & CustomClassDecorator & { KEY: TKey };
-
 export type DecoratorsType = "class" | "method";
-
-type SetMetadata = {
+export type SetMetadataType = {
   /**
    * Decorator that assigns metadata to the class using the specified `key`.
    *
@@ -48,25 +46,5 @@ type SetMetadata = {
    *
    * @publicApi
    */
-  <K = string, V = any>(metadataKey: K, metadataValue: V, type?: DecoratorsType | undefined): CustomDecorator<K>;
-};
-
-const defineMetadata = <K, V>(key: K, value: V, target: any) => {
-  Reflect.defineMetadata(key, value, target);
-  return target;
-};
-
-export const SetMetadata: SetMetadata = <K = string, V = any>(
-  metadataKey: K,
-  metadataValue: V,
-  type: DecoratorsType | undefined = undefined,
-): CustomDecorator<K> => {
-  const decoratorFactory = (target: object | Function, key?: any, descriptor?: any) => {
-    if (!type)
-      return defineMetadata(metadataKey, metadataValue, descriptor && descriptor.value ? descriptor.value : target);
-
-    return defineMetadata(metadataKey, metadataValue, type === "method" ? descriptor.value : target);
-  };
-  decoratorFactory.KEY = metadataKey;
-  return decoratorFactory;
+  <K = string, V = any>(metadataKey: K, metadataValue: V, type?: DecoratorsType): CustomDecorator<K>;
 };

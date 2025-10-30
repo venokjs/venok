@@ -18,7 +18,7 @@ export function validateEach(
   arr: any[],
   predicate: Function,
   decorator: string,
-  item: string,
+  item: string
 ): boolean {
   if (!context || !context.name) return true;
 

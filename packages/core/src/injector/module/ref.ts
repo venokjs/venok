@@ -1,18 +1,13 @@
+import type { ContextId, IntrospectionResult, ModuleRefGetOrResolveOpts, Type } from "~/interfaces/index.js";
+
 import { AbstractInstanceResolver } from "~/injector/instance/resolver.js";
 import { InstanceLinksHost } from "~/injector/instance/links-host.js";
 import { InstanceWrapper } from "~/injector/instance/wrapper.js";
-
 import { getClassScope } from "~/injector/helpers/class-scope.helper.js";
 import { Injector } from "~/injector/injector.js";
 import { isDurable } from "~/injector/helpers/is-durable.helper.js";
 import { Module } from "~/injector/module/module.js";
 import { VenokContainer } from "~/injector/container.js";
-import {
-  type ContextId,
-  type IntrospectionResult,
-  type ModuleRefGetOrResolveOpts,
-  type Type,
-} from "~/interfaces/index.js";
 import { Scope } from "~/enums/scope.enum.js";
 
 export abstract class ModuleRef extends AbstractInstanceResolver {
@@ -146,16 +141,19 @@ export abstract class ModuleRef extends AbstractInstanceResolver {
       durable: isDurable(type),
       host: moduleRef,
     });
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises,no-async-promise-executor
     return new Promise<T>(async (resolve, reject) => {
       try {
         const callback = async (instances: any[]) => {
           const properties = await this.injector.resolveProperties(wrapper, moduleRef, undefined, contextId);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           const instance = new type(...instances);
           this.injector.applyProperties(instance, properties);
           resolve(instance);
         };
         await this.injector.resolveConstructorParams<T>(wrapper, moduleRef, null, callback, contextId);
       } catch (err) {
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         reject(err);
       }
     });

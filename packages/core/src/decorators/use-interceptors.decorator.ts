@@ -28,14 +28,19 @@ import { INTERCEPTORS_METADATA } from "~/constants.js";
 export function UseInterceptors(...interceptors: (VenokInterceptor | Function)[]): MethodDecorator & ClassDecorator {
   return (target: any, key?: string | symbol, descriptor?: TypedPropertyDescriptor<any>) => {
     const isInterceptorValid = <T extends Function | Record<string, any>>(interceptor: T) =>
-      interceptor && (isFunction(interceptor) || isFunction((interceptor as Record<string, any>).intercept));
+      // @ts-expect-error Mismatch types
+      interceptor && (isFunction(interceptor) || isFunction((interceptor).intercept));
 
     if (descriptor) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       validateEach(target.constructor, interceptors, isInterceptorValid, "@UseInterceptors", "interceptor");
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       extendArrayMetadata(INTERCEPTORS_METADATA, interceptors, descriptor.value);
       return descriptor;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     validateEach(target, interceptors, isInterceptorValid, "@UseInterceptors", "interceptor");
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     extendArrayMetadata(INTERCEPTORS_METADATA, interceptors, target);
     return target;
   };

@@ -1,9 +1,8 @@
-import { type Abstract, type ContextId, type GetOrResolveOptions, type Type } from "~/interfaces/index.js";
-
+import type { Abstract, ContextId, GetOrResolveOptions, Type } from "~/interfaces/index.js";
 import type { InstanceLink, InstanceLinksHost } from "~/injector/instance/links-host.js";
+
 import { Injector } from "~/injector/injector.js";
 import { Module } from "~/injector/module/module.js";
-
 import { InvalidClassScopeException } from "~/errors/exceptions/invalid-class-scope.exception.js";
 import { UnknownElementException } from "~/errors/exceptions/unknown-element.exception.js";
 import { Scope } from "~/enums/scope.enum.js";
@@ -19,7 +18,7 @@ export abstract class AbstractInstanceResolver {
 
   protected find<TInput = any, TResult = TInput>(
     typeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
-    options: { moduleId?: string; each?: boolean },
+    options: { moduleId?: string; each?: boolean }
   ): TResult | Array<TResult> {
     const instanceLinkOrArray = this.instanceLinksHost.get<TResult>(typeOrToken, options);
     const pluckInstance = ({ wrapperRef }: InstanceLink) => {
@@ -37,7 +36,7 @@ export abstract class AbstractInstanceResolver {
     typeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
     contextModule: Module,
     contextId: ContextId,
-    options?: GetOrResolveOptions,
+    options?: GetOrResolveOptions
   ): Promise<TResult | Array<TResult>> {
     const instanceLinkOrArray = options?.strict
       ? this.instanceLinksHost.get(typeOrToken, {
@@ -59,7 +58,7 @@ export abstract class AbstractInstanceResolver {
         wrapperRef.host as Module,
         collection,
         contextId,
-        wrapperRef,
+        wrapperRef
       );
       if (!instance) throw new UnknownElementException();
 

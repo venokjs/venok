@@ -3,7 +3,7 @@ import type { DynamicModule, ExistingProvider, FactoryProvider, ValueProvider } 
 import {
   inquirerProvider,
   ReflectorAliasProvider,
-  requestProvider,
+  requestProvider
 } from "~/injector/internal-core-module/core-providers.js";
 
 import { Global } from "~/decorators/global.decorator.js";

@@ -32,7 +32,7 @@ export class ContextUtils {
 
   public mergeParamsMetatypes(
     paramsProperties: ParamProperties[],
-    paramtypes: any[],
+    paramtypes: any[]
   ): (ParamProperties & { metatype?: any })[] {
     if (!paramtypes) return paramsProperties;
 
@@ -45,7 +45,7 @@ export class ContextUtils {
   public getCustomFactory(
     factory: (...args: unknown[]) => void,
     data: unknown,
-    contextFactory: (args: unknown[]) => ExecutionContextHost,
+    contextFactory: (args: unknown[]) => ExecutionContextHost
   ): (...args: unknown[]) => unknown {
     return isFunction(factory) ? (...args: unknown[]) => factory(data, contextFactory(args)) : () => null;
   }
@@ -53,7 +53,7 @@ export class ContextUtils {
   public getContextFactory<TContext extends string = ContextType>(
     contextType: TContext,
     instance?: object,
-    callback?: Function,
+    callback?: Function
   ): (args: unknown[]) => ExecutionContextHost {
     return (args: unknown[]) => {
       const ctx = new ExecutionContextHost(args, instance && (instance.constructor as Type), callback);

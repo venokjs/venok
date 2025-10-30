@@ -1,6 +1,6 @@
-import { Observable } from "rxjs";
-
 import type { ExecutionContext } from "~/interfaces/index.js";
+
+import { Observable } from "rxjs";
 
 /**
  * Interface providing access to the response stream.

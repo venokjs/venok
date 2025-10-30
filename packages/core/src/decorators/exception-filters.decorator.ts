@@ -31,14 +31,19 @@ export const UseFilters = (...filters: (ExceptionFilter | Function)[]) => addExc
 function addExceptionFiltersMetadata(...filters: (Function | ExceptionFilter)[]): MethodDecorator & ClassDecorator {
   return (target: any, key?: string | symbol, descriptor?: TypedPropertyDescriptor<any>) => {
     const isFilterValid = <T extends Function | Record<string, any>>(filter: T) =>
-      filter && (isFunction(filter) || isFunction((filter as Record<string, any>).catch));
+      // @ts-expect-error Mismatch types
+      filter && (isFunction(filter) || isFunction((filter).catch));
 
     if (descriptor) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       validateEach(target.constructor, filters, isFilterValid, "@UseFilters", "filter");
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       extendArrayMetadata(EXCEPTION_FILTERS_METADATA, filters, descriptor.value);
       return descriptor;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     validateEach(target, filters, isFilterValid, "@UseFilters", "filter");
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     extendArrayMetadata(EXCEPTION_FILTERS_METADATA, filters, target);
     return target;
   };

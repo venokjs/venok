@@ -17,7 +17,7 @@ export class GuardsContextCreator extends ContextCreator {
 
   constructor(
     private readonly container: VenokContainer,
-    private readonly config?: ApplicationConfig,
+    private readonly config?: ApplicationConfig
   ) {
     super();
   }
@@ -27,7 +27,7 @@ export class GuardsContextCreator extends ContextCreator {
     callback: (...args: unknown[]) => unknown,
     module: string,
     contextId = STATIC_CONTEXT,
-    inquirerId?: string,
+    inquirerId?: string
   ): CanActivate[] {
     this.moduleContext = module;
     return this.createContext(instance, callback, GUARDS_METADATA, contextId, inquirerId);
@@ -36,7 +36,7 @@ export class GuardsContextCreator extends ContextCreator {
   public createConcreteContext<T extends unknown[], R extends unknown[]>(
     metadata: T,
     contextId = STATIC_CONTEXT,
-    inquirerId?: string,
+    inquirerId?: string
   ): R {
     if (isEmpty(metadata)) return [] as any as R;
 
@@ -49,18 +49,18 @@ export class GuardsContextCreator extends ContextCreator {
   public getGuardInstance(
     metatype: Function | CanActivate,
     contextId = STATIC_CONTEXT,
-    inquirerId?: string,
+    inquirerId?: string
   ): CanActivate | null {
-    const isObject = (metatype as CanActivate).canActivate;
+    const isObject = (metatype as any).canActivate;
 
-    if (!!isObject) return metatype as CanActivate;
+    if (isObject) return metatype as CanActivate;
 
     const instanceWrapper = this.getInstanceByMetatype(metatype as Type);
     if (!instanceWrapper) return null;
 
     const instanceHost = instanceWrapper.getInstanceByContextId(
       this.getContextId(contextId, instanceWrapper),
-      inquirerId,
+      inquirerId
     );
 
     return instanceHost && instanceHost.instance;

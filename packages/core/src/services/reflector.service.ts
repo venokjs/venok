@@ -1,6 +1,3 @@
-import { uid } from "uid";
-
-import { SetMetadata } from "~/decorators/set-metadata.decorator.js";
 import type {
   ClassDecoratorOptions,
   CreateDecoratorOptions,
@@ -11,9 +8,12 @@ import type {
   ReflectableDecorators,
   ReflectableMethodDecorator,
   Type,
-  WithTransform,
+  WithTransform
 } from "~/interfaces/index.js";
 
+import { uid } from "uid";
+
+import { SetMetadata } from "~/decorators/set-metadata.decorator.js";
 import { isEmpty, isObject } from "~/helpers/shared.helper.js";
 
 /**
@@ -45,7 +45,7 @@ export class Reflector {
     options: WithTransform<MethodDecoratorOptions<Options, Transformed>>,
   ): ReflectableMethodDecorator<Options, Transformed>;
   public static createDecorator<Options, Transformed = Options>(
-    options: CreateDecoratorOptions<Options, Transformed> = {},
+    options: CreateDecoratorOptions<Options, Transformed> = {}
   ): ReflectableDecorators<Options, Transformed> {
     const metadataKey = options.key ?? uid(21);
     const decoratorFn =
@@ -76,7 +76,7 @@ export class Reflector {
     options: WithTransform<MethodDecoratorOptions<Options, Transformed>>,
   ): ReflectableMethodDecorator<Options, Transformed>;
   public static createMetadataDecorator<Options, Transformed extends Record<any, any>>(
-    options: WithTransform<CreateDecoratorOptions<Options, Transformed>>,
+    options: WithTransform<CreateDecoratorOptions<Options, Transformed>>
   ): ReflectableDecorators<Options, Transformed> {
     const metadataKey = options.key ?? uid(21);
     const decoratorFn =
@@ -203,7 +203,7 @@ export class Reflector {
    */
   public getAll<TResult extends any[] = any[], TKey = any>(
     metadataKeyOrDecorator: TKey,
-    targets: (Type | Function)[],
+    targets: (Type | Function)[]
   ): TResult {
     return (targets || []).map((target) => this.get(metadataKeyOrDecorator, target)) as TResult;
   }
@@ -239,7 +239,7 @@ export class Reflector {
    */
   public getAllAndMerge<TResult extends any[] | object = any[], TKey = any>(
     metadataKeyOrDecorator: TKey,
-    targets: (Type | Function)[],
+    targets: (Type | Function)[]
   ): TResult {
     const metadataCollection = this.getAll<any[], TKey>(metadataKeyOrDecorator, targets).filter(Boolean);
 
@@ -282,7 +282,7 @@ export class Reflector {
    */
   public getAllAndOverride<TResult = any, TKey = any>(
     metadataKeyOrDecorator: TKey,
-    targets: (Type | Function)[],
+    targets: (Type | Function)[]
   ): TResult | undefined {
     for (const target of targets) {
       const result = this.get(metadataKeyOrDecorator, target);

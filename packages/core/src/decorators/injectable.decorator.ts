@@ -1,6 +1,6 @@
-import { uid } from "uid";
-
 import type { ScopeOptions, Type } from "~/interfaces/index.js";
+
+import { uid } from "uid";
 
 import { INJECTABLE_WATERMARK, SCOPE_OPTIONS_METADATA } from "~/constants.js";
 

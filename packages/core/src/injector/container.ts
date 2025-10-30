@@ -1,21 +1,18 @@
 import type { ContextId, DynamicModule, ModuleFactory, Provider, Type } from "~/interfaces/index.js";
 import type { InjectableToken } from "~/interfaces/injectable.interface.js";
+import type { EnhancerSubtype } from "~/constants.js";
 
-import { type EnhancerSubtype, GLOBAL_MODULE_METADATA, REQUEST, REQUEST_CONTEXT_ID } from "~/constants.js";
-
+import { GLOBAL_MODULE_METADATA, REQUEST, REQUEST_CONTEXT_ID } from "~/constants.js";
 import { Module } from "~/injector/module/module.js";
 import { ModuleCompiler } from "~/injector/module/compiler.js";
 import { ModulesContainer } from "~/injector/module/container.js";
 import { TokenFactory } from "~/injector/module/token-factory.js";
 import { InternalCoreModule } from "~/injector/internal-core-module/internal-core-module.js";
-
 import { InitializeOnPreviewAllowlist } from "~/inspector/initialize-on-preview.allowlist.js";
 import { ContextIdFactory } from "~/context/context-id.factory.js";
 import { MetaHostStorage } from "~/storage/meta-host.storage.js";
-
 import { SerializedGraph } from "~/inspector/serialized-graph.js";
 import { ApplicationConfig } from "~/application/config.js";
-
 import { CircularDependencyException } from "~/errors/exceptions/circular-dependency.exception.js";
 import { UndefinedForwardRefException } from "~/errors/exceptions/undefined-forwardref.exception.js";
 import { UnknownModuleException } from "~/errors/exceptions/unknown-module.exception.js";
@@ -44,12 +41,12 @@ export class VenokContainer {
 
   public async addModule(
     metatype: ModuleMetatype | undefined,
-    scope: ModuleScope,
+    scope: ModuleScope
   ): Promise<
     | {
-        moduleRef: Module;
-        inserted: boolean;
-      }
+      moduleRef: Module;
+      inserted: boolean;
+    }
     | undefined
   > {
     // In DependenciesScanner#scanForModules we already check for undefined or invalid modules
@@ -72,7 +69,7 @@ export class VenokContainer {
           type,
           dynamicMetadata,
         },
-        scope,
+        scope
       )) as Module,
       inserted: true,
     };
@@ -81,12 +78,12 @@ export class VenokContainer {
   public async replaceModule(
     metatypeToReplace: ModuleMetatype,
     newMetatype: ModuleMetatype,
-    scope: ModuleScope,
+    scope: ModuleScope
   ): Promise<
     | {
-        moduleRef: Module;
-        inserted: boolean;
-      }
+      moduleRef: Module;
+      inserted: boolean;
+    }
     | undefined
   > {
     // In DependenciesScanner#scanForModules we already check for undefined or invalid modules
@@ -105,7 +102,7 @@ export class VenokContainer {
           type,
           dynamicMetadata,
         },
-        scope,
+        scope
       )) as Module,
       inserted: false,
     };
@@ -113,7 +110,7 @@ export class VenokContainer {
 
   private async setModule(
     { token, dynamicMetadata, type }: ModuleFactory,
-    scope: ModuleScope,
+    scope: ModuleScope
   ): Promise<Module | undefined> {
     const moduleRef = new Module(type, this);
     moduleRef.token = token;
@@ -140,7 +137,7 @@ export class VenokContainer {
   public async addDynamicMetadata(
     token: string,
     dynamicModuleMetadata: Partial<DynamicModule> | undefined,
-    scope: Type[],
+    scope: Type[]
   ) {
     if (!dynamicModuleMetadata) {
       return;
@@ -155,6 +152,7 @@ export class VenokContainer {
     if (!modules) {
       return;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     await Promise.all(modules.map((module) => this.addModule(module, scope)));
   }
 
@@ -215,7 +213,7 @@ export class VenokContainer {
     injectable: Provider,
     token: string,
     enhancerSubtype: EnhancerSubtype,
-    host?: Type<InjectableToken>,
+    host?: Type<InjectableToken>
   ) {
     if (!this.modules.has(token)) {
       throw new UnknownModuleException();
@@ -236,7 +234,9 @@ export class VenokContainer {
     this.modules.clear();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   public replace(toReplace: any, options: any & { scope: any[] | null }) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.modules.forEach((moduleRef) => moduleRef.replace(toReplace, options));
   }
 

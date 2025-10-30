@@ -1,10 +1,8 @@
-import { createContextId } from "~/helpers/context-id-factory.helper.js";
-
-import { isObject } from "~/helpers/shared.helper.js";
-
-import { REQUEST_CONTEXT_ID } from "~/constants.js";
-
 import type { ContextId, ContextIdResolver, ContextIdStrategy, HostComponentInfo } from "~/interfaces/index.js";
+
+import { createContextId } from "~/helpers/context-id-factory.helper.js";
+import { isObject } from "~/helpers/shared.helper.js";
+import { REQUEST_CONTEXT_ID } from "~/constants.js";
 
 export class ContextIdFactory {
   private static strategy?: ContextIdStrategy;
@@ -23,7 +21,7 @@ export class ContextIdFactory {
    */
   public static getByRequest<T extends Record<any, any> = any>(
     request: T,
-    propsToInspect: string[] = ["raw"],
+    propsToInspect: string[] = ["raw"]
   ): ContextId {
     if (!request) return ContextIdFactory.create();
 
@@ -55,7 +53,7 @@ export class ContextIdFactory {
   }
 
   private static isContextIdResolverWithPayload(
-    resolverOrResolverFn: ((info: HostComponentInfo) => ContextId) | ContextIdResolver | undefined,
+    resolverOrResolverFn: ((info: HostComponentInfo) => ContextId) | ContextIdResolver | undefined
   ): resolverOrResolverFn is ContextIdResolver {
     return isObject(resolverOrResolverFn);
   }

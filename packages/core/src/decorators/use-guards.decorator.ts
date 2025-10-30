@@ -28,14 +28,19 @@ import { GUARDS_METADATA } from "~/constants.js";
 export function UseGuards(...guards: (CanActivate | Function)[]): MethodDecorator & ClassDecorator {
   return (target: any, key?: string | symbol, descriptor?: TypedPropertyDescriptor<any>) => {
     const isGuardValid = <T extends Function | Record<string, any>>(guard: T) =>
-      guard && (isFunction(guard) || isFunction((guard as Record<string, any>).canActivate));
+      // @ts-expect-error Mismatch types
+      guard && (isFunction(guard) || isFunction((guard).canActivate));
 
     if (descriptor) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       validateEach(target.constructor, guards, isGuardValid, "@UseGuards", "guard");
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       extendArrayMetadata(GUARDS_METADATA, guards, descriptor.value);
       return descriptor;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     validateEach(target, guards, isGuardValid, "@UseGuards", "guard");
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     extendArrayMetadata(GUARDS_METADATA, guards, target);
     return target;
   };

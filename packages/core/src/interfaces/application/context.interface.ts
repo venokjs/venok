@@ -6,7 +6,7 @@ import type {
   LogLevel,
   PipeTransform,
   Type,
-  VenokInterceptor,
+  VenokInterceptor
 } from "~/interfaces/index.js";
 
 import type { VenokContainer } from "~/injector/container.js";

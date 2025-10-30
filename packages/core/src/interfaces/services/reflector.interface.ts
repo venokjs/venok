@@ -35,14 +35,17 @@ export interface CreateDecoratorOptions<Options = any, Transformed = Options>
 
 type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 export type WithTransform<T extends DecoratorOptions> = WithRequired<T, "transform">;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type ReflectableDecorator<Options, Transformed = Options> = ((
-  opts?: Options,
+  opts?: Options
 ) => ClassDecorator & MethodDecorator) & {
   KEY: string;
 };
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type ReflectableClassDecorator<Options, Transformed = Options> = ((opts?: Options) => ClassDecorator) & {
   KEY: string;
 };
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type ReflectableMethodDecorator<Options, Transformed = Options> = ((opts?: Options) => MethodDecorator) & {
   KEY: string;
 };

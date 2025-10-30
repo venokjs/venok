@@ -1,26 +1,25 @@
-import {
-  type CanActivate,
-  type ClassProvider,
-  type DynamicModule,
-  type ExceptionFilter,
-  type ExistingProvider,
-  type FactoryProvider,
-  type ForwardReference,
-  type InjectableToken,
-  type InjectionToken,
-  type ModuleDefinition,
-  type PipeTransform,
-  type Provider,
-  type Type,
-  type ValueProvider,
-  type VenokInterceptor,
+import type {
+  CanActivate,
+  ClassProvider,
+  DynamicModule,
+  ExceptionFilter,
+  ExistingProvider,
+  FactoryProvider,
+  ForwardReference,
+  InjectableToken,
+  InjectionToken,
+  ModuleDefinition,
+  PipeTransform,
+  Provider,
+  Type,
+  ValueProvider,
+  VenokInterceptor
 } from "~/interfaces/index.js";
-
 import type { ModuleOverride } from "~/interfaces/modules/override.interface.js";
 import type { GraphInspector } from "~/inspector/graph-inspector.js";
 import type { MetadataScanner } from "~/metadata-scanner.js";
+import type { EnhancerSubtype } from "~/constants.js";
 
-import { ApplicationConfig } from "~/application/config.js";
 import {
   APP_FILTER,
   APP_GUARD,
@@ -29,28 +28,25 @@ import {
   CATCH_WATERMARK,
   ENHANCER_KEY_TO_SUBTYPE_MAP,
   ENHANCER_TOKEN_TO_SUBTYPE_MAP,
-  type EnhancerSubtype,
   EXCEPTION_FILTERS_METADATA,
   GUARDS_METADATA,
   INJECTABLE_WATERMARK,
   INTERCEPTORS_METADATA,
   MODULE_METADATA,
   PIPES_METADATA,
-  ROUTE_ARGS_METADATA,
+  ROUTE_ARGS_METADATA
 } from "~/constants.js";
-
+import { ApplicationConfig } from "~/application/config.js";
 import { CircularDependencyException } from "~/errors/exceptions/circular-dependency.exception.js";
 import { InvalidClassModuleException } from "~/errors/exceptions/invalid-class-module.exception.js";
 import { InvalidModuleException } from "~/errors/exceptions/invalid-module.exception.js";
 import { UndefinedModuleException } from "~/errors/exceptions/undefined-module.exception.js";
-
 import { InternalCoreModuleFactory } from "~/injector/internal-core-module/internal-core-module-factory.js";
 import { getClassScope } from "~/injector/helpers/class-scope.helper.js";
 import { InstanceWrapper } from "~/injector/instance/wrapper.js";
 import { Module } from "~/injector/module/module.js";
 import { VenokContainer } from "~/injector/container.js";
 import { TopologyTree } from "~/injector/topology-tree/topology-tree.js";
-
 import { flatten } from "~/helpers/flatten.helper.js";
 import { isFunction, isNull, isUndefined } from "~/helpers/shared.helper.js";
 import { UuidFactory } from "~/helpers/uuid.helper.js";
@@ -78,7 +74,7 @@ export class DependenciesScanner {
     private readonly container: VenokContainer,
     private readonly metadataScanner: MetadataScanner,
     private readonly graphInspector: GraphInspector,
-    private readonly applicationConfig = new ApplicationConfig(),
+    private readonly applicationConfig = new ApplicationConfig()
   ) {}
 
   public async scan(module: Type, options?: { overrides?: ModuleOverride[] }) {
@@ -107,10 +103,12 @@ export class DependenciesScanner {
     ctxRegistry = [],
     overrides = [],
   }: ModulesScanParameters): Promise<Module[]> {
-    const { moduleRef: moduleInstance, inserted: moduleInserted } =
-      (await this.insertOrOverrideModule(moduleDefinition, overrides, scope)) ?? {};
+    // eslint-disable-next-line @stylistic/max-len
+    const { moduleRef: moduleInstance, inserted: moduleInserted } = (await this.insertOrOverrideModule(moduleDefinition, overrides, scope)) ?? {};
 
-    moduleDefinition = this.getOverrideModuleByModule(moduleDefinition, overrides)?.newModule ?? moduleDefinition;
+    moduleDefinition =
+      this.getOverrideModuleByModule(moduleDefinition, overrides)?.newModule ??
+      moduleDefinition;
 
     moduleDefinition = moduleDefinition instanceof Promise ? await moduleDefinition : moduleDefinition;
 
@@ -123,26 +121,27 @@ export class DependenciesScanner {
     const modules = !this.isDynamicModule(moduleDefinition as Type | DynamicModule)
       ? this.reflectMetadata(MODULE_METADATA.IMPORTS, moduleDefinition as Type)
       : [
-          ...this.reflectMetadata(MODULE_METADATA.IMPORTS, (moduleDefinition as DynamicModule).module),
+          ...this.reflectMetadata(
+            MODULE_METADATA.IMPORTS,
+            (moduleDefinition as DynamicModule).module
+          ),
           ...((moduleDefinition as DynamicModule).imports || []),
         ];
 
     let registeredModuleRefs: any[] = [];
     for (const [index, innerModule] of modules.entries()) {
       // In case of a circular dependency (ES module system), JavaScript will resolve the type to `undefined`.
-      if (innerModule === undefined) {
-        throw new UndefinedModuleException(moduleDefinition, index, scope);
-      }
-      if (!innerModule) {
-        throw new InvalidModuleException(moduleDefinition, index, scope);
-      }
-      if (ctxRegistry.includes(innerModule)) {
-        continue;
-      }
+      if (innerModule === undefined) throw new UndefinedModuleException(moduleDefinition, index, scope);
+      if (!innerModule) throw new InvalidModuleException(moduleDefinition, index, scope);
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      if (ctxRegistry.includes(innerModule)) continue;
+
       const moduleRefs = await this.scanForModules({
         moduleDefinition: innerModule,
         // Maybe Error
-        scope: scope.concat(moduleDefinition as any),
+        // @ts-expect-error Mismatch types
+        scope: scope.concat(moduleDefinition),
         ctxRegistry,
         overrides,
         lazy,
@@ -152,16 +151,19 @@ export class DependenciesScanner {
 
     if (!moduleInstance) return registeredModuleRefs;
 
-    if (lazy && moduleInserted) this.container.bindGlobalsToImports(moduleInstance);
+    if (lazy && moduleInserted)
+      this.container.bindGlobalsToImports(moduleInstance);
 
     return [moduleInstance].concat(registeredModuleRefs);
   }
 
   public async insertModule(
-    moduleDefinition: any,
-    scope: Type[],
+    moduleDefinition: ModuleDefinition,
+    scope: Type[]
   ): Promise<{ moduleRef: Module; inserted: boolean } | undefined> {
-    const moduleToAdd = this.isForwardReference(moduleDefinition) ? moduleDefinition.forwardRef() : moduleDefinition;
+    const moduleToAdd: Type = this.isForwardReference(moduleDefinition)
+      ? moduleDefinition.forwardRef()
+      : moduleDefinition;
 
     if (this.isInjectable(moduleToAdd) || this.isExceptionFilter(moduleToAdd)) {
       throw new InvalidClassModuleException(moduleDefinition, scope);
@@ -170,7 +172,9 @@ export class DependenciesScanner {
     return this.container.addModule(moduleToAdd, scope);
   }
 
-  public async scanModulesForDependencies(modules: Map<string, Module> = this.container.getModules()) {
+  public async scanModulesForDependencies(
+    modules: Map<string, Module> = this.container.getModules()
+  ) {
     for (const [token, { metatype }] of modules) {
       await this.reflectImports(metatype, token, metatype.name);
       this.reflectProviders(metatype, token);
@@ -179,9 +183,12 @@ export class DependenciesScanner {
   }
 
   public async reflectImports(module: Type, token: string, context: string) {
-    const modules = [
+    const modules: (Type | DynamicModule)[] = [
       ...this.reflectMetadata(MODULE_METADATA.IMPORTS, module),
-      ...(this.container.getDynamicMetadataByToken(token, MODULE_METADATA.IMPORTS as "imports") as any[]),
+      ...(this.container.getDynamicMetadataByToken(
+        token,
+        MODULE_METADATA.IMPORTS as "imports"
+      ) as any[]),
     ];
 
     for (const related of modules) {
@@ -190,14 +197,17 @@ export class DependenciesScanner {
   }
 
   public reflectProviders(module: Type, token: string) {
-    const providers = [
+    const providers: Provider[] = [
       ...this.reflectMetadata(MODULE_METADATA.PROVIDERS, module),
-      ...(this.container.getDynamicMetadataByToken(token, MODULE_METADATA.PROVIDERS as "providers") as any[]),
+      ...(this.container.getDynamicMetadataByToken(
+        token,
+        MODULE_METADATA.PROVIDERS as "providers"
+      ) as any[]),
     ];
 
     providers.forEach((provider) => {
       this.insertProvider(provider, token);
-      this.reflectDynamicMetadata(provider, token);
+      this.reflectDynamicMetadata(provider as Type, token);
     });
   }
 
@@ -212,30 +222,50 @@ export class DependenciesScanner {
   }
 
   public reflectExports(module: Type, token: string) {
-    const exports = [
+    const exports: (ForwardReference | DynamicModule | Type)[] = [
       ...this.reflectMetadata(MODULE_METADATA.EXPORTS, module),
-      ...(this.container.getDynamicMetadataByToken(token, MODULE_METADATA.EXPORTS as "exports") as any[]),
+      ...(this.container.getDynamicMetadataByToken(
+        token,
+        MODULE_METADATA.EXPORTS as "exports"
+      ) as any[]),
     ];
 
-    exports.forEach((exportedProvider) => this.insertExportedProviderOrModule(exportedProvider, token));
+    exports.forEach((exportedProvider) =>
+      this.insertExportedProviderOrModule(exportedProvider, token)
+    );
   }
 
   public reflectInjectables(
     component: Type<InjectableToken>,
     token: string,
-    metadataKey: keyof typeof ENHANCER_KEY_TO_SUBTYPE_MAP,
+    metadataKey: keyof typeof ENHANCER_KEY_TO_SUBTYPE_MAP
   ) {
-    const Injectables = this.reflectMetadata<Type<InjectableToken>>(metadataKey, component);
-    const methodInjectables = this.metadataScanner.getAllMethodNames(component.prototype).reduce((acc, method) => {
-      const methodInjectable = this.reflectKeyMetadata(component, metadataKey, method);
+    const Injectables = this.reflectMetadata<Type<InjectableToken>>(
+      metadataKey,
+      component
+    );
+    const methodInjectables = this.metadataScanner
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      .getAllMethodNames(component.prototype)
+      .reduce((acc, method) => {
+        const methodInjectable = this.reflectKeyMetadata(
+          component,
+          metadataKey,
+          method
+        );
 
-      if (methodInjectable) acc.push(methodInjectable);
+        if (methodInjectable) acc.push(methodInjectable);
 
-      return acc;
-    }, [] as any[]);
+        return acc;
+      }, [] as any[]);
 
     Injectables.forEach((injectable) =>
-      this.insertInjectable(injectable, token, component, ENHANCER_KEY_TO_SUBTYPE_MAP[metadataKey]),
+      this.insertInjectable(
+        injectable,
+        token,
+        component,
+        ENHANCER_KEY_TO_SUBTYPE_MAP[metadataKey]
+      )
     );
 
     methodInjectables.forEach((methodInjectable) => {
@@ -245,13 +275,15 @@ export class DependenciesScanner {
           token,
           component,
           ENHANCER_KEY_TO_SUBTYPE_MAP[metadataKey],
-          methodInjectable.methodKey,
-        ),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          methodInjectable.methodKey
+        )
       );
     });
   }
 
   public reflectParamInjectables(component: Type<InjectableToken>, token: string, metadataKey: string) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const paramsMethods = this.metadataScanner.getAllMethodNames(component.prototype);
 
     paramsMethods.forEach((methodKey) => {
@@ -270,25 +302,39 @@ export class DependenciesScanner {
       params
         .map((item) => item.pipes)
         .flat(1)
-        .forEach((injectable) => this.insertInjectable(injectable, token, component, "pipe", methodKey));
+        .forEach((injectable) =>
+          this.insertInjectable(
+            injectable,
+            token,
+            component,
+            "pipe",
+            methodKey
+          )
+        );
     });
   }
 
   public reflectKeyMetadata(
     component: Type<InjectableToken>,
     key: string,
-    methodKey: string,
+    methodKey: string
   ): { methodKey: string; metadata: any } | undefined {
     let prototype = component.prototype;
     do {
       const descriptor = Reflect.getOwnPropertyDescriptor(prototype, methodKey);
       if (!descriptor) continue;
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const metadata = Reflect.getMetadata(key, descriptor.value);
       if (!metadata) return;
 
       return { methodKey, metadata };
-    } while ((prototype = Reflect.getPrototypeOf(prototype)) && prototype !== Object.prototype && prototype);
+    } while (
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      (prototype = Reflect.getPrototypeOf(prototype)) &&
+      prototype !== Object.prototype &&
+      prototype
+    );
 
     return undefined;
   }
@@ -301,7 +347,7 @@ export class DependenciesScanner {
      * The second element is the actual root module
      */
     modulesGenerator.next();
-    const rootModule = modulesGenerator.next().value! as Module;
+    const rootModule = modulesGenerator.next().value!;
     if (!rootModule) return;
 
     /* Convert modules to an acyclic connected graph */
@@ -313,29 +359,36 @@ export class DependenciesScanner {
     });
   }
 
-  public async insertImport(related: any, token: string, context: string) {
+  public async insertImport(related: Type | DynamicModule, token: string, context: string) {
     if (isUndefined(related)) throw new CircularDependencyException(context);
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     if (this.isForwardReference(related)) return this.container.addImport(related.forwardRef(), token);
 
     await this.container.addImport(related, token);
   }
 
   public isCustomProvider(
-    provider: Provider,
-  ): provider is ClassProvider | ValueProvider | FactoryProvider | ExistingProvider {
+    provider: Provider
+  ): provider is
+    | ClassProvider
+    | ValueProvider
+    | FactoryProvider
+    | ExistingProvider {
     return provider && !isNull((provider as any).provide);
   }
 
   public insertProvider(provider: Provider, token: string) {
     const isCustomProvider = this.isCustomProvider(provider);
-    if (!isCustomProvider) return this.container.addProvider(provider as Type, token);
+    if (!isCustomProvider)
+      return this.container.addProvider(provider as Type, token);
 
     const applyProvidersMap = this.getApplyProvidersMap();
     const providersKeys = Object.keys(applyProvidersMap);
-    const type = (provider as ClassProvider | ValueProvider | FactoryProvider | ExistingProvider).provide;
+    const type = provider.provide;
 
-    if (!providersKeys.includes(type as string)) return this.container.addProvider(provider as any, token);
+    if (!providersKeys.includes(type as string))
+      return this.container.addProvider(provider, token);
 
     const uuid = UuidFactory.get(type.toString());
     const providerToken = `${type as string} (UUID: ${uuid})`;
@@ -360,10 +413,17 @@ export class DependenciesScanner {
 
     const enhancerSubtype =
       ENHANCER_TOKEN_TO_SUBTYPE_MAP[
-        type as typeof APP_GUARD | typeof APP_PIPE | typeof APP_FILTER | typeof APP_INTERCEPTOR
+        type as
+          | typeof APP_GUARD
+          | typeof APP_PIPE
+          | typeof APP_FILTER
+          | typeof APP_INTERCEPTOR
       ];
-    const factoryOrClassProvider = newProvider as FactoryProvider | ClassProvider;
-    if (this.isRequestOrTransient(factoryOrClassProvider.scope as any)) {
+    const factoryOrClassProvider = newProvider as
+      | FactoryProvider
+      | ClassProvider;
+    // @ts-expect-error Mismatch types
+    if (this.isRequestOrTransient(factoryOrClassProvider.scope)) {
       return this.container.addInjectable(newProvider, token, enhancerSubtype);
     }
 
@@ -375,10 +435,15 @@ export class DependenciesScanner {
     token: string,
     host: Type<InjectableToken>,
     subtype: EnhancerSubtype,
-    methodKey?: string,
+    methodKey?: string
   ) {
     if (isFunction(injectable)) {
-      const instanceWrapper = this.container.addInjectable(injectable as Type, token, subtype, host) as InstanceWrapper;
+      const instanceWrapper = this.container.addInjectable(
+        injectable as Type,
+        token,
+        subtype,
+        host
+      ) as InstanceWrapper;
 
       this.graphInspector.insertEnhancerMetadataCache({
         moduleToken: token,
@@ -400,16 +465,20 @@ export class DependenciesScanner {
     }
   }
 
-  public insertExportedProviderOrModule(toExport: ForwardReference | DynamicModule | Type<unknown>, token: string) {
+  public insertExportedProviderOrModule(
+    toExport: ForwardReference | DynamicModule | Type<unknown>,
+    token: string
+  ) {
     const fulfilledProvider = this.isForwardReference(toExport) ? toExport.forwardRef() : toExport;
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.container.addExportedProviderOrModule(fulfilledProvider, token);
   }
 
   private insertOrOverrideModule(
     moduleDefinition: ModuleDefinition,
     overrides: ModuleOverride[],
-    scope: Type[],
+    scope: Type[]
   ): Promise<{ moduleRef: Module; inserted: boolean } | undefined> {
     const overrideModule = this.getOverrideModuleByModule(moduleDefinition, overrides);
 
@@ -418,7 +487,10 @@ export class DependenciesScanner {
     return this.insertModule(moduleDefinition, scope);
   }
 
-  private getOverrideModuleByModule(module: ModuleDefinition, overrides: ModuleOverride[]): ModuleOverride | undefined {
+  private getOverrideModuleByModule(
+    module: ModuleDefinition,
+    overrides: ModuleOverride[]
+  ): ModuleOverride | undefined {
     if (this.isForwardReference(module)) {
       return overrides.find((moduleToOverride) => {
         return (
@@ -434,12 +506,16 @@ export class DependenciesScanner {
   private async overrideModule(
     moduleToOverride: ModuleDefinition,
     newModule: ModuleDefinition,
-    scope: Type[],
+    scope: Type[]
   ): Promise<{ moduleRef: Module; inserted: boolean } | undefined> {
     return this.container.replaceModule(
-      this.isForwardReference(moduleToOverride) ? moduleToOverride.forwardRef() : moduleToOverride,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      this.isForwardReference(moduleToOverride)
+        ? moduleToOverride.forwardRef()
+        : moduleToOverride,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       this.isForwardReference(newModule) ? newModule.forwardRef() : newModule,
-      scope,
+      scope
     );
   }
 
@@ -453,7 +529,7 @@ export class DependenciesScanner {
       this,
       this.container.getModuleCompiler(),
       this.graphInspector,
-      overrides,
+      overrides
     );
     const [instance] = await this.scanForModules({
       moduleDefinition,
@@ -468,15 +544,19 @@ export class DependenciesScanner {
    */
   public addScopedEnhancersMetadata() {
     this.applicationProvidersApplyMap
-      .filter((wrapper) => this.isRequestOrTransient(wrapper.scope as any))
+      // @ts-expect-error Mismatch types
+      .filter((wrapper) => this.isRequestOrTransient(wrapper.scope))
       .forEach(({ moduleKey, providerKey }) => {
         const modulesContainer = this.container.getModules();
         const { injectables } = modulesContainer.get(moduleKey) as Module;
         const instanceWrapper = injectables.get(providerKey);
 
         const iterableIterator = modulesContainer.values();
-        flatten([...iterableIterator].map((moduleRef) => moduleRef.entryProviders)).forEach((EntryProvider) =>
-          EntryProvider.addEnhancerMetadata(instanceWrapper as any),
+        flatten(
+          [...iterableIterator].map((moduleRef) => moduleRef.entryProviders)
+        ).forEach((EntryProvider) =>
+          // @ts-expect-error Mismatch types
+          EntryProvider.addEnhancerMetadata(instanceWrapper)
         );
       });
   }
@@ -485,30 +565,46 @@ export class DependenciesScanner {
     const applyProvidersMap = this.getApplyProvidersMap();
     const applyRequestProvidersMap = this.getApplyRequestProvidersMap();
 
-    const getInstanceWrapper = (moduleKey: string, providerKey: string, collectionKey: "providers" | "injectables") => {
+    const getInstanceWrapper = (
+      moduleKey: string,
+      providerKey: string,
+      collectionKey: "providers" | "injectables"
+    ) => {
       const modules = this.container.getModules();
       const collection = modules.get(moduleKey)![collectionKey];
       return collection.get(providerKey);
     };
 
     // Add global enhancers to the application config
-    this.applicationProvidersApplyMap.forEach(({ moduleKey, providerKey, type, scope }) => {
-      let instanceWrapper: InstanceWrapper;
-      if (this.isRequestOrTransient(scope as any)) {
-        instanceWrapper = getInstanceWrapper(moduleKey, providerKey, "injectables") as InstanceWrapper<InjectableToken>;
+    this.applicationProvidersApplyMap.forEach(
+      ({ moduleKey, providerKey, type, scope }) => {
+        let instanceWrapper: InstanceWrapper;
+        // @ts-expect-error Mismatch types
+        if (this.isRequestOrTransient(scope)) {
+          instanceWrapper = getInstanceWrapper(
+            moduleKey,
+            providerKey,
+            "injectables"
+          ) as InstanceWrapper<InjectableToken>;
 
+          this.graphInspector.insertAttachedEnhancer(instanceWrapper);
+          return applyRequestProvidersMap[type as string](instanceWrapper);
+        }
+        instanceWrapper = getInstanceWrapper(
+          moduleKey,
+          providerKey,
+          "providers"
+        ) as InstanceWrapper<InjectableToken>;
         this.graphInspector.insertAttachedEnhancer(instanceWrapper);
-        return applyRequestProvidersMap[type as string](instanceWrapper);
+        applyProvidersMap[type as string](instanceWrapper.instance);
       }
-      instanceWrapper = getInstanceWrapper(moduleKey, providerKey, "providers") as InstanceWrapper<InjectableToken>;
-      this.graphInspector.insertAttachedEnhancer(instanceWrapper);
-      applyProvidersMap[type as string](instanceWrapper.instance);
-    });
+    );
   }
 
   public getApplyProvidersMap(): { [type: string]: Function } {
     return {
-      [APP_INTERCEPTOR]: (interceptor: VenokInterceptor) => this.applicationConfig.addGlobalInterceptor(interceptor),
+      [APP_INTERCEPTOR]: (interceptor: VenokInterceptor) =>
+        this.applicationConfig.addGlobalInterceptor(interceptor),
       [APP_PIPE]: (pipe: PipeTransform) => this.applicationConfig.addGlobalPipe(pipe),
       [APP_GUARD]: (guard: CanActivate) => this.applicationConfig.addGlobalGuard(guard),
       [APP_FILTER]: (filter: ExceptionFilter) => this.applicationConfig.addGlobalFilter(filter),

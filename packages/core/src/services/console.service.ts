@@ -1,13 +1,14 @@
-import { inspect, type InspectOptions } from "util";
+import type { InspectOptions } from "util";
+
+import type { ConsoleLoggerOptions, LoggerService, LogLevel } from "~/interfaces/index.js";
+
+import { inspect } from "util";
 
 import { colors, isColorAllowed, yellow } from "~/helpers/color.helper.js";
 import { isFunction, isPlainObject, isString, isUndefined } from "~/helpers/shared.helper.js";
-
 import { Injectable } from "~/decorators/injectable.decorator.js";
-
 import { isLogLevelEnabled } from "~/helpers/is-log-level-enabled.util.js";
 import { Optional } from "~/decorators/optional.decorator.js";
-import type { ConsoleLoggerOptions, LoggerService, LogLevel } from "~/interfaces/index.js";
 
 const DEFAULT_DEPTH = 5;
 
@@ -56,7 +57,7 @@ export class ConsoleLogger implements LoggerService {
     @Optional()
     contextOrOptions?: string | ConsoleLoggerOptions,
     @Optional()
-    options?: ConsoleLoggerOptions,
+    options?: ConsoleLoggerOptions
   ) {
     // eslint-disable-next-line prefer-const
     let [context, opts] = isString(contextOrOptions)
@@ -206,7 +207,7 @@ export class ConsoleLogger implements LoggerService {
     context = "",
     logLevel: LogLevel = "log",
     writeStreamType?: "stdout" | "stderr",
-    errorStack?: unknown,
+    errorStack?: unknown
   ) {
     messages.forEach((message) => {
       if (this.options.json) {
@@ -228,7 +229,7 @@ export class ConsoleLogger implements LoggerService {
         pidMessage,
         formattedLogLevel,
         contextMessage,
-        timestampDiff,
+        timestampDiff
       );
 
       if (this.options.forceConsole) {
@@ -250,11 +251,12 @@ export class ConsoleLogger implements LoggerService {
       logLevel: LogLevel;
       writeStreamType?: "stdout" | "stderr";
       errorStack?: unknown;
-    },
+    }
   ) {
     const logObject = this.getJsonLogObject(message, options);
     const formattedMessage =
       !this.options.colors && this.inspectOptions.compact === true
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         ? JSON.stringify(logObject, this.stringifyReplacer)
         : inspect(logObject, this.inspectOptions);
     if (this.options.forceConsole) {
@@ -275,7 +277,7 @@ export class ConsoleLogger implements LoggerService {
       logLevel: LogLevel;
       writeStreamType?: "stdout" | "stderr";
       errorStack?: unknown;
-    },
+    }
   ) {
     type JsonLogObject = {
       level: LogLevel;
@@ -322,7 +324,7 @@ export class ConsoleLogger implements LoggerService {
     pidMessage: string,
     formattedLogLevel: string,
     contextMessage: string,
-    timestampDiff: string,
+    timestampDiff: string
   ) {
     const output = this.stringifyMessage(message, logLevel);
     pidMessage = this.colorize(pidMessage, logLevel);

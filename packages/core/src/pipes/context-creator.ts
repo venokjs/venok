@@ -15,7 +15,7 @@ export class PipesContextCreator extends ContextCreator {
 
   constructor(
     private readonly container: VenokContainer,
-    private readonly config?: ApplicationConfig,
+    private readonly config?: ApplicationConfig
   ) {
     super();
   }
@@ -25,7 +25,7 @@ export class PipesContextCreator extends ContextCreator {
     callback: (...args: unknown[]) => unknown,
     moduleKey: string,
     contextId = STATIC_CONTEXT,
-    inquirerId?: string,
+    inquirerId?: string
   ): PipeTransform[] {
     this.moduleContext = moduleKey;
     return this.createContext(instance, callback, PIPES_METADATA, contextId, inquirerId);
@@ -34,31 +34,31 @@ export class PipesContextCreator extends ContextCreator {
   public createConcreteContext<T extends any[], R extends any[]>(
     metadata: T,
     contextId = STATIC_CONTEXT,
-    inquirerId?: string,
+    inquirerId?: string
   ): R {
     if (isEmpty(metadata)) return [] as any as R;
 
     return metadata
       .filter((pipe: any) => pipe && (pipe.name || pipe.transform))
-      .map((pipe) => this.getPipeInstance(pipe, contextId, inquirerId))
-      .filter((pipe) => pipe && pipe.transform && isFunction(pipe.transform)) as R;
+      .map((pipe: Function | PipeTransform) => this.getPipeInstance(pipe, contextId, inquirerId))
+      .filter((pipe: any) => pipe && pipe.transform && isFunction(pipe.transform)) as R;
   }
 
   public getPipeInstance(
     pipe: Function | PipeTransform,
     contextId = STATIC_CONTEXT,
-    inquirerId?: string,
+    inquirerId?: string
   ): PipeTransform | null {
-    const isObject = (pipe as PipeTransform).transform;
+    const isObject = (pipe as any).transform;
 
-    if (!!isObject) return pipe as PipeTransform;
+    if (isObject) return pipe as PipeTransform;
 
     const instanceWrapper = this.getInstanceByMetatype(pipe as Type);
     if (!instanceWrapper) return null;
 
     const instanceHost = instanceWrapper.getInstanceByContextId(
       this.getContextId(contextId, instanceWrapper),
-      inquirerId,
+      inquirerId
     );
 
     return instanceHost && instanceHost.instance;

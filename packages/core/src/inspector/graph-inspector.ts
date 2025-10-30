@@ -1,17 +1,18 @@
+import type {
+  ClassNode,
+  EnhancerMetadataCacheEntry,
+  Entrypoint,
+  Node,
+  OrphanedEnhancerDefinition
+} from "~/interfaces/index.js";
 import type { SerializedGraph } from "~/inspector/serialized-graph.js";
+
 import { InstanceWrapper } from "~/injector/instance/wrapper.js";
 import { Module } from "~/injector/module/module.js";
 import { VenokContainer } from "~/injector/container.js";
 import { DeterministicUuidRegistry } from "~/helpers/uuid.helper.js";
 import { UnknownDependenciesException } from "~/errors/exceptions/unknown-dependencies.exception.js";
 import { PartialGraphHost } from "~/inspector/partial-graph.host.js";
-import type {
-  ClassNode,
-  EnhancerMetadataCacheEntry,
-  Entrypoint,
-  Node,
-  OrphanedEnhancerDefinition,
-} from "~/interfaces/index.js";
 
 export class GraphInspector {
   private readonly graph: SerializedGraph;
@@ -59,12 +60,12 @@ export class GraphInspector {
   public inspectInstanceWrapper<T = any>(source: InstanceWrapper<T>, moduleRef: Module) {
     const ctorMetadata = source.getCtorMetadata();
     ctorMetadata?.forEach((target, index) =>
-      this.insertClassToClassEdge(source, target, moduleRef, index, "constructor"),
+      this.insertClassToClassEdge(source, target, moduleRef, index, "constructor")
     );
 
     const propertiesMetadata = source.getPropertiesMetadata();
     propertiesMetadata?.forEach(({ key, wrapper: target }) =>
-      this.insertClassToClassEdge(source, target, moduleRef, key, "property"),
+      this.insertClassToClassEdge(source, target, moduleRef, key, "property")
     );
   }
 
@@ -97,7 +98,7 @@ export class GraphInspector {
   public insertClassNode(
     moduleRef: Module,
     wrapper: InstanceWrapper,
-    type: Exclude<Node["metadata"]["type"], "module">,
+    type: Exclude<Node["metadata"]["type"], "module">
   ) {
     this.graph.insertNode({
       id: wrapper.id,
@@ -160,7 +161,7 @@ export class GraphInspector {
         entry.enhancerInstanceWrapper,
         moduleRef,
         undefined,
-        "decorator",
+        "decorator"
       );
 
       enhancers.push({
@@ -185,7 +186,7 @@ export class GraphInspector {
     target: InstanceWrapper,
     moduleRef: Module,
     keyOrIndex: number | string | symbol | undefined,
-    injectionType: "constructor" | "property" | "decorator",
+    injectionType: "constructor" | "property" | "decorator"
   ) {
     this.graph.insertEdge({
       source: source.id,

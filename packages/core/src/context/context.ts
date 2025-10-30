@@ -1,5 +1,3 @@
-import { isObservable, lastValueFrom, Observable } from "rxjs";
-
 import type {
   ArgumentMetadata,
   ContextType,
@@ -9,8 +7,10 @@ import type {
   ParamsMetadata,
   PipeTransform,
   VenokContextCreatorInterface,
-  VenokParamsFactoryInterface,
+  VenokParamsFactoryInterface
 } from "~/interfaces/index.js";
+
+import { isObservable, lastValueFrom, Observable } from "rxjs";
 
 import { ModulesContainer } from "~/injector/module/container.js";
 import { STATIC_CONTEXT } from "~/injector/constants.js";
@@ -18,7 +18,6 @@ import { VenokContainer } from "~/injector/container.js";
 import { HandlerMetadataStorage } from "~/storage/handler-metadata.storage.js";
 import { ContextUtils } from "~/helpers/context.helper.js";
 import { isEmpty } from "~/helpers/shared.helper.js";
-
 import { InterceptorsConsumer } from "~/interceptors/consumer.js";
 import { InterceptorsContextCreator } from "~/interceptors/context-creator.js";
 import { GuardsConsumer } from "~/guards/consumer.js";
@@ -27,11 +26,8 @@ import { PipesConsumer } from "~/pipes/consumer.js";
 import { PipesContextCreator } from "~/pipes/context-creator.js";
 import { VenokExceptionFilterContext } from "~/filters/context.js";
 import { VenokProxy } from "~/context/proxy.js";
-
 import { Reflector } from "~/services/reflector.service.js";
-
 import { RuntimeException } from "~/errors/exceptions/runtime.exception.js";
-
 import { CUSTOM_ROUTE_ARGS_METADATA, FORBIDDEN_MESSAGE } from "~/constants.js";
 
 export class VenokContextCreator implements VenokContextCreatorInterface {
@@ -49,13 +45,13 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     private readonly modulesContainer: ModulesContainer,
     private readonly pipesContextCreator: PipesContextCreator,
     private readonly pipesConsumer: PipesConsumer,
-    protected readonly filtersContextCreator: VenokExceptionFilterContext,
+    protected readonly filtersContextCreator: VenokExceptionFilterContext
   ) {}
 
   static fromContainer(
     container: VenokContainer,
     contextClass: typeof VenokContextCreator = VenokContextCreator,
-    filtersContext: typeof VenokExceptionFilterContext = VenokExceptionFilterContext,
+    filtersContext: typeof VenokExceptionFilterContext = VenokExceptionFilterContext
   ): VenokContextCreator {
     const guardsContextCreator = new GuardsContextCreator(container, container.applicationConfig);
     const guardsConsumer = new GuardsConsumer();
@@ -73,7 +69,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
       container.getModules(),
       pipesContextCreator,
       pipesConsumer,
-      filtersContextCreator,
+      filtersContextCreator
     );
     venokContextCreator.container = container;
     return venokContextCreator;
@@ -93,7 +89,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
       filters: true,
       callback: () => {},
     },
-    contextType: TContext = "native" as TContext,
+    contextType: TContext = "native" as TContext
   ) {
     const module = this.getContextModuleKey(instance.constructor);
     const { argsLength, paramtypes, getParamsMetadata } = this.getMetadata<TParamsMetadata, TContext>(
@@ -101,7 +97,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
       methodName,
       metadataKey,
       paramsFactory,
-      contextType,
+      contextType
     );
     const pipes = this.pipesContextCreator.create(instance, callback, module, contextId, inquirerId);
     const guards = this.guardsContextCreator.create(instance, callback, module, contextId, inquirerId);
@@ -117,16 +113,17 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     const fnApplyPipes = this.createPipesFn(pipes, paramsOptions, contextType);
     const handler =
       (initialArgs: unknown[], ...args: unknown[]) =>
-      async () => {
-        if (fnApplyPipes) {
-          await fnApplyPipes(initialArgs, ...args);
-          return callback.apply(instance, initialArgs);
-        }
-        return callback.apply(instance, args);
-      };
+        async () => {
+          if (fnApplyPipes) {
+            await fnApplyPipes(initialArgs, ...args);
+            return callback.apply(instance, initialArgs);
+          }
+          return callback.apply(instance, args);
+        };
 
     const target = async (...args: any[]) => {
       const initialArgs = this.contextUtils.createNullArray(argsLength);
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       fnCanActivate && (await fnCanActivate(args));
 
       const result = await this.interceptorsConsumer.intercept(
@@ -134,10 +131,12 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
         args,
         instance,
         callback,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         handler(initialArgs, ...args),
-        contextType,
+        contextType
       );
       const done = await this.transformToResult(result);
+      // eslint-disable-next-line @typescript-eslint/await-thenable,@typescript-eslint/no-unsafe-argument
       if (options.callback) await options.callback(done, ...args);
       return done;
     };
@@ -145,11 +144,11 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
   }
 
   public getMetadata<TMetadata, TContext extends string = ContextType>(
-    instance: any,
+    instance: object,
     methodName: string,
     metadataKey?: string,
     paramsFactory?: VenokParamsFactoryInterface,
-    contextType?: TContext,
+    contextType?: TContext
   ): ExternalHandlerMetadata {
     const cacheMetadata = this.handlerMetadataStorage.get(instance, methodName);
     if (cacheMetadata) return cacheMetadata;
@@ -160,9 +159,12 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     const argsLength = this.contextUtils.getArgumentsLength(keys, metadata);
     const paramtypes = this.contextUtils.reflectCallbackParamtypes(instance, methodName);
     const contextFactory = this.contextUtils.getContextFactory<TContext>(
-      contextType as any,
+      // @ts-expect-error Mismatch types
+      contextType,
       instance,
-      instance[methodName],
+      // @ts-expect-error Mismatch types
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      instance[methodName]
     );
     const getParamsMetadata = (moduleKey: string, contextId = STATIC_CONTEXT, inquirerId?: string) =>
       paramsFactory
@@ -197,7 +199,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     paramsFactory: VenokParamsFactoryInterface,
     contextId = STATIC_CONTEXT,
     inquirerId?: string,
-    contextFactory = this.contextUtils.getContextFactory("native"),
+    contextFactory = this.contextUtils.getContextFactory("native")
   ): ParamProperties[] {
     this.pipesContextCreator.setModuleContext(moduleContext);
 
@@ -208,6 +210,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
 
       if (key.includes(CUSTOM_ROUTE_ARGS_METADATA)) {
         const { factory } = metadata[key];
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         const customExtractValue = this.contextUtils.getCustomFactory(factory, data, contextFactory);
         return { index, extractValue: customExtractValue, type, data, pipes };
       }
@@ -221,7 +224,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
   public createPipesFn(
     pipes: PipeTransform[],
     paramsOptions: (ParamProperties & { metatype?: unknown })[],
-    contextType: string,
+    contextType: string
   ) {
     const pipesFn = async (args: unknown[], ...params: unknown[]) => {
       const resolveParamValue = async (param: ParamProperties & { metatype?: unknown }) => {
@@ -236,7 +239,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
             data: data as any,
             contextType,
           },
-          pipes.concat(paramPipes),
+          pipes.concat(paramPipes)
         );
       };
       await Promise.all(paramsOptions.map(resolveParamValue));
@@ -248,6 +251,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     return isEmpty(pipes) ? value : this.pipesConsumer.apply(value, metadata, pipes);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   public async transformToResult(resultOrDeferred: Observable<any> | any) {
     if (isObservable(resultOrDeferred)) return lastValueFrom(resultOrDeferred);
 
@@ -258,15 +262,16 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     guards: any[],
     instance: object,
     callback: (...args: any[]) => any,
-    contextType?: TContext,
+    contextType?: TContext
   ): Function | null {
     const canActivateFn = async (args: any[]) => {
       const canActivate = await this.guardsConsumer.tryActivate<TContext>(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         guards,
         args,
         instance,
         callback,
-        contextType,
+        contextType
       );
       if (!canActivate) throw new RuntimeException(FORBIDDEN_MESSAGE);
     };

@@ -12,5 +12,6 @@ export interface ExternalContextOptions {
   guards?: boolean;
   interceptors?: boolean;
   filters?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   callback?: (result: any | Observable<any>, ...args: any[]) => void;
 }

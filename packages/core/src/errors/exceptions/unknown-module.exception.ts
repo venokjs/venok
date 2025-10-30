@@ -5,7 +5,7 @@ export class UnknownModuleException extends RuntimeException {
     super(
       `Venok could not select the given module (${
         moduleName ? `"${moduleName}"` : "it"
-      } does not exist in current context).`,
+      } does not exist in current context).`
     );
   }
 }

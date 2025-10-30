@@ -7,7 +7,7 @@ import type {
   OrphanedEnhancerDefinition,
   SerializedGraphJson,
   SerializedGraphMetadata,
-  SerializedGraphStatus,
+  SerializedGraphStatus
 } from "~/interfaces/index.js";
 
 import { ApplicationConfig } from "~/application/config.js";

@@ -15,7 +15,7 @@ export class InterceptorsContextCreator extends ContextCreator {
 
   constructor(
     private readonly container: VenokContainer,
-    private readonly config?: ApplicationConfig,
+    private readonly config?: ApplicationConfig
   ) {
     super();
   }
@@ -25,7 +25,7 @@ export class InterceptorsContextCreator extends ContextCreator {
     callback: (...args: unknown[]) => unknown,
     module: string,
     contextId = STATIC_CONTEXT,
-    inquirerId?: string,
+    inquirerId?: string
   ): VenokInterceptor[] {
     this.moduleContext = module;
     return this.createContext(instance, callback, INTERCEPTORS_METADATA, contextId, inquirerId);
@@ -34,31 +34,30 @@ export class InterceptorsContextCreator extends ContextCreator {
   public createConcreteContext<T extends any[], R extends any[]>(
     metadata: T,
     contextId = STATIC_CONTEXT,
-    inquirerId?: string,
+    inquirerId?: string
   ): R {
     if (isEmpty(metadata)) return [] as any as R;
 
     return metadata
       .filter((interceptor) => interceptor && (interceptor.name || interceptor.intercept))
-      .map((interceptor) => this.getInterceptorInstance(interceptor, contextId, inquirerId))
+      .map((interceptor: Function | VenokInterceptor) => this.getInterceptorInstance(interceptor, contextId, inquirerId))
       .filter((interceptor: any) => interceptor && isFunction(interceptor.intercept)) as R;
   }
 
   public getInterceptorInstance(
     metatype: Function | VenokInterceptor,
     contextId = STATIC_CONTEXT,
-    inquirerId?: string,
+    inquirerId?: string
   ): VenokInterceptor | null {
-    const isObject = (metatype as VenokInterceptor).intercept;
-
-    if (!!isObject) return metatype as VenokInterceptor;
+    const isObject = (metatype as any).intercept;
+    if (isObject) return metatype as VenokInterceptor;
 
     const instanceWrapper = this.getInstanceByMetatype(metatype as Type);
     if (!instanceWrapper) return null;
 
     const instanceHost = instanceWrapper.getInstanceByContextId(
       this.getContextId(contextId, instanceWrapper),
-      inquirerId,
+      inquirerId
     );
 
     return instanceHost && instanceHost.instance;

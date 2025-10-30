@@ -8,6 +8,7 @@ export class VenokExceptionsHandler {
 
   constructor(private readonly exceptionsFilter: ExceptionFilter) {}
 
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   public next(exception: Error | any, host: ArgumentsHost) {
     const result = this.invokeCustomFilters(exception, host);
 
@@ -26,18 +27,19 @@ export class VenokExceptionsHandler {
     if (isEmpty(this.filters)) return false;
 
     const filter = this.selectExceptionFilterMetadata(this.filters, exception);
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     filter && filter.func(exception, host);
     return !!filter;
   }
 
   protected selectExceptionFilterMetadata<T = any>(
     filters: ExceptionFilterMetadata[],
-    exception: T,
+    exception: T
   ): ExceptionFilterMetadata | undefined {
     return filters.find(
       ({ exceptionMetatypes }) =>
         !exceptionMetatypes.length ||
-        exceptionMetatypes.some((ExceptionMetaType) => exception instanceof ExceptionMetaType),
+        exceptionMetatypes.some((ExceptionMetaType) => exception instanceof ExceptionMetaType)
     );
   }
 }

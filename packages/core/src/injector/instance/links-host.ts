@@ -13,7 +13,7 @@ type HostCollection = "providers" | "injectables";
 export interface InstanceLink<T = any> {
   token: InjectionToken;
   wrapperRef: InstanceWrapper<T>;
-  collection: Map<any, InstanceWrapper>;
+  collection: Map<InjectionToken, InstanceWrapper>;
   moduleId: string;
 }
 
@@ -31,7 +31,7 @@ export class InstanceLinksHost {
   ): InstanceLink<T> | Array<InstanceLink<T>>;
   get<T = any>(
     token: InjectionToken,
-    options: { moduleId?: string; each?: boolean } = {},
+    options: { moduleId?: string; each?: boolean } = {}
   ): InstanceLink<T> | Array<InstanceLink<T>> {
     const instanceLinksForGivenToken = this.instanceLinks.get(token);
 

@@ -13,7 +13,7 @@ import { Module } from "~/injector/module/module.js";
  * @param instance The instance which should be checked
  */
 function hasOnModuleDestroyHook(instance: unknown): instance is OnModuleDestroy {
-  return isFunction((instance as OnModuleDestroy).onModuleDestroy);
+  return isFunction((instance as any).onModuleDestroy);
 }
 
 /**
@@ -23,6 +23,7 @@ function callOperator(instances: InstanceWrapper[]): Promise<any>[] {
   return instances
     .filter((instance) => !isNull(instance))
     .filter(hasOnModuleDestroyHook)
+    // eslint-disable-next-line @typescript-eslint/require-await
     .map(async (instance) => (instance as any as OnModuleDestroy).onModuleDestroy());
 }
 
@@ -36,7 +37,7 @@ export async function callModuleDestroyHook(module: Module): Promise<any> {
   const providers = module.getNonAliasProviders();
   // Module (class) instance is the first element of the providers array
   // Lifecycle hook has to be called once all classes are properly destroyed
-  const [_, moduleClassHost] = providers.shift() as [InjectionToken, InstanceWrapper<unknown>];
+  const [, moduleClassHost] = providers.shift() as [InjectionToken, InstanceWrapper<unknown>];
   const instances = [...providers, ...module.injectables];
 
   const nonTransientInstances = getNonTransientInstances(instances);
@@ -48,6 +49,6 @@ export async function callModuleDestroyHook(module: Module): Promise<any> {
   // Call the module instance itself
   const moduleClassInstance = moduleClassHost.instance;
   if (moduleClassInstance && hasOnModuleDestroyHook(moduleClassInstance) && moduleClassHost.isDependencyTreeStatic()) {
-    await (moduleClassInstance as OnModuleDestroy).onModuleDestroy();
+    await (moduleClassInstance as any).onModuleDestroy();
   }
 }

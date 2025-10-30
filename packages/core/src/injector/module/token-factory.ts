@@ -1,7 +1,7 @@
-import { createHash } from "crypto";
-import stringify from "fast-safe-stringify";
-
 import type { DynamicModule, Type } from "~/interfaces/index.js";
+
+import stringify from "fast-safe-stringify";
+import { createHash } from "crypto";
 
 import { isFunction, isSymbol } from "~/helpers/shared.helper.js";
 import { randomStringGenerator } from "~/helpers/random-string-generator.helper.js";
@@ -13,7 +13,7 @@ export class TokenFactory {
   private readonly moduleTokenCache = new Map<string, string>();
   private readonly moduleIdsCache = new WeakMap<Type, string>();
 
-  public create(metatype: Type, dynamicModuleMetadata?: Partial<DynamicModule> | undefined): string {
+  public create(metatype: Type, dynamicModuleMetadata?: Partial<DynamicModule>): string {
     const moduleId = this.getModuleId(metatype);
 
     if (!dynamicModuleMetadata) return this.getStaticModuleToken(moduleId, this.getModuleName(metatype));
@@ -41,7 +41,8 @@ export class TokenFactory {
     // Uses safeStringify instead of JSON.stringify to support circular dynamic modules
     // The replacer function is also required in order to obtain real class names
     // instead of the unified "Function" key
-    // @ts-ignore
+    // @ts-expect-error Mismatch types
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     return opaqueToken ? stringify(opaqueToken, this.replacer) : "";
   }
 

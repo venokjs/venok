@@ -1,15 +1,13 @@
 import type { InjectableToken } from "~/interfaces/injectable.interface.js";
 import type { GraphInspector } from "~/inspector/graph-inspector.js";
+import type { LoggerService } from "~/interfaces/index.js";
 
 import { InternalCoreModule } from "~/injector/internal-core-module/internal-core-module.js";
 import { Injector } from "~/injector/injector.js";
 import { Module } from "~/injector/module/module.js";
 import { VenokContainer } from "~/injector/container.js";
-
 import { Logger } from "~/services/logger.service.js";
-
 import { MODULE_INIT_MESSAGE } from "~/helpers/messages.helper.js";
-import type { LoggerService } from "~/interfaces/index.js";
 
 export class InstanceLoader<TInjector extends Injector = Injector> {
   constructor(
@@ -18,7 +16,7 @@ export class InstanceLoader<TInjector extends Injector = Injector> {
     protected readonly graphInspector: GraphInspector,
     private logger: LoggerService = new Logger(InstanceLoader.name, {
       timestamp: true,
-    }),
+    })
   ) {}
 
   public setLogger(logger: Logger) {
@@ -52,8 +50,9 @@ export class InstanceLoader<TInjector extends Injector = Injector> {
         await this.createInstancesOfInjectables(moduleRef);
 
         const { name } = moduleRef;
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         this.isModuleWhitelisted(name) && this.logger.log(MODULE_INIT_MESSAGE`${name}`);
-      }),
+      })
     );
   }
 
@@ -69,7 +68,7 @@ export class InstanceLoader<TInjector extends Injector = Injector> {
       wrappers.map(async (item) => {
         await this.injector.loadProvider(item, moduleRef);
         this.graphInspector.inspectInstanceWrapper(item, moduleRef);
-      }),
+      })
     );
   }
 
@@ -85,7 +84,7 @@ export class InstanceLoader<TInjector extends Injector = Injector> {
       wrappers.map(async (item) => {
         await this.injector.loadInjectable(item, moduleRef);
         this.graphInspector.inspectInstanceWrapper(item, moduleRef);
-      }),
+      })
     );
   }
 

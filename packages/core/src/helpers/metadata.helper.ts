@@ -8,7 +8,7 @@ export function extendArrayMetadata<T extends Array<unknown>>(key: string, metad
   Reflect.defineMetadata(key, value, target);
 }
 
-export function assignMetadata<TParamtype = any, TArgs = any>(
+export function assignMetadata<TParamtype extends string | number = string, TArgs = any>(
   args: TArgs,
   paramtype: TParamtype,
   index: number,

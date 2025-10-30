@@ -1,10 +1,3 @@
-import { getClassScope } from "~/injector/helpers/class-scope.helper.js";
-import { InstanceWrapper } from "~/injector/instance/wrapper.js";
-import { isDurable } from "~/injector/helpers/is-durable.helper.js";
-import { ModuleRef } from "~/injector/module/ref.js";
-import { PROVIDER_ID_KEY } from "~/injector/constants.js";
-import { VenokContainer } from "~/injector/container.js";
-
 import type {
   ClassProvider,
   ContextId,
@@ -16,21 +9,24 @@ import type {
   Provider,
   Type,
   ValueProvider,
-  VenokModule,
+  VenokModule
 } from "~/interfaces/index.js";
-
 import type { InjectableToken } from "~/interfaces/injectable.interface.js";
+import type { EnhancerSubtype } from "~/constants.js";
 
+import { ENTRY_PROVIDER_WATERMARK } from "~/constants.js";
+import { getClassScope } from "~/injector/helpers/class-scope.helper.js";
+import { InstanceWrapper } from "~/injector/instance/wrapper.js";
+import { isDurable } from "~/injector/helpers/is-durable.helper.js";
+import { ModuleRef } from "~/injector/module/ref.js";
+import { PROVIDER_ID_KEY } from "~/injector/constants.js";
+import { VenokContainer } from "~/injector/container.js";
 import { createContextId } from "~/helpers/context-id-factory.helper.js";
 import { isFunction, isNull, isObject, isString, isSymbol, isUndefined } from "~/helpers/shared.helper.js";
 import { randomStringGenerator } from "~/helpers/random-string-generator.helper.js";
 import { UuidFactory } from "~/helpers/uuid.helper.js";
-
-import { type EnhancerSubtype, ENTRY_PROVIDER_WATERMARK } from "~/constants.js";
-
 import { RuntimeException } from "~/errors/exceptions/runtime.exception.js";
 import { ApplicationConfig } from "~/application/config.js";
-
 import { InvalidClassException } from "~/errors/exceptions/invalid-class.exception.js";
 import { UnknownExportException } from "~/errors/exceptions/unknown-export.exception.js";
 
@@ -49,7 +45,7 @@ export class Module {
 
   constructor(
     private readonly _metatype: Type,
-    private readonly container: VenokContainer,
+    private readonly container: VenokContainer
   ) {
     this.addCoreProviders();
     this._id = this.generateUuid();
@@ -146,7 +142,7 @@ export class Module {
         isResolved: true,
         instance: new moduleRef(),
         host: this,
-      }),
+      })
     );
   }
 
@@ -160,7 +156,7 @@ export class Module {
         isResolved: false,
         instance: null,
         host: this,
-      }),
+      })
     );
   }
 
@@ -173,14 +169,14 @@ export class Module {
         isResolved: true,
         instance: this.container.applicationConfig,
         host: this,
-      }),
+      })
     );
   }
 
   public addInjectable<T extends InjectableToken>(
     injectable: Provider,
     enhancerSubtype: EnhancerSubtype,
-    host?: Type<T>,
+    host?: Type<T>
   ) {
     if (this.isCustomProvider(injectable)) {
       return this.addCustomProvider(injectable, this._injectables, enhancerSubtype);
@@ -202,6 +198,7 @@ export class Module {
     }
     if (host) {
       const hostWrapper = this._providers.get(host);
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       hostWrapper && hostWrapper.addEnhancerMetadata(instanceWrapper);
     }
     return instanceWrapper;
@@ -237,7 +234,7 @@ export class Module {
         scope: getClassScope(provider),
         durable: isDurable(provider),
         host: this,
-      }),
+      })
     );
 
     this.assignProviderUniqueId(provider);
@@ -250,15 +247,15 @@ export class Module {
   }
 
   public isCustomProvider(
-    provider: Provider,
+    provider: Provider
   ): provider is ClassProvider | FactoryProvider | ValueProvider | ExistingProvider {
     return !isNull((provider as ClassProvider | FactoryProvider | ValueProvider | ExistingProvider).provide);
   }
 
   public addCustomProvider(
     provider: ClassProvider | FactoryProvider | ValueProvider | ExistingProvider,
-    collection: Map<Function | string | symbol, any>,
-    enhancerSubtype?: EnhancerSubtype,
+    collection: Map<InjectionToken, InstanceWrapper>,
+    enhancerSubtype?: EnhancerSubtype
   ) {
     if (this.isCustomClass(provider)) {
       this.addCustomClass(provider, collection, enhancerSubtype);
@@ -295,7 +292,7 @@ export class Module {
   public addCustomClass(
     provider: ClassProvider,
     collection: Map<InjectionToken, InstanceWrapper>,
-    enhancerSubtype?: EnhancerSubtype,
+    enhancerSubtype?: EnhancerSubtype
   ) {
     let { scope, durable } = provider;
 
@@ -320,7 +317,7 @@ export class Module {
         durable,
         host: this,
         subtype: enhancerSubtype,
-      }),
+      })
     );
 
     this.assignProviderUniqueId(useClass);
@@ -329,7 +326,7 @@ export class Module {
   public addCustomValue(
     provider: ValueProvider,
     collection: Map<Function | string | symbol, InstanceWrapper>,
-    enhancerSubtype?: EnhancerSubtype,
+    enhancerSubtype?: EnhancerSubtype
   ) {
     const { useValue: value, provide: providerToken } = provider;
     collection.set(
@@ -343,16 +340,17 @@ export class Module {
         async: value instanceof Promise,
         host: this,
         subtype: enhancerSubtype,
-      }),
+      })
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.assignProviderUniqueId(value);
   }
 
   public addCustomFactory(
     provider: FactoryProvider,
     collection: Map<Function | string | symbol, InstanceWrapper>,
-    enhancerSubtype?: EnhancerSubtype,
+    enhancerSubtype?: EnhancerSubtype
   ) {
     const { useFactory: factory, inject, scope, durable, provide: providerToken } = provider;
 
@@ -369,14 +367,14 @@ export class Module {
         durable,
         host: this,
         subtype: enhancerSubtype,
-      }),
+      })
     );
   }
 
   public addCustomUseExisting(
     provider: ExistingProvider,
     collection: Map<Function | string | symbol, InstanceWrapper>,
-    enhancerSubtype?: EnhancerSubtype,
+    enhancerSubtype?: EnhancerSubtype
   ) {
     const { useExisting, provide: providerToken } = provider;
     collection.set(
@@ -391,14 +389,16 @@ export class Module {
         host: this,
         isAlias: true,
         subtype: enhancerSubtype,
-      }),
+      })
     );
   }
 
   public addExportedProviderOrModule(toExport: Provider | string | symbol | DynamicModule) {
     const addExportedUnit = (token: InjectionToken) => this._exports.add(this.validateExportedProvider(token));
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     if (this.isCustomProvider(toExport as any)) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return this.addCustomExportedProvider(toExport as any);
     } else if (isString(toExport) || isSymbol(toExport)) {
       return addExportedUnit(toExport);
@@ -442,14 +442,13 @@ export class Module {
     if (options.isProvider && this.hasProvider(toReplace)) {
       const originalProvider = this._providers.get(toReplace) as InstanceWrapper;
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return originalProvider.mergeWith({ provide: toReplace, ...options });
     } else if (!options.isProvider && this.hasInjectable(toReplace)) {
       const originalInjectable = this._injectables.get(toReplace) as InstanceWrapper;
 
-      return originalInjectable.mergeWith({
-        provide: toReplace,
-        ...options,
-      });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      return originalInjectable.mergeWith({ provide: toReplace, ...options });
     }
   }
 
@@ -474,7 +473,7 @@ export class Module {
   }
 
   public getNonAliasProviders(): Array<[InjectionToken, InstanceWrapper<InjectableToken>]> {
-    return [...this._providers].filter(([_, wrapper]) => !wrapper.isAlias);
+    return [...this._providers].filter(([, wrapper]) => !wrapper.isAlias);
   }
 
   public createModuleReferenceType(): Type<ModuleRef> {
@@ -487,7 +486,7 @@ export class Module {
 
       public get<TInput = any, TResult = TInput>(
         typeOrToken: Type<TInput> | string | symbol,
-        options: ModuleRefGetOrResolveOpts = {},
+        options: ModuleRefGetOrResolveOpts = {}
       ): TResult | Array<TResult> {
         options.strict ??= true;
         options.each ??= false;
@@ -499,14 +498,14 @@ export class Module {
                 moduleId: self.id,
                 each: options.each,
               }
-            : options,
+            : options
         );
       }
 
       public resolve<TInput = any, TResult = TInput>(
         typeOrToken: Type<TInput> | string | symbol,
         contextId = createContextId(),
-        options: ModuleRefGetOrResolveOpts = {},
+        options: ModuleRefGetOrResolveOpts = {}
       ): Promise<TResult | Array<TResult>> {
         options.strict ??= true;
         options.each ??= false;

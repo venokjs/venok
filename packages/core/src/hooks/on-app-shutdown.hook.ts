@@ -13,7 +13,7 @@ import { Module } from "~/injector/module/module.js";
  * @param instance The instance which should be checked
  */
 function hasOnAppShutdownHook(instance: unknown): instance is OnApplicationShutdown {
-  return isFunction((instance as OnApplicationShutdown).onApplicationShutdown);
+  return isFunction((instance as any).onApplicationShutdown);
 }
 
 /**
@@ -23,6 +23,7 @@ function callOperator(instances: InstanceWrapper[], signal?: string): Promise<an
   return instances
     .filter((instance) => !isNull(instance))
     .filter(hasOnAppShutdownHook)
+    // eslint-disable-next-line @typescript-eslint/require-await
     .map(async (instance) => (instance as any as OnApplicationShutdown).onApplicationShutdown(signal));
 }
 
@@ -37,7 +38,7 @@ export async function callAppShutdownHook(module: Module, signal?: string): Prom
   const providers = module.getNonAliasProviders();
   // Module (class) instance is the first element of the providers array
   // Lifecycle hook has to be called once all classes are properly initialized
-  const [_, moduleClassHost] = providers.shift() as [InjectionToken, InstanceWrapper<unknown>];
+  const [, moduleClassHost] = providers.shift() as [InjectionToken, InstanceWrapper<unknown>];
   const instances = [...providers, ...module.injectables];
 
   const nonTransientInstances = getNonTransientInstances(instances);
@@ -48,6 +49,6 @@ export async function callAppShutdownHook(module: Module, signal?: string): Prom
   // Call the instance itself
   const moduleClassInstance = moduleClassHost.instance;
   if (moduleClassInstance && hasOnAppShutdownHook(moduleClassInstance) && moduleClassHost.isDependencyTreeStatic()) {
-    await (moduleClassInstance as OnApplicationShutdown).onApplicationShutdown(signal);
+    await (moduleClassInstance as any).onApplicationShutdown(signal);
   }
 }

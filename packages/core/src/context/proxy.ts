@@ -1,18 +1,20 @@
-import { catchError, isObservable } from "rxjs";
-
 import type { ContextType } from "~/interfaces/index.js";
+
+import { catchError, isObservable } from "rxjs";
 
 import { VenokExceptionsHandler } from "~/exceptions/handler.js";
 import { ExecutionContextHost } from "~/context/execution-host.js";
 
 export class VenokProxy {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public createProxy<TContext extends string = ContextType>(
     targetCallback: (...args: any[]) => any,
     exceptionsHandler: VenokExceptionsHandler,
-    type: ContextType = "native",
+    type: ContextType = "native"
   ) {
     return async (...args: any[]) => {
       try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         const result = await targetCallback(...args);
         return !isObservable(result)
           ? result
@@ -27,7 +29,7 @@ export class VenokProxy {
     exceptionsHandler: VenokExceptionsHandler,
     args: any[],
     error: T,
-    type: ContextType = "native",
+    type: ContextType = "native"
   ) {
     const host = new ExecutionContextHost(args);
     host.setType<ContextType>(type);
@@ -36,16 +38,17 @@ export class VenokProxy {
   }
 
   public createExceptionLayerProxy<TContext extends string = ContextType>(
-    targetCallback: <TError>(err: TError, ...args: any[]) => void,
+    targetCallback: <TError>(err: TError, ...args: any[]) => void | Promise<void>,
     exceptionsHandler: VenokExceptionsHandler,
-    type?: TContext,
+    type?: TContext
   ) {
     return async <TError>(err: TError, req: any, res: any, next: any) => {
       try {
         await targetCallback(err, req, res, next);
       } catch (e) {
         const host = new ExecutionContextHost([req, res, next]);
-        host.setType<TContext>(type as any);
+        // @ts-expect-error Mismatch types
+        host.setType<TContext>(type);
         exceptionsHandler.next(e, host);
         return res;
       }

@@ -29,13 +29,17 @@ import { PIPES_METADATA } from "~/constants.js";
 export function UsePipes(...pipes: (PipeTransform | Function)[]): ClassDecorator & MethodDecorator {
   return (target: any, key?: string | symbol, descriptor?: TypedPropertyDescriptor<any>) => {
     const isPipeValid = <T extends Function | Record<string, any>>(pipe: T) =>
-      pipe && (isFunction(pipe) || isFunction((pipe as Record<string, any>).transform));
+      // @ts-expect-error Mismatch types
+      pipe && (isFunction(pipe) || isFunction((pipe).transform));
 
     if (descriptor) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       extendArrayMetadata(PIPES_METADATA, pipes, descriptor.value);
       return descriptor;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     validateEach(target, pipes, isPipeValid, "@UsePipes", "pipe");
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     extendArrayMetadata(PIPES_METADATA, pipes, target);
     return target;
   };

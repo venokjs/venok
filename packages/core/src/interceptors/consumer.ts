@@ -1,10 +1,9 @@
-import { defer, mergeAll, Observable, switchMap, from } from "rxjs";
-import { AsyncResource } from "node:async_hooks";
-
 import type { CallHandler, ContextType, Type, VenokInterceptor } from "~/interfaces/index.js";
 
-import { ExecutionContextHost } from "~/context/execution-host.js";
+import { defer, from, mergeAll, Observable, switchMap } from "rxjs";
+import { AsyncResource } from "node:async_hooks";
 
+import { ExecutionContextHost } from "~/context/execution-host.js";
 import { isEmpty } from "~/helpers/shared.helper.js";
 
 export class InterceptorsConsumer {
@@ -14,7 +13,7 @@ export class InterceptorsConsumer {
     instance: object,
     callback: (...args: unknown[]) => unknown,
     next: () => Promise<unknown>,
-    type?: TContext,
+    type?: TContext
   ): Promise<unknown> {
     if (isEmpty(interceptors)) return next();
 
@@ -37,7 +36,7 @@ export class InterceptorsConsumer {
   public createContext(
     args: unknown[],
     instance: object,
-    callback: (...args: unknown[]) => unknown,
+    callback: (...args: unknown[]) => unknown
   ): ExecutionContextHost {
     return new ExecutionContextHost(args, instance.constructor as Type, callback);
   }
@@ -47,7 +46,7 @@ export class InterceptorsConsumer {
       switchMap((res: any) => {
         const isDeferred = res instanceof Promise || res instanceof Observable;
         return isDeferred ? res : Promise.resolve(res);
-      }),
+      })
     );
   }
 }

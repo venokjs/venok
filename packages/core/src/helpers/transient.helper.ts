@@ -11,8 +11,8 @@ import { flatten } from "~/helpers/flatten.helper.js";
 export function getTransientInstances(instances: [InjectionToken, InstanceWrapper][]): InstanceWrapper[] {
   return flatten(
     instances
-      .filter(([_, wrapper]) => wrapper.isDependencyTreeStatic())
-      .map(([_, wrapper]) => wrapper.getStaticTransientInstances()),
+      .filter(([, wrapper]) => wrapper.isDependencyTreeStatic())
+      .map(([, wrapper]) => wrapper.getStaticTransientInstances())
   )
     .filter(Boolean)
     .map(({ instance }: any) => instance);
@@ -24,6 +24,6 @@ export function getTransientInstances(instances: [InjectionToken, InstanceWrappe
  */
 export function getNonTransientInstances(instances: [InjectionToken, InstanceWrapper][]): InstanceWrapper[] {
   return instances
-    .filter(([key, wrapper]) => wrapper.isDependencyTreeStatic() && !wrapper.isTransient)
-    .map(([key, { instance }]) => instance);
+    .filter(([, wrapper]) => wrapper.isDependencyTreeStatic() && !wrapper.isTransient)
+    .map(([, { instance }]) => instance);
 }

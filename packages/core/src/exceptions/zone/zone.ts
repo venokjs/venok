@@ -10,7 +10,8 @@ export class ExceptionsZone {
     try {
       callback();
     } catch (e) {
-      this.exceptionHandler.handle(e as any);
+      // @ts-expect-error Mismatch types
+      this.exceptionHandler.handle(e);
       if (autoFlushLogs) Logger.flush();
       teardown(e);
     }
@@ -19,12 +20,13 @@ export class ExceptionsZone {
   public static async asyncRun(
     callback: () => Promise<void>,
     teardown: (err: any) => void = DEFAULT_TEARDOWN,
-    autoFlushLogs?: boolean,
+    autoFlushLogs?: boolean
   ) {
     try {
       await callback();
     } catch (e) {
-      this.exceptionHandler.handle(e as any);
+      // @ts-expect-error Mismatch types
+      this.exceptionHandler.handle(e);
       if (autoFlushLogs) Logger.flush();
       teardown(e);
     }

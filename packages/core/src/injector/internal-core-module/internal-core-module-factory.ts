@@ -22,7 +22,7 @@ export class InternalCoreModuleFactory {
     scanner: DependenciesScanner,
     moduleCompiler: ModuleCompiler,
     graphInspector: GraphInspector,
-    moduleOverrides?: ModuleOverride[],
+    moduleOverrides?: ModuleOverride[]
   ) {
     const lazyModuleLoaderFactory = () => {
       const logger = new Logger(LazyModuleLoader.name, {

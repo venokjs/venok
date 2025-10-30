@@ -13,7 +13,7 @@ import { Module } from "~/injector/module/module.js";
  * @param instance The instance which should be checked
  */
 function hasOnModuleInitHook(instance: unknown): instance is OnModuleInit {
-  return isFunction((instance as OnModuleInit).onModuleInit);
+  return isFunction((instance as any).onModuleInit);
 }
 
 /**
@@ -23,6 +23,7 @@ function callOperator(instances: InstanceWrapper[]): Promise<any>[] {
   return instances
     .filter((instance) => !isNull(instance))
     .filter(hasOnModuleInitHook)
+    // eslint-disable-next-line @typescript-eslint/require-await
     .map(async (instance) => (instance as any as OnModuleInit).onModuleInit());
 }
 
@@ -36,7 +37,7 @@ export async function callModuleInitHook(module: Module): Promise<void> {
   const providers = module.getNonAliasProviders();
   // Module (class) instance is the first element of the providers array
   // Lifecycle hook has to be called once all classes are properly initialized
-  const [_, moduleClassHost] = providers.shift() as [InjectionToken, InstanceWrapper<unknown>];
+  const [, moduleClassHost] = providers.shift() as [InjectionToken, InstanceWrapper<unknown>];
   const instances = [...providers, ...module.injectables];
 
   const nonTransientInstances = getNonTransientInstances(instances);
@@ -48,6 +49,6 @@ export async function callModuleInitHook(module: Module): Promise<void> {
   // Call the instance itself
   const moduleClassInstance = moduleClassHost.instance;
   if (moduleClassInstance && hasOnModuleInitHook(moduleClassInstance) && moduleClassHost.isDependencyTreeStatic()) {
-    await (moduleClassInstance as OnModuleInit).onModuleInit();
+    await (moduleClassInstance as any).onModuleInit();
   }
 }

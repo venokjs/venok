@@ -1,11 +1,9 @@
-import { ConsoleLogger } from "~/services/console.service.js";
-
-import { Injectable } from "~/decorators/injectable.decorator.js";
-
-import { isLogLevelEnabled } from "~/helpers/is-log-level-enabled.util.js";
-
-import { isObject } from "~/helpers/shared.helper.js";
 import type { LoggerService, LogLevel } from "~/interfaces/index.js";
+
+import { ConsoleLogger } from "~/services/console.service.js";
+import { Injectable } from "~/decorators/injectable.decorator.js";
+import { isLogLevelEnabled } from "~/helpers/is-log-level-enabled.util.js";
+import { isObject } from "~/helpers/shared.helper.js";
 
 export const LOG_LEVELS = ["verbose", "debug", "log", "warn", "error", "fatal"] as const satisfies string[];
 
@@ -47,7 +45,7 @@ export class Logger implements LoggerService {
   private static WrapBuffer: MethodDecorator = (
     target: object,
     propertyKey: string | symbol,
-    descriptor: TypedPropertyDescriptor<any>,
+    descriptor: TypedPropertyDescriptor<any>
   ) => {
     const originalFn = descriptor.value;
     descriptor.value = function (...args: unknown[]) {
@@ -67,7 +65,7 @@ export class Logger implements LoggerService {
   constructor(context: string, options?: { timestamp?: boolean });
   constructor(
     protected context?: string,
-    protected options: { timestamp?: boolean } = {},
+    protected options: { timestamp?: boolean } = {}
   ) {}
 
   get localInstance(): LoggerService {
@@ -93,6 +91,7 @@ export class Logger implements LoggerService {
       ? (optionalParams.length ? optionalParams : [undefined]).concat(this.context)
       : optionalParams;
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.localInstance?.error(message, ...optionalParams);
   }
 
@@ -104,6 +103,7 @@ export class Logger implements LoggerService {
   @Logger.WrapBuffer
   log(message: any, ...optionalParams: any[]) {
     optionalParams = this.context ? optionalParams.concat(this.context) : optionalParams;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.localInstance?.log(message, ...optionalParams);
   }
 
@@ -115,6 +115,7 @@ export class Logger implements LoggerService {
   @Logger.WrapBuffer
   warn(message: any, ...optionalParams: any[]) {
     optionalParams = this.context ? optionalParams.concat(this.context) : optionalParams;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.localInstance?.warn(message, ...optionalParams);
   }
 
@@ -126,6 +127,7 @@ export class Logger implements LoggerService {
   @Logger.WrapBuffer
   debug(message: any, ...optionalParams: any[]) {
     optionalParams = this.context ? optionalParams.concat(this.context) : optionalParams;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.localInstance?.debug?.(message, ...optionalParams);
   }
 
@@ -137,6 +139,7 @@ export class Logger implements LoggerService {
   @Logger.WrapBuffer
   verbose(message: any, ...optionalParams: any[]) {
     optionalParams = this.context ? optionalParams.concat(this.context) : optionalParams;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.localInstance?.verbose?.(message, ...optionalParams);
   }
 
@@ -148,6 +151,7 @@ export class Logger implements LoggerService {
   @Logger.WrapBuffer
   fatal(message: any, ...optionalParams: any[]) {
     optionalParams = this.context ? optionalParams.concat(this.context) : optionalParams;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.localInstance?.fatal?.(message, ...optionalParams);
   }
 
@@ -160,6 +164,7 @@ export class Logger implements LoggerService {
   static error(message: any, ...optionalParams: [...any, string?, string?]): void;
   @Logger.WrapBuffer
   static error(message: any, ...optionalParams: any[]) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.staticInstanceRef?.error(message, ...optionalParams);
   }
 
@@ -170,6 +175,7 @@ export class Logger implements LoggerService {
   static log(message: any, ...optionalParams: [...any, string?]): void;
   @Logger.WrapBuffer
   static log(message: any, ...optionalParams: any[]) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.staticInstanceRef?.log(message, ...optionalParams);
   }
 
@@ -180,6 +186,7 @@ export class Logger implements LoggerService {
   static warn(message: any, ...optionalParams: [...any, string?]): void;
   @Logger.WrapBuffer
   static warn(message: any, ...optionalParams: any[]) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.staticInstanceRef?.warn(message, ...optionalParams);
   }
 
@@ -191,6 +198,7 @@ export class Logger implements LoggerService {
   static debug(message: any, ...optionalParams: [...any, string?]): void;
   @Logger.WrapBuffer
   static debug(message: any, ...optionalParams: any[]) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.staticInstanceRef?.debug?.(message, ...optionalParams);
   }
 
@@ -201,6 +209,7 @@ export class Logger implements LoggerService {
   static verbose(message: any, ...optionalParams: [...any, string?]): void;
   @Logger.WrapBuffer
   static verbose(message: any, ...optionalParams: any[]) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.staticInstanceRef?.verbose?.(message, ...optionalParams);
   }
 
@@ -211,6 +220,7 @@ export class Logger implements LoggerService {
   static fatal(message: any, ...optionalParams: [...any, string?]): void;
   @Logger.WrapBuffer
   static fatal(message: any, ...optionalParams: any[]) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.staticInstanceRef?.fatal?.(message, ...optionalParams);
   }
 

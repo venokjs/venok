@@ -1,11 +1,6 @@
-import {
-  ApplicationContextOptions,
-  type DynamicModule,
-  type ForwardReference,
-  type Type,
-  type VenokApplicationContext,
-} from "~/interfaces/index.js";
+import type { DynamicModule, ForwardReference, Type, VenokApplicationContext } from "~/interfaces/index.js";
 
+import { ApplicationContextOptions } from "~/interfaces/index.js";
 import { isFunction, isNull } from "~/helpers/shared.helper.js";
 import { rethrow } from "~/helpers/rethrow.helper.js";
 import { UuidFactory, UuidFactoryMode } from "~/helpers/uuid.helper.js";
@@ -13,17 +8,13 @@ import { ApplicationConfig } from "~/application/config.js";
 import { ApplicationContext } from "~/application/context.js";
 import { ConsoleLogger } from "~/services/console.service.js";
 import { Logger } from "~/services/logger.service.js";
-
 import { NoopGraphInspector } from "~/inspector/noop-graph-inspector.js";
 import { GraphInspector } from "~/inspector/graph-inspector.js";
-
 import { Injector } from "~/injector/injector.js";
 import { VenokContainer } from "~/injector/container.js";
 import { InstanceLoader } from "~/injector/instance/loader.js";
-
 import { MetadataScanner } from "~/metadata-scanner.js";
 import { DependenciesScanner } from "~/scanner.js";
-
 import { ExceptionsZone } from "~/exceptions/zone/zone.js";
 import { MESSAGES } from "~/constants.js";
 
@@ -53,11 +44,12 @@ export class VenokFactoryStatic {
    */
   public async createApplicationContext(
     moduleCls: IEntryVenokModule,
-    options?: ApplicationContextOptions,
+    options?: ApplicationContextOptions
   ): Promise<VenokApplicationContext> {
     const applicationConfig = new ApplicationConfig();
     const container = new VenokContainer(applicationConfig);
-    const graphInspector = this.createGraphInspector(options as any, container);
+    // @ts-expect-error Mismatch types
+    const graphInspector = this.createGraphInspector(options, container);
 
     this.setAbortOnError(options);
     this.registerLoggerConfiguration(options);
@@ -68,7 +60,7 @@ export class VenokFactoryStatic {
     const root = modules.next().value;
 
     const context = this.createVenokInstance<ApplicationContext>(
-      new ApplicationContext(container, applicationConfig, options, root),
+      new ApplicationContext(container, applicationConfig, options, root)
     );
 
     if (this.autoFlushLogs) context.flushLogsOnOverride();
@@ -89,7 +81,7 @@ export class VenokFactoryStatic {
     container: VenokContainer,
     graphInspector: GraphInspector,
     config = new ApplicationConfig(),
-    options: ApplicationContextOptions = {},
+    options: ApplicationContextOptions = {}
   ) {
     UuidFactory.mode = options.snapshot ? UuidFactoryMode.Deterministic : UuidFactoryMode.Random;
 
@@ -106,12 +98,13 @@ export class VenokFactoryStatic {
 
       await ExceptionsZone.asyncRun(
         async () => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           await dependenciesScanner.scan(module);
           await instanceLoader.createInstancesOfDependencies();
           dependenciesScanner.applyApplicationProviders();
         },
         teardown,
-        this.autoFlushLogs,
+        this.autoFlushLogs
       );
     } catch (e) {
       this.handleInitializationError(e);

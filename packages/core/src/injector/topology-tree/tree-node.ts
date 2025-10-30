@@ -27,6 +27,7 @@ export class TreeNode<T> {
     const visited = new Set<TreeNode<T>>();
 
     let depth = 0;
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     let current: TreeNode<T> | null = this;
 
     while (current) {
@@ -43,6 +44,7 @@ export class TreeNode<T> {
   hasCycleWith(target: T) {
     const visited = new Set<TreeNode<T>>();
 
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     let current: TreeNode<T> | null = this;
 
     while (current) {

@@ -1,8 +1,7 @@
-import type { DynamicModule, ForwardReference } from "~/interfaces/modules/index.js";
 import type { InjectorDependency, InjectorDependencyContext, Type } from "~/interfaces/index.js";
+import type { DynamicModule, ForwardReference } from "~/interfaces/modules/index.js";
 
 import { Module } from "~/injector/module/module.js";
-
 import { isNull, isSymbol } from "~/helpers/shared.helper.js";
 
 /**
@@ -29,7 +28,7 @@ const getInstanceName = (instance: unknown): string => {
 const getDependencyName = (
   dependency: InjectorDependency | undefined,
   fallbackValue: string,
-  disambiguated = true,
+  disambiguated = true
 ): string =>
   // use class name
   getInstanceName(dependency) ||
@@ -52,7 +51,7 @@ const stringifyScope = (scope: any[]): string => (scope || []).map(getInstanceNa
 export const UNKNOWN_DEPENDENCIES_MESSAGE = (
   type: string | symbol,
   unknownDependencyContext: InjectorDependencyContext,
-  module: Module,
+  module: Module
 ) => {
   const { index, name = "dependency", dependencies, key } = unknownDependencyContext;
   const moduleName = getModuleName(module);
@@ -105,7 +104,7 @@ Potential solutions:
     return message;
   }
   const dependenciesName = (dependencies || []).map((dependencyName) => getDependencyName(dependencyName, "+", false));
-  // @ts-ignore
+  // @ts-expect-error Mismatch types
   dependenciesName[index] = "?";
 
   message += ` (`;
@@ -117,7 +116,7 @@ Potential solutions:
 };
 
 export const UNDEFINED_FORWARDREF_MESSAGE = (
-  scope: Type[],
+  scope: Type[]
 ) => `Venok cannot create the module instance. Often, this is because of a circular dependency between modules. Use forwardRef() to avoid it.
 
 Scope [${stringifyScope(scope)}]
@@ -134,8 +133,9 @@ Scope [${stringifyScope(scope)}]`;
 
 export const USING_INVALID_CLASS_AS_A_MODULE_MESSAGE = (
   metatypeUsedAsAModule: Type | ForwardReference,
-  scope: any[],
+  scope: any[]
 ) => {
+  // eslint-disable-next-line no-constant-binary-expression
   const metatypeNameQuote = `"${getInstanceName(metatypeUsedAsAModule)}"` || "that class";
 
   return `Classes annotated with @Injectable(), @Catch(), and @Controller() decorators must not appear in the "imports" array of a module.

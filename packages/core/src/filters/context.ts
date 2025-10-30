@@ -17,7 +17,7 @@ import { EXCEPTION_FILTERS_METADATA } from "~/constants.js";
 export class VenokExceptionFilterContext extends ExceptionFilterContextCreator {
   constructor(
     container: VenokContainer,
-    private readonly config?: ApplicationConfig,
+    private readonly config?: ApplicationConfig
   ) {
     super(container);
   }
@@ -27,7 +27,7 @@ export class VenokExceptionFilterContext extends ExceptionFilterContextCreator {
     callback: (...args: any) => void,
     module: string,
     contextId = STATIC_CONTEXT,
-    inquirerId?: string,
+    inquirerId?: string
   ): VenokExceptionsHandler {
     this.moduleContext = module;
 
@@ -37,11 +37,12 @@ export class VenokExceptionFilterContext extends ExceptionFilterContextCreator {
       callback,
       EXCEPTION_FILTERS_METADATA,
       contextId,
-      inquirerId,
+      inquirerId
     );
 
     if (isEmpty(filters)) return exceptionHandler;
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     exceptionHandler.setCustomFilters(filters.reverse());
     return exceptionHandler;
   }

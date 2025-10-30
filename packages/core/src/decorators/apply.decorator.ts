@@ -11,14 +11,15 @@ export function applyDecorators(...decorators: Array<ClassDecorator | MethodDeco
   return <TFunction extends Function, Y>(
     target: TFunction | object,
     propertyKey?: string | symbol,
-    descriptor?: TypedPropertyDescriptor<Y>,
+    descriptor?: TypedPropertyDescriptor<Y>
   ) => {
     for (const decorator of decorators) {
       if (target instanceof Function && !descriptor) {
         (decorator as ClassDecorator)(target);
         continue;
       }
-      (decorator as MethodDecorator | PropertyDecorator)(target, propertyKey as string | symbol, descriptor as any);
+      // @ts-expect-error Mismatch types
+      (decorator as MethodDecorator | PropertyDecorator)(target, propertyKey as string | symbol, descriptor);
     }
   };
 }

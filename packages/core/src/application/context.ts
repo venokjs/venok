@@ -8,36 +8,29 @@ import type {
   LogLevel,
   PipeTransform,
   Type,
-  VenokInterceptor,
+  VenokInterceptor
 } from "~/interfaces/index.js";
+import type { GetOrResolveOptions, SelectOptions, VenokApplicationContext } from "~/interfaces/application/index.js";
 
-import { callAppShutdownHook } from "~/hooks/on-app-shutdown.hook.js";
+import { ApplicationContextOptions } from "~/interfaces/application/index.js";
+import { UnknownModuleException } from "~/errors/exceptions/unknown-module.exception.js";
 import { callBeforeAppShutdownHook } from "~/hooks/before-app-shutdown.hook.js";
 import { callModuleBootstrapHook } from "~/hooks/on-app-bootstrap.hook.js";
-import { callModuleDestroyHook } from "~/hooks/on-module-destroy.hook.js";
-import { callModuleInitHook } from "~/hooks/on-module-init.hook.js";
-
-import {
-  ApplicationContextOptions,
-  type GetOrResolveOptions,
-  type SelectOptions,
-  type VenokApplicationContext,
-} from "~/interfaces/application/index.js";
-
-import { Logger } from "~/services/logger.service.js";
-import { UnknownModuleException } from "~/errors/exceptions/unknown-module.exception.js";
-import { createContextId } from "~/helpers/context-id-factory.helper.js";
-import { isEmpty } from "~/helpers/shared.helper.js";
-import { ApplicationConfig } from "~/application/config.js";
-import { MESSAGES } from "~/constants.js";
-
 import { AbstractInstanceResolver } from "~/injector/instance/resolver.js";
+import { callModuleDestroyHook } from "~/hooks/on-module-destroy.hook.js";
+import { createContextId } from "~/helpers/context-id-factory.helper.js";
+import { callAppShutdownHook } from "~/hooks/on-app-shutdown.hook.js";
+import { callModuleInitHook } from "~/hooks/on-module-init.hook.js";
 import { InstanceLinksHost } from "~/injector/instance/links-host.js";
-import { Module } from "~/injector/module/module.js";
-import { ModuleCompiler } from "~/injector/module/compiler.js";
-import { Injector } from "~/injector/injector.js";
-import { VenokContainer } from "~/injector/container.js";
 import { ShutdownSignal } from "~/enums/shutdown-signal.enum.js";
+import { ModuleCompiler } from "~/injector/module/compiler.js";
+import { ApplicationConfig } from "~/application/config.js";
+import { VenokContainer } from "~/injector/container.js";
+import { Logger } from "~/services/logger.service.js";
+import { isEmpty } from "~/helpers/shared.helper.js";
+import { Module } from "~/injector/module/module.js";
+import { Injector } from "~/injector/injector.js";
+import { MESSAGES } from "~/constants.js";
 
 type ShutdownSignalKeys = keyof typeof ShutdownSignal;
 
@@ -46,8 +39,7 @@ type ShutdownSignalKeys = keyof typeof ShutdownSignal;
  */
 export class ApplicationContext<TOptions extends ApplicationContextOptions = ApplicationContextOptions>
   extends AbstractInstanceResolver
-  implements VenokApplicationContext
-{
+  implements VenokApplicationContext {
   protected isInitialized = false;
   protected injector: Injector;
   protected readonly logger = new Logger(ApplicationContext.name, {
@@ -74,7 +66,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
     protected readonly config: ApplicationConfig,
     protected readonly appOptions: TOptions = {} as TOptions,
     private contextModule: Module = null as any,
-    private readonly scope = new Array<Type<any>>(),
+    private readonly scope = new Array<Type<any>>()
   ) {
     super();
     this.injector = new Injector();
@@ -142,7 +134,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
    */
   public get<TInput = any, TResult = TInput>(
     typeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
-    options: GetOrResolveOptions = { strict: false },
+    options: GetOrResolveOptions = { strict: false }
   ): TResult | Array<TResult> {
     return !(options && options.strict)
       ? this.find<TInput, TResult>(typeOrToken, options)
@@ -189,7 +181,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
   public resolve<TInput = any, TResult = TInput>(
     typeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
     contextId = createContextId(),
-    options: GetOrResolveOptions = { strict: false },
+    options: GetOrResolveOptions = { strict: false }
   ): Promise<TResult | Array<TResult>> {
     return this.resolvePerContext<TInput, TResult>(typeOrToken, this.contextModule, contextId, options);
   }
@@ -211,12 +203,14 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
   public async init(): Promise<this> {
     if (this.isInitialized) return this;
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises,no-async-promise-executor
     this.initializationPromise = this.initializationPromise = new Promise(async (resolve, reject) => {
       try {
         await this.callInitHook();
         await this.callBootstrapHook();
         resolve();
       } catch (err) {
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         reject(err);
       }
     });
@@ -339,6 +333,7 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
         await this.callBeforeShutdownHook(signal);
         await this.dispose();
         await this.callShutdownHook(signal);
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         signals.forEach((sig) => process.removeListener(sig, cleanup));
         process.kill(process.pid, signal);
       } catch (err) {
@@ -350,7 +345,8 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
 
     signals.forEach((signal: string) => {
       this.activeShutdownSignals.push(signal);
-      process.on(signal as any, cleanup);
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      process.on(signal, cleanup);
     });
   }
 
@@ -361,7 +357,8 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
     if (!this.shutdownCleanupRef) return;
 
     this.activeShutdownSignals.forEach((signal) => {
-      process.removeListener(signal, this.shutdownCleanupRef as any);
+      // @ts-expect-error Mismatch types
+      process.removeListener(signal, this.shutdownCleanupRef);
     });
   }
 

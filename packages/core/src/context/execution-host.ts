@@ -7,10 +7,11 @@ export class ExecutionContextHost implements ExecutionContext {
   constructor(
     private readonly args: any[],
     private readonly constructorRef: Type = null as any,
-    private readonly handler: Function = null as any,
+    private readonly handler: Function = null as any
   ) {}
 
   setType<TContext extends string = ContextType>(type: TContext) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     type && (this.contextType = type);
   }
 

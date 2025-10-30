@@ -5,7 +5,7 @@ import { Scope } from "~/enums/scope.enum.js";
  *
  * @publicApi
  */
-export type Provider<T = any> = Type | ClassProvider<T> | ValueProvider<T> | FactoryProvider<T> | ExistingProvider<T>;
+export type Provider<T = any> = Type | ClassProvider<T> | ValueProvider<T> | FactoryProvider<T> | ExistingProvider;
 
 /**
  * Interface defining a *Class* type provider.
@@ -135,7 +135,7 @@ export interface FactoryProvider<T = any> {
  *
  * @publicApi
  */
-export interface ExistingProvider<T = any> {
+export interface ExistingProvider {
   /**
    * Injection token
    */

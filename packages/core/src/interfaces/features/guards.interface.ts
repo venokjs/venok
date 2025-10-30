@@ -1,6 +1,6 @@
-import { Observable } from "rxjs";
-
 import type { ExecutionContext } from "~/interfaces/index.js";
+
+import { Observable } from "rxjs";
 
 /**
  * Interface defining the `canActivate()` function that must be implemented

@@ -12,5 +12,5 @@ export enum ShutdownSignal {
   SIGFPE = "SIGFPE",
   SIGSEGV = "SIGSEGV",
   SIGUSR2 = "SIGUSR2",
-  SIGTERM = "SIGTERM",
+  SIGTERM = "SIGTERM"
 }

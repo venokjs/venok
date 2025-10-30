@@ -1,6 +1,7 @@
+import type { ContextId } from "~/interfaces/index.js";
+
 import { InstanceWrapper } from "~/injector/instance/wrapper.js";
 import { STATIC_CONTEXT } from "~/injector/constants.js";
-import type { ContextId } from "~/interfaces/index.js";
 
 export abstract class ContextCreator {
   public abstract createConcreteContext<T extends any[], R extends any[]>(
@@ -15,7 +16,7 @@ export abstract class ContextCreator {
     callback: (...args: any[]) => void,
     metadataKey: string,
     contextId = STATIC_CONTEXT,
-    inquirerId?: string,
+    inquirerId?: string
   ): R {
     const globalMetadata = this.getGlobalMetadata && this.getGlobalMetadata<T>(contextId, inquirerId);
     const classMetadata = this.reflectClassMetadata<T>(instance, metadataKey);
@@ -29,6 +30,7 @@ export abstract class ContextCreator {
 
   public reflectClassMetadata<T>(instance: object, metadataKey: string): T {
     const prototype = Object.getPrototypeOf(instance);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return Reflect.getMetadata(metadataKey, prototype.constructor);
   }
 

@@ -1,4 +1,4 @@
-import { type Provider } from "~/interfaces/index.js";
+import type { Provider } from "~/interfaces/index.js";
 
 import { INQUIRER, REQUEST } from "~/constants.js";
 import { Reflector } from "~/services/reflector.service.js";

@@ -5,7 +5,7 @@ import {
   type InstancePerContext,
   type LoggerService,
   type Provider,
-  type Type,
+  type Type
 } from "~/interfaces/index.js";
 import type { SettlementSignal } from "~/injector/settlement-signal.js";
 import type { EnhancerSubtype } from "~/constants.js";
@@ -206,9 +206,9 @@ export class InstanceWrapper<T = any> {
     const isTreeNonDurable = this.introspectDepsAttribute(
       (collection, registry) =>
         collection.some(
-          (item: InstanceWrapper) => !item.isDependencyTreeStatic() && !item.isDependencyTreeDurable(registry),
+          (item: InstanceWrapper) => !item.isDependencyTreeStatic() && !item.isDependencyTreeDurable(registry)
         ),
-      lookupRegistry,
+      lookupRegistry
     );
     this.isTreeDurable = !isTreeNonDurable;
     if (this.isTreeDurable) this.printIntrospectedAsDurable();
@@ -218,7 +218,7 @@ export class InstanceWrapper<T = any> {
 
   public introspectDepsAttribute(
     callback: (collection: InstanceWrapper[], lookupRegistry: string[]) => boolean,
-    lookupRegistry: string[] = [],
+    lookupRegistry: string[] = []
   ): boolean {
     if (lookupRegistry.includes(this[INSTANCE_ID_SYMBOL])) {
       return false;
@@ -234,7 +234,7 @@ export class InstanceWrapper<T = any> {
     introspectionResult = properties
       ? callback(
           properties.map((item) => item.wrapper),
-          lookupRegistry,
+          lookupRegistry
         )
       : false;
     if (introspectionResult || !enhancers) return introspectionResult;
@@ -252,7 +252,7 @@ export class InstanceWrapper<T = any> {
     }
     this.isTreeStatic = !this.introspectDepsAttribute(
       (collection, registry) => collection.some((item: InstanceWrapper) => !item.isDependencyTreeStatic(registry)),
-      lookupRegistry,
+      lookupRegistry
     );
     if (!this.isTreeStatic) this.printIntrospectedAsRequestScoped();
 
@@ -269,7 +269,7 @@ export class InstanceWrapper<T = any> {
       isResolved: false,
       isPending: false,
     };
-    if (this.isNewable()) instancePerContext.instance = Object.create(this.metatype!.prototype);
+    if (this.isNewable()) instancePerContext.instance = Object.create(this.metatype!.prototype as unknown as object);
 
     this.setInstanceByContextId(contextId, instancePerContext);
     return instancePerContext;
@@ -284,7 +284,7 @@ export class InstanceWrapper<T = any> {
       isPending: false,
     };
     if (this.isNewable()) {
-      instancePerContext.instance = Object.create(this.metatype!.prototype);
+      instancePerContext.instance = Object.create(this.metatype!.prototype as unknown as object);
     }
     this.setInstanceByInquirerId(contextId, inquirerId, instancePerContext);
     return instancePerContext;
@@ -294,10 +294,10 @@ export class InstanceWrapper<T = any> {
     const host = this.getInstanceByContextId(contextId);
     if (!this.isNewable() || host.isResolved) return;
 
-    return Object.create(this.metatype!.prototype);
+    return Object.create(this.metatype!.prototype as unknown as object);
   }
 
-  public isInRequestScope(contextId: ContextId, inquirer?: InstanceWrapper | undefined): boolean {
+  public isInRequestScope(contextId: ContextId, inquirer?: InstanceWrapper): boolean {
     const isDependencyTreeStatic = this.isDependencyTreeStatic();
 
     return (
@@ -364,7 +364,6 @@ export class InstanceWrapper<T = any> {
 
   public mergeWith(provider: Provider) {
     if (isValueProvider(provider)) {
-      // @ts-ignore
       this.metatype = null;
       this.inject = null;
 
@@ -394,6 +393,7 @@ export class InstanceWrapper<T = any> {
 
     this.setInstanceByContextId(STATIC_CONTEXT, { instance, isResolved });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     this.scope === Scope.TRANSIENT && (this.transientMap = new Map());
   }
 
@@ -403,7 +403,7 @@ export class InstanceWrapper<T = any> {
     }
     if (isString(this.name)) {
       InstanceWrapper.logger.log(
-        `${colors.cyanBright(this.name)}${colors.green(" introspected as ")}${colors.magentaBright("request-scoped")}`,
+        `${colors.cyanBright(this.name)}${colors.green(" introspected as ")}${colors.magentaBright("request-scoped")}`
       );
     }
   }
@@ -414,7 +414,7 @@ export class InstanceWrapper<T = any> {
     }
     if (isString(this.name)) {
       InstanceWrapper.logger.log(
-        `${colors.cyanBright(this.name)}${colors.green(" introspected as ")}${colors.magentaBright("durable")}`,
+        `${colors.cyanBright(this.name)}${colors.green(" introspected as ")}${colors.magentaBright("durable")}`
       );
     }
   }

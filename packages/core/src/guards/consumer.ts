@@ -1,9 +1,8 @@
-import { lastValueFrom, Observable } from "rxjs";
-
 import type { CanActivate, ContextType } from "~/interfaces/index.js";
 
-import { ExecutionContextHost } from "~/context/execution-host.js";
+import { lastValueFrom, Observable } from "rxjs";
 
+import { ExecutionContextHost } from "~/context/execution-host.js";
 import { isEmpty } from "~/helpers/shared.helper.js";
 
 export class GuardsConsumer {
@@ -12,7 +11,7 @@ export class GuardsConsumer {
     args: unknown[],
     instance: object,
     callback: (...args: unknown[]) => unknown,
-    type?: TContext,
+    type?: TContext
   ): Promise<boolean> {
     if (!guards || isEmpty(guards)) return true;
 
@@ -36,9 +35,10 @@ export class GuardsConsumer {
   public createContext(
     args: unknown[],
     instance: object,
-    callback: (...args: unknown[]) => unknown,
+    callback: (...args: unknown[]) => unknown
   ): ExecutionContextHost {
-    return new ExecutionContextHost(args, instance.constructor as any, callback);
+    // @ts-expect-error Mismatch types
+    return new ExecutionContextHost(args, instance.constructor, callback);
   }
 
   public async pickResult(result: boolean | Promise<boolean> | Observable<boolean>): Promise<boolean> {

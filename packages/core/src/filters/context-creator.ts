@@ -20,33 +20,35 @@ export class ExceptionFilterContextCreator extends ContextCreator {
   public createConcreteContext<T extends any[], R extends any[]>(
     metadata: T,
     contextId = STATIC_CONTEXT,
-    inquirerId?: string,
+    inquirerId?: string
   ): R {
     if (isEmpty(metadata)) return [] as any as R;
 
     return metadata
       .filter((instance) => instance && (isFunction(instance.catch) || instance.name))
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       .map((filter) => this.getFilterInstance(filter, contextId, inquirerId))
       .filter(Boolean)
       .map((instance) => ({
         func: instance!.catch.bind(instance),
-        exceptionMetatypes: this.reflectCatchExceptions(instance as any),
+        // @ts-expect-error Mismatch types
+        exceptionMetatypes: this.reflectCatchExceptions(instance),
       })) as R;
   }
 
   public getFilterInstance(
     filter: Function | ExceptionFilter,
     contextId = STATIC_CONTEXT,
-    inquirerId?: string,
+    inquirerId?: string
   ): ExceptionFilter | null {
-    if ("catch" in filter) return filter as ExceptionFilter;
+    if ("catch" in filter) return filter;
 
     const instanceWrapper = this.getInstanceByMetatype(filter as Type);
     if (!instanceWrapper) return null;
 
     const instanceHost = instanceWrapper.getInstanceByContextId(
       this.getContextId(contextId, instanceWrapper),
-      inquirerId,
+      inquirerId
     );
 
     return instanceHost && instanceHost.instance;
@@ -64,6 +66,7 @@ export class ExceptionFilterContextCreator extends ContextCreator {
 
   public reflectCatchExceptions(instance: ExceptionFilter): Type[] {
     const prototype = Object.getPrototypeOf(instance);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return Reflect.getMetadata(FILTER_CATCH_EXCEPTIONS, prototype.constructor) || [];
   }
 }

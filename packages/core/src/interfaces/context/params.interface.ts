@@ -26,5 +26,5 @@ type ParamPropertiesWithMetatype<T = any> = ParamProperties & { metatype?: T };
 export type GetParamsMetadata = (
   moduleKey: string,
   contextId?: ContextId,
-  inquirerId?: string,
+  inquirerId?: string
 ) => ParamPropertiesWithMetatype[];
