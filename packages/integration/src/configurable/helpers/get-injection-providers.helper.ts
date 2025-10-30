@@ -1,10 +1,6 @@
-import type {
-  FactoryProvider,
-  InjectionToken,
-  OptionalFactoryDependency,
-  Provider,
-} from "@venok/core/interfaces/index.js";
-import { isUndefined } from "@venok/core/helpers/index.js";
+import type { FactoryProvider, InjectionToken, OptionalFactoryDependency, Provider } from "@venok/core";
+
+import { isUndefined } from "@venok/core";
 
 /**
  * check if x is OptionalFactoryDependency, based on prototype presence
@@ -13,7 +9,7 @@ import { isUndefined } from "@venok/core/helpers/index.js";
  * @returns x is OptionalFactoryDependency
  */
 function isOptionalFactoryDependency(
-  value: InjectionToken | OptionalFactoryDependency,
+  value: InjectionToken | OptionalFactoryDependency
 ): value is OptionalFactoryDependency {
   return (
     !isUndefined((value as OptionalFactoryDependency).token) &&
@@ -38,7 +34,8 @@ export function getInjectionProviders(providers: Provider[], tokens: FactoryProv
     const match = (providers ?? []).filter(
       (p) =>
         !result.includes(p) && // this prevents circular loops and duplication
-        (search.includes(p as any) || search.includes((p as any)?.provide)),
+        // @ts-expect-error Mismatch types
+        (search.includes(p as InjectionToken) || search.includes((p)?.provide as InjectionToken))
     );
     result.push(...match);
     // get injection tokens of the matched providers, if any
@@ -46,7 +43,8 @@ export function getInjectionProviders(providers: Provider[], tokens: FactoryProv
       .filter((p) => (p as any)?.inject)
       .map((p) => (p as FactoryProvider).inject)
       .flat()
-      .map(mapInjectToTokens as any);
+      // @ts-expect-error Mismatch types
+      .map(mapInjectToTokens);
   }
   return result;
 }

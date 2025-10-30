@@ -1,4 +1,4 @@
-import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper.js";
+import { randomStringGenerator } from "@venok/core";
 
 export function generateOptionsInjectionToken() {
   const hash = randomStringGenerator();

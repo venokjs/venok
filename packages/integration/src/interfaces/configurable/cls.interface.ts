@@ -1,6 +1,7 @@
-import type { DynamicModule } from "@venok/core/interfaces/index.js";
-import type { ConfigurableModuleAsyncOptions } from "@venok/integration/interfaces/configurable/async-options.interface.js";
-import { DEFAULT_FACTORY_CLASS_METHOD_KEY, DEFAULT_METHOD_KEY } from "@venok/integration/configurable/index.js";
+import type { DynamicModule } from "@venok/core";
+
+import type { ConfigurableModuleAsyncOptions } from "~/interfaces/configurable/async-options.interface.js";
+import { DEFAULT_FACTORY_CLASS_METHOD_KEY, DEFAULT_METHOD_KEY } from "~/configurable/constants.js";
 
 /**
  * Class that represents a blueprint/prototype for a configurable Nest module.
@@ -13,7 +14,7 @@ export type ConfigurableModuleCls<
   ModuleOptions,
   MethodKey extends string = typeof DEFAULT_METHOD_KEY,
   FactoryClassMethodKey extends string = typeof DEFAULT_FACTORY_CLASS_METHOD_KEY,
-  ExtraModuleDefinitionOptions = {},
+  ExtraModuleDefinitionOptions = object
 > = {
   new (): any;
 } & Record<`${MethodKey}`, (options: ModuleOptions & Partial<ExtraModuleDefinitionOptions>) => DynamicModule> &
@@ -21,6 +22,6 @@ export type ConfigurableModuleCls<
     `${MethodKey}Async`,
     (
       options: ConfigurableModuleAsyncOptions<ModuleOptions, FactoryClassMethodKey> &
-        Partial<ExtraModuleDefinitionOptions>,
+        Partial<ExtraModuleDefinitionOptions>
     ) => DynamicModule
   >;

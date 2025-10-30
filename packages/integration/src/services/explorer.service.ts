@@ -1,22 +1,20 @@
+import type { VenokContextCreatorInterface, VenokParamsFactoryInterface } from "@venok/core";
+
 import {
   Injectable,
   MetadataScanner,
   Reflector,
   ROUTE_ARGS_METADATA,
   VenokContainer,
-  type VenokContextCreatorInterface,
-  type VenokParamsFactoryInterface,
+  Injector,
+  InstanceWrapper,
+  STATIC_CONTEXT,
+  ExecutionContextHost,
+  VenokContextCreator,
+  VenokExceptionFilterContext
 } from "@venok/core";
 
-// class Reflector {
-//   constructor() {}
-// }
-
-import { Injector, InstanceWrapper, STATIC_CONTEXT } from "@venok/core/injector/index.js";
-import { ExecutionContextHost, VenokContextCreator } from "@venok/core/context/index.js";
-import { VenokExceptionFilterContext } from "@venok/core/filters/index.js";
-
-import { DiscoveryService } from "@venok/integration/services/discovery.service.js";
+import { DiscoveryService } from "~/services/discovery.service.js";
 
 @Injectable()
 export abstract class ExplorerService<T = any> extends Reflector {
@@ -28,7 +26,7 @@ export abstract class ExplorerService<T = any> extends Reflector {
   protected readonly options = { guards: true, filters: true, interceptors: true };
 
   protected readonly exceptionsFilter: VenokExceptionFilterContext;
-  protected contextCreator: VenokContextCreatorInterface = this.externalContextCreator;
+  protected contextCreator: VenokContextCreatorInterface;
 
   protected readonly wrappers: InstanceWrapper[];
 
@@ -38,9 +36,10 @@ export abstract class ExplorerService<T = any> extends Reflector {
     protected readonly container: VenokContainer,
     protected readonly discoveryService: DiscoveryService,
     protected readonly externalContextCreator: VenokContextCreator,
-    protected readonly metadataScanner: MetadataScanner,
+    protected readonly metadataScanner: MetadataScanner
   ) {
     super();
+    this.contextCreator = this.externalContextCreator;
     this.exceptionsFilter = new VenokExceptionFilterContext(this.container, this.container.applicationConfig);
     this.wrappers = this.discoveryService.getProviders().filter((wrapper) => {
       const { instance } = wrapper;
@@ -58,12 +57,14 @@ export abstract class ExplorerService<T = any> extends Reflector {
 
   protected createCallback(wrapper: InstanceWrapper, methodName: string) {
     if (!this.withRequestScope)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return this.createContextCallback(wrapper.instance, wrapper.instance[methodName], methodName);
 
     const isRequestScoped = !wrapper.isDependencyTreeStatic();
 
     return isRequestScoped
       ? this.createRequestScopeContextCallback(wrapper, methodName)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       : this.createContextCallback(wrapper.instance, wrapper.instance[methodName], methodName);
   }
 
@@ -72,7 +73,7 @@ export abstract class ExplorerService<T = any> extends Reflector {
     callback: (...args: any[]) => any,
     methodName: string,
     contextId = STATIC_CONTEXT,
-    inquirerId: string | undefined = undefined,
+    inquirerId: string | undefined = undefined
   ) {
     return this.contextCreator.create(
       instance,
@@ -83,13 +84,14 @@ export abstract class ExplorerService<T = any> extends Reflector {
       contextId,
       inquirerId,
       this.options,
-      this.type,
+      this.type
     );
   }
 
   private createRequestScopeContextCallback(wrapper: InstanceWrapper, methodName: string) {
     const { instance } = wrapper;
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const moduleKey: string = this.externalContextCreator.getContextModuleKey(instance.constructor);
     const moduleRef = this.container.getModuleByKey(moduleKey);
     const collection = moduleRef.injectables;
@@ -102,15 +104,19 @@ export abstract class ExplorerService<T = any> extends Reflector {
         const contextInstance = await new Injector().loadPerContext(instance, moduleRef, collection, contextId);
         await this.createContextCallback(
           contextInstance,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           contextInstance[methodName],
           methodName,
           contextId,
-          wrapper.id,
+          wrapper.id
         )(...args);
       } catch (err) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         let exceptionFilter = this.exceptionFiltersCache.get(instance[methodName]);
         if (!exceptionFilter) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           exceptionFilter = this.exceptionsFilter.create(instance, instance[methodName], moduleKey);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           this.exceptionFiltersCache.set(instance[methodName], exceptionFilter);
         }
         const host = new ExecutionContextHost(args);

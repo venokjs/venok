@@ -1,9 +1,8 @@
-import type { InjectionToken, Type } from "@venok/core";
+import type { InjectableToken, InjectionToken, Type } from "@venok/core";
 
-import { getClassScope, InstanceWrapper, isDurable } from "@venok/core/injector/index.js";
-import type { Injectable } from "@venok/core/interfaces/injectable.interface.js";
+import type { BaseMiddlewareConfiguration } from "~/interfaces/index.js";
 
-import type { BaseMiddlewareConfiguration } from "@venok/integration/interfaces/index.js";
+import { getClassScope, InstanceWrapper, isDurable } from "@venok/core";
 
 export class MiddlewareContainer {
   private readonly middleware = new Map<string, Map<InjectionToken, InstanceWrapper>>();
@@ -11,7 +10,7 @@ export class MiddlewareContainer {
 
   public getMiddlewareCollection(moduleKey: string): Map<InjectionToken, InstanceWrapper> {
     if (!this.middleware.has(moduleKey)) {
-      this.middleware.set(moduleKey, new Map<InjectionToken, InstanceWrapper<Injectable>>());
+      this.middleware.set(moduleKey, new Map<InjectionToken, InstanceWrapper<InjectableToken>>());
     }
     return this.middleware.get(moduleKey) as Map<InjectionToken, InstanceWrapper>;
   }
@@ -35,10 +34,11 @@ export class MiddlewareContainer {
           name: token?.name ?? token,
           metatype,
           token,
-        }),
+        })
       );
     };
     configurations.forEach((config) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       [].concat(config.middleware).map(insertMiddleware);
       targetConfig.add(config);
     });

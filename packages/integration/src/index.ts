@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 import "reflect-metadata";
 
 export * from "./configurable/index.js";

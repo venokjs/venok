@@ -1,19 +1,12 @@
-import type { DynamicModule, InjectionToken, Provider } from "@venok/core";
-import { Logger } from "@venok/core/services/logger.service.js";
-import type {
-  ConfigurableModuleAsyncOptions,
-  ConfigurableModuleCls,
-  ConfigurableModuleHost,
-  ConfigurableModuleOptionsFactory,
-} from "@venok/integration/interfaces/configurable/index.js";
-import { generateOptionsInjectionToken, getInjectionProviders } from "@venok/integration/configurable/helpers/index.js";
-import { randomStringGenerator } from "@venok/core/helpers/random-string-generator.helper.js";
-import {
-  ASYNC_METHOD_SUFFIX,
-  CONFIGURABLE_MODULE_ID,
-  DEFAULT_FACTORY_CLASS_METHOD_KEY,
-  DEFAULT_METHOD_KEY,
-} from "@venok/integration/configurable/constants.js";
+import type { DynamicModule, InjectionToken, Provider } from "@venok/core/index.js";
+
+import type { ConfigurableModuleAsyncOptions, ConfigurableModuleCls, ConfigurableModuleHost, ConfigurableModuleOptionsFactory } from "~/interfaces/configurable/index.js";
+
+import { Logger, randomStringGenerator } from "@venok/core";
+
+import { generateOptionsInjectionToken } from "~/configurable/helpers/generate-options-injection-token.helper.js";
+import { ASYNC_METHOD_SUFFIX, CONFIGURABLE_MODULE_ID, DEFAULT_FACTORY_CLASS_METHOD_KEY, DEFAULT_METHOD_KEY } from "~/configurable/constants.js";
+import { getInjectionProviders } from "~/configurable/helpers/get-injection-providers.helper.js";
 
 /**
  * @publicApi
@@ -52,21 +45,21 @@ export class ConfigurableModuleBuilder<
   ModuleOptions,
   StaticMethodKey extends string = typeof DEFAULT_METHOD_KEY,
   FactoryClassMethodKey extends string = typeof DEFAULT_FACTORY_CLASS_METHOD_KEY,
-  ExtraModuleDefinitionOptions = {},
+  ExtraModuleDefinitionOptions = object
 > {
   protected staticMethodKey!: StaticMethodKey;
   protected factoryClassMethodKey!: FactoryClassMethodKey;
   protected extras!: ExtraModuleDefinitionOptions;
   protected transformModuleDefinition!: (
     definition: DynamicModule,
-    extraOptions: ExtraModuleDefinitionOptions,
+    extraOptions: ExtraModuleDefinitionOptions
   ) => DynamicModule;
 
   protected readonly logger = new Logger(ConfigurableModuleBuilder.name);
 
   constructor(
     protected readonly options: ConfigurableModuleBuilderOptions = {},
-    parentBuilder?: ConfigurableModuleBuilder<ModuleOptions>,
+    parentBuilder?: ConfigurableModuleBuilder<ModuleOptions>
   ) {
     if (parentBuilder) {
       this.staticMethodKey = parentBuilder.staticMethodKey as StaticMethodKey;
@@ -94,14 +87,14 @@ export class ConfigurableModuleBuilder<
   setExtras<ExtraModuleDefinitionOptions>(
     extras: ExtraModuleDefinitionOptions,
     transformDefinition: (definition: DynamicModule, extras: ExtraModuleDefinitionOptions) => DynamicModule = (def) =>
-      def,
+      def
   ) {
     const builder = new ConfigurableModuleBuilder<
       ModuleOptions,
       StaticMethodKey,
       FactoryClassMethodKey,
       ExtraModuleDefinitionOptions
-    >(this.options, this as any);
+    >(this.options, this);
     builder.extras = extras;
     builder.transformModuleDefinition = transformDefinition;
     return builder;
@@ -124,7 +117,7 @@ export class ConfigurableModuleBuilder<
       StaticMethodKey,
       FactoryClassMethodKey,
       ExtraModuleDefinitionOptions
-    >(this.options, this as any);
+    >(this.options, this);
     builder.staticMethodKey = key;
     return builder;
   }
@@ -146,7 +139,7 @@ export class ConfigurableModuleBuilder<
       StaticMethodKey,
       FactoryClassMethodKey,
       ExtraModuleDefinitionOptions
-    >(this.options, this as any);
+    >(this.options, this);
     builder.factoryClassMethodKey = key;
     return builder;
   }
@@ -211,12 +204,12 @@ export class ConfigurableModuleBuilder<
           {
             ...self.extras,
             ...options,
-          },
+          }
         );
       }
 
       static [asyncMethodKey](
-        options: ConfigurableModuleAsyncOptions<ModuleOptions> & ExtraModuleDefinitionOptions,
+        options: ConfigurableModuleAsyncOptions<ModuleOptions> & ExtraModuleDefinitionOptions
       ): DynamicModule {
         const providers = this.createAsyncProviders(options);
         if (self.options.alwaysTransient) {
@@ -234,13 +227,13 @@ export class ConfigurableModuleBuilder<
           {
             ...self.extras,
             ...options,
-          },
+          }
         );
       }
 
       private static omitExtras(
         input: ModuleOptions & ExtraModuleDefinitionOptions,
-        extras: ExtraModuleDefinitionOptions | undefined,
+        extras: ExtraModuleDefinitionOptions | undefined
       ): ModuleOptions {
         if (!extras) return input;
 
@@ -250,7 +243,7 @@ export class ConfigurableModuleBuilder<
         Object.keys(input as Record<string, any>)
           .filter((key) => !extrasKeys.includes(key))
           .forEach((key) => {
-            // @ts-ignore
+            // @ts-expect-error Mismatch types
             moduleOptions[key] = input[key];
           });
         return moduleOptions as ModuleOptions;
@@ -306,7 +299,7 @@ export class ConfigurableModuleBuilder<
         get: () => {
           throw new Error(`"${typeName}" is not supposed to be used as a value.`);
         },
-      },
+      }
     );
     return proxy as any;
   }

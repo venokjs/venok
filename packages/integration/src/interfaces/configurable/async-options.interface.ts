@@ -1,5 +1,6 @@
-import type { FactoryProvider, ModuleMetadata, Provider, Type } from "@venok/core/interfaces/index.js";
-import { DEFAULT_FACTORY_CLASS_METHOD_KEY } from "@venok/integration/configurable/index.js";
+import type { FactoryProvider, ModuleMetadata, Provider, Type } from "@venok/core";
+
+import { DEFAULT_FACTORY_CLASS_METHOD_KEY } from "~/configurable/constants.js";
 
 /**
  * Interface that must be implemented by the module options factory class.
@@ -20,7 +21,7 @@ export type ConfigurableModuleOptionsFactory<ModuleOptions, FactoryClassMethodKe
  */
 export interface ConfigurableModuleAsyncOptions<
   ModuleOptions,
-  FactoryClassMethodKey extends string = typeof DEFAULT_FACTORY_CLASS_METHOD_KEY,
+  FactoryClassMethodKey extends string = typeof DEFAULT_FACTORY_CLASS_METHOD_KEY
 > extends Pick<ModuleMetadata, "imports"> {
   /**
    * Injection token resolving to an existing provider. The provider must implement

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Provider } from "@venok/core";
+import { Provider } from "@venok/core/index.js";
 import { getInjectionProviders } from "@venok/integration/configurable/helpers";
 
 describe("getInjectionProviders", () => {

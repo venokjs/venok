@@ -1,5 +1,5 @@
-import type { ConfigurableModuleCls } from "@venok/integration/interfaces/configurable/cls.interface.js";
-import type { ConfigurableModuleAsyncOptions } from "@venok/integration/interfaces/configurable/async-options.interface.js";
+import type { ConfigurableModuleAsyncOptions } from "~/interfaces/configurable/async-options.interface.js";
+import type { ConfigurableModuleCls } from "~/interfaces/configurable/cls.interface.js";
 
 /**
  * Configurable module host. See properties for more details
@@ -10,7 +10,7 @@ export interface ConfigurableModuleHost<
   ModuleOptions = Record<string, unknown>,
   MethodKey extends string = string,
   FactoryClassMethodKey extends string = string,
-  ExtraModuleDefinitionOptions = {},
+  ExtraModuleDefinitionOptions = object
 > {
   /**
    * Class that represents a blueprint/prototype for a configurable Nest module.

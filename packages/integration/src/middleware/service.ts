@@ -1,16 +1,12 @@
-import { Injectable, type InjectionToken, type Type, VenokContainer } from "@venok/core";
+import type { CoreModule, InjectionToken, InstanceWrapper, Type } from "@venok/core";
 
-import { Injector, InstanceWrapper, Module, STATIC_CONTEXT } from "@venok/core/injector/index.js";
-import { ExecutionContextHost, VenokProxy } from "@venok/core/context/index.js";
-import { VenokExceptionFilterContext } from "@venok/core/filters/index.js";
-import { RuntimeException } from "@venok/core/errors/exceptions/index.js";
-import { Logger } from "@venok/core/services/logger.service.js";
-import { isUndefined } from "@venok/core/helpers/index.js";
+import type { BaseMiddlewareConfiguration, VenokMiddleware } from "~/interfaces/index.js";
 
-import type { BaseMiddlewareConfiguration, VenokMiddleware } from "@venok/integration/interfaces/index.js";
-import { MiddlewareContainer } from "@venok/integration/middleware/container.js";
-import { MiddlewareResolver } from "@venok/integration/middleware/resolver.js";
-import { InvalidMiddlewareException } from "@venok/integration/exceptions/index.js";
+import { ExecutionContextHost, Injectable, Injector, isUndefined, Logger, RuntimeException, STATIC_CONTEXT, VenokContainer, VenokExceptionFilterContext, VenokProxy } from "@venok/core";
+
+import { MiddlewareContainer } from "~/middleware/container.js";
+import { MiddlewareResolver } from "~/middleware/resolver.js";
+import { InvalidMiddlewareException } from "~/exceptions/invalid-middleware.exception.js";
 
 type VenokContextCallback = (...args: any[]) => void | Promise<void>;
 
@@ -37,14 +33,14 @@ export abstract class MiddlewareService<MiddlewareConfiguration extends BaseMidd
   public async explore(middlewareClass: any) {
     const modules = this.container.getModules();
     const moduleEntries = [...modules.entries()];
-    const loadMiddlewareConfiguration = async ([moduleName, moduleRef]: [string, Module]) => {
+    const loadMiddlewareConfiguration = async ([moduleName, moduleRef]: [string, CoreModule]) => {
       await this.loadConfiguration(moduleRef, moduleName, middlewareClass);
       await this.resolver.resolveInstances(moduleRef, moduleName);
     };
     await Promise.all(moduleEntries.map(loadMiddlewareConfiguration));
   }
 
-  private async loadConfiguration(moduleRef: Module, moduleKey: string, middlewareClass: any) {
+  private async loadConfiguration(moduleRef: CoreModule, moduleKey: string, middlewareClass: any) {
     const { instance } = moduleRef;
     if (!(instance as any).configure) return;
 
@@ -66,6 +62,7 @@ export abstract class MiddlewareService<MiddlewareConfiguration extends BaseMidd
     }
 
     const config = builder.build();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.middlewareContainer.insertConfig(config, moduleKey);
   }
 
@@ -88,10 +85,12 @@ export abstract class MiddlewareService<MiddlewareConfiguration extends BaseMidd
 
   private async registerConfig(config: MiddlewareConfiguration, moduleKey: string) {
     const { to } = config;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     for (const info of to) await this.registerMiddleware(info, moduleKey, config);
   }
 
   private async registerMiddleware(to: MiddlewareConfiguration["to"][number], moduleKey: string, config: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const middlewareCollection = [].concat(config.middleware);
     const collection = this.middlewareContainer.getMiddlewareCollection(moduleKey);
     const moduleRef = this.container.getModuleByKey(moduleKey);
@@ -102,6 +101,7 @@ export abstract class MiddlewareService<MiddlewareConfiguration extends BaseMidd
 
       if (instanceWrapper.isTransient) return;
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const proxy = await this.createCallback(instanceWrapper, moduleRef, collection);
 
       await this.registerHandler(to, proxy);
@@ -115,10 +115,11 @@ export abstract class MiddlewareService<MiddlewareConfiguration extends BaseMidd
 
   protected async createCallback(
     wrapper: InstanceWrapper<VenokMiddleware>,
-    moduleRef: Module,
-    collection: Map<InjectionToken, InstanceWrapper>,
+    moduleRef: CoreModule,
+    collection: Map<InjectionToken, InstanceWrapper>
   ) {
     const { instance, metatype } = wrapper as { instance: VenokMiddleware; metatype: Function | Type };
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     if (isUndefined(instance?.use)) throw new InvalidMiddlewareException(metatype.name);
 
     const isStatic = wrapper.isDependencyTreeStatic();
@@ -131,16 +132,21 @@ export abstract class MiddlewareService<MiddlewareConfiguration extends BaseMidd
       try {
         const contextId = this.container.getContextId(args[this.index], isTreeDurable);
         const contextInstance = await this.injector.loadPerContext(instance, moduleRef, collection, contextId);
-        const proxy = await this.createProxy(contextInstance as any, contextId);
+        const proxy = await this.createProxy(contextInstance, contextId);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         return proxy(...args);
       } catch (err) {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         let exceptionsHandler = this.exceptionFiltersCache.get(instance.use);
         if (!exceptionsHandler) {
           exceptionsHandler = this.exceptionsFilter.create(
             instance,
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises,@typescript-eslint/unbound-method
             instance.use as VenokContextCallback,
-            undefined as any,
+            // @ts-expect-error Mismatch types
+            undefined
           );
+          // eslint-disable-next-line @typescript-eslint/unbound-method
           this.exceptionFiltersCache.set(instance.use, exceptionsHandler);
         }
         const host = new ExecutionContextHost(args);
@@ -149,15 +155,18 @@ export abstract class MiddlewareService<MiddlewareConfiguration extends BaseMidd
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await,@typescript-eslint/no-unused-vars
   private async createProxy<TRequest = unknown, TResponse = unknown>(
     instance: VenokMiddleware,
-    contextId = STATIC_CONTEXT,
+    contextId = STATIC_CONTEXT
   ): Promise<VenokContextCallback> {
     const exceptionsHandler = this.exceptionsFilter.create(
       instance,
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises,@typescript-eslint/unbound-method
       instance.use as VenokContextCallback,
-      undefined as any,
-      contextId,
+      // @ts-expect-error Mismatch types
+      undefined,
+      contextId
     );
     const middleware = instance.use.bind(instance);
     return this.venokProxy.createProxy(middleware, exceptionsHandler, this.type);
