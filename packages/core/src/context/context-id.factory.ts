@@ -1,0 +1,60 @@
+import type { ContextId, ContextIdResolver, ContextIdStrategy, HostComponentInfo } from "~/interfaces/index.js";
+
+import { createContextId } from "~/helpers/context-id-factory.helper.js";
+import { isObject } from "~/helpers/shared.helper.js";
+import { REQUEST_CONTEXT_ID } from "~/constants.js";
+
+export class ContextIdFactory {
+  private static strategy?: ContextIdStrategy;
+
+  /**
+   * Generates a context identifier based on the request object.
+   */
+  public static create(): ContextId {
+    return createContextId();
+  }
+
+  /**
+   * Generates a random identifier to track asynchronous execution context.
+   * @param request request object
+   * @param propsToInspect
+   */
+  public static getByRequest<T extends Record<any, any> = any>(
+    request: T,
+    propsToInspect: string[] = ["raw"]
+  ): ContextId {
+    if (!request) return ContextIdFactory.create();
+
+    if (request[REQUEST_CONTEXT_ID as any]) return request[REQUEST_CONTEXT_ID as any];
+
+    for (const key of propsToInspect) if (request[key]?.[REQUEST_CONTEXT_ID]) return request[key][REQUEST_CONTEXT_ID];
+
+    if (!this.strategy) return ContextIdFactory.create();
+
+    const contextId = createContextId();
+
+    const resolverObjectOrFunction = this.strategy.attach(contextId, request);
+    if (this.isContextIdResolverWithPayload(resolverObjectOrFunction)) {
+      contextId.getParent = resolverObjectOrFunction.resolve;
+      contextId.payload = resolverObjectOrFunction.payload;
+    } else {
+      contextId.getParent = resolverObjectOrFunction;
+    }
+    return contextId;
+  }
+
+  /**
+   * Registers a custom context id strategy that lets you attach
+   * a parent context id to the existing context id object.
+   * @param strategy strategy instance
+   */
+  public static apply(strategy: ContextIdStrategy) {
+    this.strategy = strategy;
+  }
+
+  private static isContextIdResolverWithPayload(
+    resolverOrResolverFn: ((info: HostComponentInfo) => ContextId) | ContextIdResolver | undefined
+  ): resolverOrResolverFn is ContextIdResolver {
+    return isObject(resolverOrResolverFn);
+  }
+}

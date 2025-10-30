@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
-    "composite": true,
+    //    "composite": true,
     "target": "ES2021",
+    "baseUrl": ".",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "module": "ESNext",
+    "module": "NodeNext",
     "verbatimModuleSyntax": true,
     "moduleResolution": "nodenext",
     "esModuleInterop": true,
@@ -12,8 +13,8 @@
     "strict": true,
     "skipLibCheck": true,
     "paths": {
-      "@venok/core": ["./packages/core/index.js"],
-      "@venok/core/*": ["./packages/core/*"],
+      //      "@venok/core": ["./packages/core/index.js"],
+      //      "@venok/core/*": ["./packages/core/*"],
       "@venok/integration": ["./packages/integration/index.js"],
       "@venok/integration/*": ["./packages/integration/*"],
       "@venok/http": ["./network/http/index.js"],
