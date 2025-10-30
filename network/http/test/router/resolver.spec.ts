@@ -10,7 +10,7 @@
 // import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
 // import { NoopHttpAdapter } from "../../helpers/adapter.helper";
 // import { VersioningType } from "../../enums";
-// import { MODULE_PATH } from "@venok/core/constants";
+// import { MODULE_PATH } from "@venok/core/constants.js";
 // import { BadRequestException } from "../../errors";
 // import { HttpConfig } from "../../application/config";
 //

@@ -6,6 +6,19 @@
   "homepage": "",
   "main": "index.js",
   "types": "./index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      },
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -36,10 +49,10 @@
     "http-errors": "^2.0.0"
   },
   "peerDependencies": {
-    "@venok/core": "^1.1.0",
-    "@venok/integration": "^1.1.0",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "@venok/core": "workspace:*",
+    "@venok/integration": "workspace:*",
+    "reflect-metadata": "catalog:",
+    "rxjs": "catalog:"
   },
   "dependencies": {
     "path-to-regexp": "^6.2.1"
