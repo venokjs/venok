@@ -1,6 +1,8 @@
-import { expect } from "chai";
-import sinon from "sinon";
-import { PipesConsumer } from "@venok/core/pipes";
+import type { PipeTransform } from "~/interfaces/index.js";
+
+import { beforeEach, describe, expect, it, mock } from "bun:test";
+
+import { PipesConsumer } from "~/pipes/consumer.js";
 
 const createPipe = (transform: Function) => ({ transform });
 
@@ -10,29 +12,30 @@ describe("PipesConsumer", () => {
     consumer = new PipesConsumer();
   });
   describe("apply", () => {
-    let value: any, metatype: any, type: any, stringifiedType: any, transforms: any, data: any, contextType: any;
+    let value: any, metatype: any, type: any, transforms: PipeTransform[], data: any, contextType: any;
     beforeEach(() => {
       value = 0;
       data = null;
       (metatype = {}), (type = "query");
-      stringifiedType = "query";
       contextType = "native";
       transforms = [
-        createPipe(sinon.stub().callsFake((val) => val + 1)),
-        createPipe(sinon.stub().callsFake((val) => Promise.resolve(val + 1))),
-        createPipe(sinon.stub().callsFake((val) => val + 1)),
-      ];
+        createPipe(mock((val) => val + 1)),
+        createPipe(mock((val) => Promise.resolve(val + 1))),
+        createPipe(mock((val) => val + 1)),
+      ] as PipeTransform[];
     });
     it("should call all transform functions", (done) => {
       consumer.apply(value, { metatype, type, data, contextType }, transforms).then(() => {
-        expect(transforms.reduce((prev: any, next: any) => prev && next.transform.called, true)).to.be.true;
+        transforms.forEach((transform: any) => {
+          expect(transform.transform).toHaveBeenCalled();
+        });
         done();
       });
     });
     it("should return expected result", (done) => {
       const expectedResult = 3;
       consumer.apply(value, { metatype, type, data, contextType }, transforms).then((result) => {
-        expect(result).to.be.eql(expectedResult);
+        expect(result).toEqual(expectedResult);
         done();
       });
     });

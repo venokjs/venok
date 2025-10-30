@@ -1,7 +1,6 @@
-import { expect } from "chai";
-import * as sinon from "sinon";
-import { ExceptionFilterContextCreator } from "@venok/core/filters/context-creator";
-import { VenokContainer } from "@venok/core/injector/container";
+import { beforeEach, describe, expect, it, spyOn, mock } from "bun:test";
+import { VenokContainer } from "~/injector/container.js";
+import { ExceptionFilterContextCreator } from "~/filters/context-creator.js";
 
 export class Filter {}
 
@@ -18,7 +17,7 @@ describe("ExceptionFilterContextCreator", () => {
     describe("when param is an object", () => {
       it("should return instance", () => {
         const instance = { catch: () => null };
-        expect(filter.getFilterInstance(instance)).to.be.eql(instance);
+        expect(filter.getFilterInstance(instance)).toEqual(instance);
       });
     });
     describe("when param is a constructor", () => {
@@ -27,12 +26,13 @@ describe("ExceptionFilterContextCreator", () => {
           instance: "test",
           getInstanceByContextId: () => wrapper,
         };
-        sinon.stub(filter, "getInstanceByMetatype").callsFake(() => wrapper as any);
-        expect(filter.getFilterInstance(Filter)).to.be.eql(wrapper.instance);
+        spyOn(filter, "getInstanceByMetatype").mockImplementation(() => wrapper as any);
+        // @ts-expect-error Mismatch types
+        expect(filter.getFilterInstance(Filter)).toEqual(wrapper.instance);
       });
       it("should return null", () => {
-        sinon.stub(filter, "getInstanceByMetatype").callsFake(() => null as any);
-        expect(filter.getFilterInstance(Filter)).to.be.eql(null);
+        spyOn(filter, "getInstanceByMetatype").mockImplementation(() => null as any);
+        expect(filter.getFilterInstance(Filter)).toEqual(null);
       });
     });
   });
@@ -41,7 +41,8 @@ describe("ExceptionFilterContextCreator", () => {
     describe('when "moduleContext" is nil', () => {
       it("should return undefined", () => {
         (filter as any).moduleContext = undefined;
-        expect(filter.getInstanceByMetatype(null as any)).to.be.undefined;
+        // @ts-expect-error Mismatch types
+        expect(filter.getInstanceByMetatype(null)).toBeUndefined();
       });
     });
     describe('when "moduleContext" is not nil', () => {
@@ -51,8 +52,9 @@ describe("ExceptionFilterContextCreator", () => {
 
       describe("and when module exists", () => {
         it("should return undefined", () => {
-          sinon.stub(container.getModules(), "get").callsFake(() => undefined);
-          expect(filter.getInstanceByMetatype(null as any)).to.be.undefined;
+          spyOn(container.getModules(), "get").mockImplementation(() => undefined);
+          // @ts-expect-error Mismatch types
+          expect(filter.getInstanceByMetatype(null)).toBeUndefined();
         });
       });
 
@@ -60,8 +62,9 @@ describe("ExceptionFilterContextCreator", () => {
         it("should return instance", () => {
           const instance = { test: true };
           const module = { injectables: { get: () => instance } };
-          sinon.stub(container.getModules(), "get").callsFake(() => module as any);
-          expect(filter.getInstanceByMetatype(class {})).to.be.eql(instance);
+          spyOn(container.getModules(), "get").mockImplementation(() => module as any);
+          // @ts-expect-error Mismatch types
+          expect(filter.getInstanceByMetatype(class {})).toEqual(instance);
         });
       });
     });

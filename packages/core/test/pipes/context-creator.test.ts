@@ -1,9 +1,8 @@
-import { expect } from "chai";
-import sinon from "sinon";
-import { PipesContextCreator } from "@venok/core/pipes";
-import { VenokContainer } from "@venok/core/injector/container";
-import { ApplicationConfig } from "@venok/core/application/config";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
+import { beforeEach, describe, expect, it, spyOn } from "bun:test";
+import { VenokContainer } from "~/injector/container.js";
+import { PipesContextCreator } from "~/pipes/context-creator.js";
+import { ApplicationConfig } from "~/application/config.js";
+import { InstanceWrapper } from "~/injector/instance/wrapper.js";
 
 class Pipe {}
 
@@ -20,15 +19,15 @@ describe("PipesContextCreator", () => {
   describe("createConcreteContext", () => {
     describe("when metadata is empty or undefined", () => {
       it("should return empty array", () => {
-        expect(creator.createConcreteContext(undefined as any)).to.be.deep.equal([]);
-        expect(creator.createConcreteContext([])).to.be.deep.equal([]);
+        expect(creator.createConcreteContext(undefined as any)).toEqual([]);
+        expect(creator.createConcreteContext([])).toEqual([]);
       });
     });
     describe("when metadata is not empty or undefined", () => {
       const metadata = [null, {}, { transform: () => ({}) }];
       it("should return expected array", () => {
         const transforms = creator.createConcreteContext(metadata as any);
-        expect(transforms).to.have.length(1);
+        expect(transforms).toHaveLength(1);
       });
     });
   });
@@ -36,7 +35,7 @@ describe("PipesContextCreator", () => {
     describe("when param is an object", () => {
       it("should return instance", () => {
         const instance = { transform: () => null };
-        expect(creator.getPipeInstance(instance)).to.be.eql(instance);
+        expect(creator.getPipeInstance(instance)).toEqual(instance);
       });
     });
     describe("when param is a constructor", () => {
@@ -45,12 +44,13 @@ describe("PipesContextCreator", () => {
           instance: "test",
           getInstanceByContextId: () => wrapper,
         } as any;
-        sinon.stub(creator, "getInstanceByMetatype").callsFake(() => wrapper);
-        expect(creator.getPipeInstance(Pipe)).to.be.eql(wrapper.instance);
+        spyOn(creator, "getInstanceByMetatype").mockImplementation(() => wrapper);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        expect(creator.getPipeInstance(Pipe)).toEqual(wrapper.instance);
       });
       it("should return null", () => {
-        sinon.stub(creator, "getInstanceByMetatype").callsFake(() => null as any);
-        expect(creator.getPipeInstance(Pipe)).to.be.eql(null);
+        spyOn(creator, "getInstanceByMetatype").mockImplementation(() => null as any);
+        expect(creator.getPipeInstance(Pipe)).toEqual(null);
       });
     });
   });
@@ -59,7 +59,8 @@ describe("PipesContextCreator", () => {
     describe('when "moduleContext" is nil', () => {
       it("should return undefined", () => {
         (creator as any).moduleContext = undefined;
-        expect(creator.getInstanceByMetatype(null as any)).to.be.undefined;
+        // @ts-expect-error Mismatch types
+        expect(creator.getInstanceByMetatype(null)).toBeUndefined();
       });
     });
     describe('when "moduleContext" is not nil', () => {
@@ -69,8 +70,9 @@ describe("PipesContextCreator", () => {
 
       describe("and when module exists", () => {
         it("should return undefined", () => {
-          sinon.stub(container.getModules(), "get").callsFake(() => undefined);
-          expect(creator.getInstanceByMetatype(null as any)).to.be.undefined;
+          spyOn(container.getModules(), "get").mockImplementation(() => undefined);
+          // @ts-expect-error Mismatch types
+          expect(creator.getInstanceByMetatype(null)).toBeUndefined();
         });
       });
 
@@ -78,8 +80,9 @@ describe("PipesContextCreator", () => {
         it("should return instance", () => {
           const instance = { test: true };
           const module = { injectables: { get: () => instance } };
-          sinon.stub(container.getModules(), "get").callsFake(() => module as any);
-          expect(creator.getInstanceByMetatype(class Test {})).to.be.eql(instance);
+          spyOn(container.getModules(), "get").mockImplementation(() => module as any);
+          // @ts-expect-error Mismatch types
+          expect(creator.getInstanceByMetatype(class Test {})).toEqual(instance);
         });
       });
     });
@@ -89,7 +92,7 @@ describe("PipesContextCreator", () => {
     describe("when contextId is static and inquirerId is nil", () => {
       it("should return global pipes", () => {
         const expectedResult = applicationConfig.getGlobalPipes();
-        expect(creator.getGlobalMetadata()).to.be.equal(expectedResult);
+        expect(creator.getGlobalMetadata()).toEqual(expectedResult);
       });
     });
     describe("otherwise", () => {
@@ -99,11 +102,13 @@ describe("PipesContextCreator", () => {
         const instance = "request-scoped";
         const scopedPipeWrappers = [instanceWrapper];
 
-        sinon.stub(applicationConfig, "getGlobalPipes").callsFake(() => globalPipes);
-        sinon.stub(applicationConfig, "getGlobalRequestPipes").callsFake(() => scopedPipeWrappers);
-        sinon.stub(instanceWrapper, "getInstanceByContextId").callsFake(() => ({ instance }) as any);
+        spyOn(applicationConfig, "getGlobalPipes").mockImplementation(() => globalPipes);
+        spyOn(applicationConfig, "getGlobalRequestPipes").mockImplementation(() => scopedPipeWrappers);
+        spyOn(instanceWrapper, "getInstanceByContextId").mockImplementation(() => ({ instance }) as any);
 
-        expect(creator.getGlobalMetadata({ id: 3 })).to.contains(instance, ...globalPipes);
+        const result = creator.getGlobalMetadata({ id: 3 });
+        expect(result).toContain(instance);
+        globalPipes.forEach((pipe: any) => expect(result).toContain(pipe));
       });
     });
   });

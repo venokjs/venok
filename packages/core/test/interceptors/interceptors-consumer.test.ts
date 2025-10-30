@@ -1,99 +1,114 @@
+import type { Observable } from "rxjs";
+
+import type { CallHandler, ExecutionContext, VenokInterceptor } from "~/interfaces/index.js";
+
+import { lastValueFrom, retry, merge, defer, of } from "rxjs";
+import { beforeEach, describe, expect, it, mock } from "bun:test";
 import { AsyncLocalStorage } from "async_hooks";
-import { expect } from "chai";
-import { Observable, lastValueFrom, of, retry, merge, defer } from "rxjs";
-import sinon, { SinonStub } from "sinon";
-import { InterceptorsConsumer } from "@venok/core/interceptors";
-import { CallHandler, VenokInterceptor } from "@venok/core/interfaces/features/interceptor.interface";
-import { ExecutionContext } from "@venok/core/interfaces/context/execution.interface";
+
+import { InterceptorsConsumer } from "~/interceptors/consumer.js";
 
 describe("InterceptorsConsumer", () => {
   let consumer: InterceptorsConsumer;
-  let interceptors: any[];
+  let interceptors: VenokInterceptor[];
   beforeEach(() => {
     consumer = new InterceptorsConsumer();
     interceptors = [
       {
-        intercept: sinon.stub().callsFake((ctx, handler) => handler.handle()),
+        intercept: mock((ctx: any, handler: any) => handler.handle()),
       },
       {
-        intercept: sinon.stub().callsFake(async (ctx, handler) => handler.handle()),
+        intercept: mock(async (ctx: any, handler: any) => handler.handle()),
       },
     ];
   });
   describe("intercept", () => {
     describe("when interceptors array is empty", () => {
-      let next: sinon.SinonSpy;
+      let next: () => Promise<unknown>;
       beforeEach(() => {
-        next = sinon.spy();
+        next = mock();
       });
       it("should call next()", async () => {
-        await consumer.intercept([], null as any, { constructor: null }, null as any, next);
-        expect(next.calledOnce).to.be.true;
+        await consumer.intercept([], null!, { constructor: null }, null!, next);
+        expect(next).toHaveBeenCalledTimes(1);
       });
     });
     describe("when interceptors array is not empty", () => {
-      let next: sinon.SinonSpy;
+      let next: () => Promise<unknown>;
       beforeEach(() => {
-        next = sinon.stub().returns(Promise.resolve(""));
+        next = mock().mockReturnValue(Promise.resolve(""));
       });
       it("does not call `intercept` (lazy evaluation)", async () => {
-        await consumer.intercept(interceptors, null as any, { constructor: null }, null as any, next);
+        await consumer.intercept(
+          interceptors,
+          null!,
+          { constructor: null },
+          null!,
+          next
+        );
 
-        expect(interceptors[0].intercept.called).to.be.false;
-        expect(interceptors[1].intercept.called).to.be.false;
+        expect(interceptors[0].intercept).not.toHaveBeenCalled();
+        expect(interceptors[1].intercept).not.toHaveBeenCalled();
       });
       it("should call every `intercept` method when subscribe", async () => {
         const intercepted = await consumer.intercept(
           interceptors,
-          null as any,
+          null!,
           { constructor: null },
-          null as any,
-          next,
+          null!,
+          next
         );
         await transformToResult(intercepted);
 
-        expect(interceptors[0].intercept.calledOnce).to.be.true;
-        expect(interceptors[1].intercept.calledOnce).to.be.true;
+        expect(interceptors[0].intercept).toHaveBeenCalledTimes(1);
+        expect(interceptors[1].intercept).toHaveBeenCalledTimes(1);
       });
       it("should not call `next` (lazy evaluation)", async () => {
-        await consumer.intercept(interceptors, null as any, { constructor: null }, null as any, next);
-        expect(next.called).to.be.false;
+        await consumer.intercept(
+          interceptors,
+          null!,
+          { constructor: null },
+          null!,
+          next
+        );
+        expect(next).not.toHaveBeenCalled();
       });
       it("should call `next` when subscribe", async () => {
         const intercepted = await consumer.intercept(
           interceptors,
-          null as any,
+          null!,
           { constructor: null },
-          null as any,
-          next,
+          null!,
+          next
         );
         await transformToResult(intercepted);
-        expect(next.called).to.be.true;
+        expect(next).toHaveBeenCalled();
       });
     });
 
     describe("when AsyncLocalStorage is used", () => {
-      it("should allow an interceptor to set values in AsyncLocalStorage that are accesible from the controller", async () => {
+      it("should allow an interceptor to set values in AsyncLocalStorage that are accessible from the controller", async () => {
         const storage = new AsyncLocalStorage<Record<string, any>>();
-
         class StorageInterceptor implements VenokInterceptor {
-          intercept(_context: ExecutionContext, next: CallHandler<any>): Observable<any> | Promise<Observable<any>> {
+          intercept(
+            _context: ExecutionContext,
+            next: CallHandler<any>
+          ): Observable<any> | Promise<Observable<any>> {
             return storage.run({ value: "hello" }, () => next.handle());
           }
         }
-
         const next = () => {
           return Promise.resolve(storage.getStore()!.value);
         };
         const intercepted = await consumer.intercept(
           [new StorageInterceptor()],
-          null as any,
+          null!,
           { constructor: null },
-          null as any,
-          next,
+          null!,
+          next
         );
         const result = await transformToResult(intercepted);
-        expect(result).to.equal("hello");
+        expect(result).toBe("hello");
       });
     });
 
@@ -107,21 +122,22 @@ describe("InterceptorsConsumer", () => {
           }
           return Promise.resolve(count);
         };
-
         class RetryInterceptor implements VenokInterceptor {
-          intercept(_context: ExecutionContext, next: CallHandler<any>): Observable<any> | Promise<Observable<any>> {
+          intercept(
+            _context: ExecutionContext,
+            next: CallHandler<any>
+          ): Observable<any> | Promise<Observable<any>> {
             return next.handle().pipe(retry(4));
           }
         }
-
         const intercepted = await consumer.intercept(
           [new RetryInterceptor()],
-          null as any,
+          null!,
           { constructor: null },
-          null as any,
-          next,
+          null!,
+          next
         );
-        expect(await transformToResult(intercepted)).to.equal(3);
+        expect(await transformToResult(intercepted)).toBe(3);
       });
     });
   });
@@ -131,8 +147,9 @@ describe("InterceptorsConsumer", () => {
       const callback = () => null;
       const context = consumer.createContext([], instance, callback);
 
-      expect(context.getClass()).to.be.eql(instance.constructor);
-      expect(context.getHandler()).to.be.eql(callback);
+      // @ts-expect-error Mismatch types
+      expect(context.getClass()).toEqual(instance.constructor);
+      expect(context.getHandler()).toEqual(callback);
     });
   });
   describe("transformDeferred", () => {
@@ -140,53 +157,57 @@ describe("InterceptorsConsumer", () => {
       it("should return Observable", async () => {
         const val = 3;
         const next = async () => val;
-        expect(await lastValueFrom(consumer.transformDeferred(next))).to.be.eql(val);
+        expect(await lastValueFrom(consumer.transformDeferred(next))).toEqual(val);
       });
     });
     describe("when next() result is Promise", () => {
       it("should return Observable", async () => {
         const val = 3;
         const next = async () => val;
-        expect(await lastValueFrom(consumer.transformDeferred(next))).to.be.eql(val);
+        expect(await lastValueFrom(consumer.transformDeferred(next))).toEqual(
+          val
+        );
       });
     });
     describe("when next() result is Observable", () => {
       it("should return Observable", async () => {
         const val = 3;
         const next = async () => of(val);
-        expect(await lastValueFrom(consumer.transformDeferred(next) as any)).to.be.eql(val);
+        // @ts-expect-error Mismatch types
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        expect(await lastValueFrom(consumer.transformDeferred(next) as any)).toEqual(val);
       });
     });
   });
   describe("deferred promise conversion", () => {
     it("should convert promise to observable deferred", async () => {
       class TestError extends Error {}
-
       const testInterceptors = [
         {
-          intercept: sinon.stub().callsFake(async (ctx, handler) => {
+          intercept: mock(async (ctx: any, handler: any) => {
             return merge(
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               handler.handle(),
               defer(() => {
                 throw new TestError();
-              }),
+              })
             );
           }),
         },
         {
-          intercept: sinon.stub().callsFake(async (ctx, handler) => handler.handle()),
+          intercept: mock(async (ctx: any, handler: any) => handler.handle()),
         },
         {
-          intercept: sinon.stub().callsFake(async (ctx, handler) => handler.handle()),
+          intercept: mock(async (ctx: any, handler: any) => handler.handle()),
         },
-      ] as VenokInterceptor[];
+      ];
 
       const observable = await consumer.intercept(
         testInterceptors,
-        null as unknown as unknown[],
+        null!,
         { constructor: null },
-        () => {},
-        async () => 1,
+        null!,
+        async () => 1
       );
 
       try {
@@ -196,13 +217,14 @@ describe("InterceptorsConsumer", () => {
           throw error;
         }
       }
-      expect((testInterceptors[2].intercept as SinonStub).called).to.be.false;
+      expect(testInterceptors[2].intercept).not.toHaveBeenCalled();
     });
   });
 });
 
 async function transformToResult(resultOrDeferred: any) {
   if (resultOrDeferred && typeof resultOrDeferred.subscribe === "function") {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return lastValueFrom(resultOrDeferred);
   }
   return resultOrDeferred;

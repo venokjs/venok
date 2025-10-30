@@ -1,8 +1,11 @@
-import { expect } from "chai";
-import sinon from "sinon";
-import { GuardsContextCreator } from "@venok/core/guards";
-import { ApplicationConfig } from "@venok/core/application/config";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
+import type { ModulesContainer } from "~/injector/module/container.js";
+import type { VenokContainer } from "~/injector/container.js";
+
+import { beforeEach, describe, expect, it, spyOn, mock } from "bun:test";
+
+import { ApplicationConfig } from "~/application/config.js";
+import { GuardsContextCreator } from "~/guards/context-creator.js";
+import { InstanceWrapper } from "~/injector/instance/wrapper.js";
 
 class Guard {}
 
@@ -10,8 +13,8 @@ describe("GuardsContextCreator", () => {
   let guardsContextCreator: GuardsContextCreator;
   let applicationConfig: ApplicationConfig;
   let guards: any[];
-  let container: any;
-  let getSpy: sinon.SinonSpy;
+  let container: VenokContainer;
+  let getSpy: any;
 
   class Guard1 {}
   class Guard2 {}
@@ -39,25 +42,29 @@ describe("GuardsContextCreator", () => {
       {},
       undefined,
     ];
-    getSpy = sinon.stub().returns({
+    getSpy = mock().mockReturnValue({
       injectables: new Map([
         [Guard1, guards[0]],
         [Guard2, guards[1]],
       ]),
-    });
+    }) as unknown as ModulesContainer;
     container = {
       getModules: () => ({
         get: getSpy,
       }),
-    };
+    } as VenokContainer;
     applicationConfig = new ApplicationConfig();
-    guardsContextCreator = new GuardsContextCreator(container, applicationConfig);
+    guardsContextCreator = new GuardsContextCreator(
+       
+      container,
+      applicationConfig
+    );
   });
   describe("createConcreteContext", () => {
-    describe("when `moduleContext` is nil", () => {
+    describe("when `moduleContext` is null", () => {
       it("should return empty array", () => {
         const result = guardsContextCreator.createConcreteContext(guards);
-        expect(result).to.be.empty;
+        expect(result).toEqual([]);
       });
     });
     describe("when `moduleContext` is defined", () => {
@@ -66,7 +73,9 @@ describe("GuardsContextCreator", () => {
       });
       it("should filter metatypes", () => {
         const guardTypeRefs = [guards[0].metatype, guards[1].instance];
-        expect(guardsContextCreator.createConcreteContext(guardTypeRefs)).to.have.length(2);
+        expect(
+          guardsContextCreator.createConcreteContext(guardTypeRefs)
+        ).toHaveLength(2);
       });
     });
   });
@@ -74,8 +83,10 @@ describe("GuardsContextCreator", () => {
   describe("getGuardInstance", () => {
     describe("when param is an object", () => {
       it("should return instance", () => {
-        const instance = { canActivate: () => null };
-        expect(guardsContextCreator.getGuardInstance(instance as any)).to.be.eql(instance);
+        const instance = { canActivate: () => null! };
+        expect(guardsContextCreator.getGuardInstance(instance)).toEqual(
+          instance
+        );
       });
     });
     describe("when param is a constructor", () => {
@@ -84,41 +95,46 @@ describe("GuardsContextCreator", () => {
           instance: "test",
           getInstanceByContextId: () => wrapper,
         };
-        sinon.stub(guardsContextCreator, "getInstanceByMetatype").callsFake(() => wrapper as any);
-        expect(guardsContextCreator.getGuardInstance(Guard)).to.be.eql(wrapper.instance);
+        spyOn(guardsContextCreator, "getInstanceByMetatype").mockImplementation(() => wrapper as any);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        expect(guardsContextCreator.getGuardInstance(Guard)).toEqual(wrapper.instance as any);
       });
       it("should return null", () => {
-        sinon.stub(guardsContextCreator, "getInstanceByMetatype").callsFake(() => null as any);
-        expect(guardsContextCreator.getGuardInstance(Guard)).to.be.eql(null);
+        spyOn(guardsContextCreator, "getInstanceByMetatype").mockImplementation(() => null!);
+        expect(guardsContextCreator.getGuardInstance(Guard)).toEqual(null);
       });
     });
   });
 
   describe("getInstanceByMetatype", () => {
-    describe('when "moduleContext" is nil', () => {
+    describe('when "moduleContext" is null', () => {
       it("should return undefined", () => {
         (guardsContextCreator as any).moduleContext = undefined;
-        expect(guardsContextCreator.getInstanceByMetatype(null as any)).to.be.undefined;
+        expect(guardsContextCreator.getInstanceByMetatype(null!)).toBeUndefined();
       });
     });
-    describe('when "moduleContext" is not nil', () => {
+    describe('when "moduleContext" is not null', () => {
       beforeEach(() => {
         (guardsContextCreator as any).moduleContext = "test";
       });
 
       describe("but module does not exist", () => {
         it("should return undefined", () => {
-          expect(guardsContextCreator.getInstanceByMetatype(class RandomModule {})).to.be.undefined;
+          expect(
+            guardsContextCreator.getInstanceByMetatype(class RandomModule {})
+          ).toBeUndefined();
         });
       });
     });
   });
 
   describe("getGlobalMetadata", () => {
-    describe("when contextId is static and inquirerId is nil", () => {
+    describe("when contextId is static and inquirerId is null", () => {
       it("should return global guards", () => {
         const expectedResult = applicationConfig.getGlobalGuards();
-        expect(guardsContextCreator.getGlobalMetadata()).to.be.equal(expectedResult);
+        expect(guardsContextCreator.getGlobalMetadata()).toEqual(
+          expectedResult
+        );
       });
     });
     describe("otherwise", () => {
@@ -128,11 +144,16 @@ describe("GuardsContextCreator", () => {
         const instance = "request-scoped";
         const scopedGuardWrappers = [instanceWrapper];
 
-        sinon.stub(applicationConfig, "getGlobalGuards").callsFake(() => globalGuards);
-        sinon.stub(applicationConfig, "getGlobalRequestGuards").callsFake(() => scopedGuardWrappers);
-        sinon.stub(instanceWrapper, "getInstanceByContextId").callsFake(() => ({ instance }) as any);
+        spyOn(applicationConfig, "getGlobalGuards").mockImplementation(() => globalGuards);
+        spyOn(applicationConfig, "getGlobalRequestGuards").mockImplementation(() => scopedGuardWrappers);
+        spyOn(instanceWrapper, "getInstanceByContextId").mockImplementation(() => ({ instance }) as any);
 
-        expect(guardsContextCreator.getGlobalMetadata({ id: 3 })).to.contains(instance, ...globalGuards);
+        expect(guardsContextCreator.getGlobalMetadata({ id: 3 })).toContain(
+          instance,
+          // @ts-expect-error Mismatch types
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          ...globalGuards
+        );
       });
     });
   });
