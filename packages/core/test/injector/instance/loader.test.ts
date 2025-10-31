@@ -1,12 +1,11 @@
-import "reflect-metadata";
-import { expect } from "chai";
-import sinon from "sinon";
-import { InstanceLoader } from "@venok/core/injector/instance/loader";
-import { Injectable } from "@venok/core/decorators/injectable.decorator";
-import { Injector } from "@venok/core/injector/injector";
-import { GraphInspector } from "@venok/core/inspector/graph-inspector";
-import { VenokContainer } from "@venok/core/injector/container";
-import { InstanceWrapper } from "@venok/core/injector/instance/wrapper";
+import { beforeEach, describe, expect, it, spyOn } from "bun:test";
+
+import { InstanceLoader } from "~/injector/instance/loader.js";
+import { Injector } from "~/injector/injector.js";
+import { GraphInspector } from "~/inspector/graph-inspector.js";
+import { VenokContainer } from "~/injector/container.js";
+import { Injectable } from "~/decorators/injectable.decorator.js";
+import { InstanceWrapper } from "~/injector/instance/wrapper.js";
 
 describe("InstanceLoader", () => {
   @Injectable()
@@ -16,19 +15,22 @@ describe("InstanceLoader", () => {
   let injector: Injector;
   let container: VenokContainer;
   let graphInspector: GraphInspector;
-  let inspectInstanceWrapperStub: sinon.SinonStub;
-  let mockContainer: sinon.SinonMock;
+  let inspectInstanceWrapperStub: any;
+  let mockContainer: any;
   let moduleMock: Record<string, any>;
 
   beforeEach(() => {
     container = new VenokContainer();
     graphInspector = new GraphInspector(container);
 
-    inspectInstanceWrapperStub = sinon.stub(graphInspector, "inspectInstanceWrapper");
+    inspectInstanceWrapperStub = spyOn(
+      graphInspector,
+      "inspectInstanceWrapper"
+    ).mockImplementation(() => {});
 
     injector = new Injector();
     loader = new InstanceLoader(container, injector, graphInspector);
-    mockContainer = sinon.mock(container);
+    mockContainer = spyOn(container, "getModules");
 
     moduleMock = {
       imports: new Set(),
@@ -41,7 +43,7 @@ describe("InstanceLoader", () => {
 
     const modules = new Map();
     modules.set("Test", moduleMock);
-    mockContainer.expects("getModules").returns(modules);
+    mockContainer.mockReturnValue(modules);
   });
 
   it('should call "loadPrototype" for every provider and controller in every module', async () => {
@@ -52,20 +54,23 @@ describe("InstanceLoader", () => {
     });
 
     moduleMock.providers.set("TestProvider", providerWrapper);
+    const loadProviderPrototypeStub = spyOn(injector, "loadPrototype").mockImplementation(() => {});
 
-    const loadProviderPrototypeStub = sinon.stub(injector, "loadPrototype");
-
-    sinon.stub(injector, "loadProvider");
+    // @ts-expect-error Mismatch types
+    spyOn(injector, "loadProvider").mockImplementation(() => {});
 
     await loader.createInstancesOfDependencies();
 
-    expect(loadProviderPrototypeStub.calledWith(providerWrapper, moduleMock.providers)).to.be.true;
+    expect(loadProviderPrototypeStub).toHaveBeenCalledWith(
+      providerWrapper,
+      moduleMock.providers
+    );
   });
 
   describe("for every provider in every module", () => {
     const testProviderToken = "TestProvider";
 
-    let loadProviderStub: sinon.SinonStub;
+    let loadProviderStub: any;
 
     beforeEach(async () => {
       const testProviderWrapper = new InstanceWrapper({
@@ -76,23 +81,29 @@ describe("InstanceLoader", () => {
       });
       moduleMock.providers.set(testProviderToken, testProviderWrapper);
 
-      loadProviderStub = sinon.stub(injector, "loadProvider");
+      // @ts-expect-error Mismatch types
+      loadProviderStub = spyOn(injector, "loadProvider").mockImplementation(() => {});
 
       await loader.createInstancesOfDependencies();
     });
 
     it('should call "loadProvider"', async () => {
-      expect(loadProviderStub.calledWith(moduleMock.providers.get(testProviderToken), moduleMock as any)).to.be.true;
+      expect(loadProviderStub).toHaveBeenCalledWith(
+        moduleMock.providers.get(testProviderToken),
+        moduleMock as any
+      );
     });
 
     it('should call "inspectInstanceWrapper"', async () => {
-      expect(inspectInstanceWrapperStub.calledWith(moduleMock.providers.get(testProviderToken), moduleMock as any)).to
-        .be.true;
+      expect(inspectInstanceWrapperStub).toHaveBeenCalledWith(
+        moduleMock.providers.get(testProviderToken),
+        moduleMock as any
+      );
     });
   });
 
   describe("for every injectable in every module", () => {
-    let loadInjectableStub: sinon.SinonStub;
+    let loadInjectableStub: any;
 
     beforeEach(async () => {
       const testInjectable = new InstanceWrapper({
@@ -103,17 +114,23 @@ describe("InstanceLoader", () => {
       });
       moduleMock.injectables.set("TestProvider", testInjectable);
 
-      loadInjectableStub = sinon.stub(injector, "loadInjectable");
-
+      // @ts-expect-error Mismatch types
+      loadInjectableStub = spyOn(injector, "loadInjectable").mockImplementation(() => {});
+      
       await loader.createInstancesOfDependencies();
     });
 
     it('should call "loadInjectable"', async () => {
-      expect(loadInjectableStub.calledWith(moduleMock.injectables.get("TestProvider"), moduleMock as any)).to.be.true;
+      expect(loadInjectableStub).toHaveBeenCalledWith(
+        moduleMock.injectables.get("TestProvider"),
+        moduleMock as any
+      );
     });
     it('should call "inspectInstanceWrapper"', async () => {
-      expect(inspectInstanceWrapperStub.calledWith(moduleMock.injectables.get("TestProvider"), moduleMock as any)).to.be
-        .true;
+      expect(inspectInstanceWrapperStub).toHaveBeenCalledWith(
+        moduleMock.injectables.get("TestProvider"),
+        moduleMock as any
+      );
     });
   });
 });
