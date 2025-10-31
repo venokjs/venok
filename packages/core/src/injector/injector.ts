@@ -72,12 +72,12 @@ export class Injector {
     const instanceHost = wrapper.getInstanceByContextId(this.getContextId(contextId, wrapper), inquirerId);
 
     // Maybe Error
-    if (instanceHost.isPending && instanceHost.donePromise) {
+    if (instanceHost.isPending) {
       const settlementSignal = wrapper.settlementSignal;
       if (inquirer && settlementSignal?.isCycle(inquirer.id))
         throw new CircularDependencyException(`"${wrapper.name}"`);
 
-      return instanceHost.donePromise.then((err?: unknown) => {
+      return instanceHost.donePromise!.then((err?: unknown) => {
         // eslint-disable-next-line @typescript-eslint/only-throw-error
         if (err) throw err;
       });
@@ -245,7 +245,7 @@ export class Injector {
       }
     };
     const instances = await Promise.all(dependencies.map(resolveParam));
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+     
     isResolved && (await callback(instances));
   }
 
@@ -391,7 +391,7 @@ export class Injector {
        * that eventual lazily created instance will be merged with the prototype
        * instantiated beforehand.
        */
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions, @typescript-eslint/no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       instanceHost.donePromise &&
         instanceHost.donePromise.then(() => this.loadProvider(instanceWrapper, moduleRef, contextId, inquirer));
     }
