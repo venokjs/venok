@@ -16,6 +16,7 @@ export class VenokExceptionFilter<T = any, R = any> implements ExceptionFilter {
 
     if (exception instanceof Error) VenokExceptionFilter.logger.error(exception.message, exception.stack);
 
+    // eslint-disable-next-line @typescript-eslint/only-throw-error
     throw exception;
   }
 }

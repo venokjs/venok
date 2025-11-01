@@ -14,8 +14,7 @@ describe("MetadataScanner", () => {
       get propParent() {
         return "";
       }
-      // @ts-expect-error Mismatch types
-      set valParent(value) {}
+      set valParent(value: any) {}
     }
 
     class Test extends Parent {
@@ -25,8 +24,7 @@ describe("MetadataScanner", () => {
       get prop() {
         return "";
       }
-      // @ts-expect-error Mismatch types
-      set val(value) {}
+      set val(value: any) {}
       public test() {}
       public test2() {}
     }

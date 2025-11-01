@@ -195,8 +195,8 @@ describe("Reflector", () => {
       const metadataDecorator = Reflector.createMetadataDecorator<string, Record<string, any>>({
         transform: (value) => ({
           customKey: value,
-          additionalKey: `processed-${value}`
-        })
+          additionalKey: `processed-${value}`,
+        }),
       });
 
       @metadataDecorator("test-value")
@@ -211,8 +211,8 @@ describe("Reflector", () => {
       const metadataDecorator = Reflector.createMetadataDecorator<string, Record<string, any>>({
         key: "custom-metadata-key",
         transform: (value) => ({
-          data: value
-        })
+          data: value,
+        }),
       });
 
       @metadataDecorator("custom-value")
@@ -227,8 +227,8 @@ describe("Reflector", () => {
       const metadataDecorator = Reflector.createMetadataDecorator<string, Record<string, any>>({
         transform: (value) => ({
           definedKey: value,
-          undefinedKey: undefined
-        })
+          undefinedKey: undefined,
+        }),
       });
 
       @metadataDecorator("test")

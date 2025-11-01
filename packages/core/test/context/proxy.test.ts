@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, spyOn, mock } from "bun:test";
+import { beforeEach, describe, expect, it, spyOn } from "bun:test";
 
 import { VenokExceptionsHandler } from "~/exceptions/handler.js";
 import { VenokProxy } from "~/context/proxy.js";
@@ -24,7 +24,9 @@ describe("VenokProxy", () => {
     });
 
     it("should method encapsulate callback passed as argument", async () => {
-      const proxy = venokProxy.createProxy((req, res, next) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const proxy = venokProxy.createProxy((req: any, res: any, next: any) => {
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
         throw "test";
       }, handler);
       await proxy(null, null, null);
@@ -32,7 +34,9 @@ describe("VenokProxy", () => {
     });
 
     it("should method encapsulate async callback passed as argument", async () => {
-      const proxy = venokProxy.createProxy(async (req, res, next) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const proxy = venokProxy.createProxy(async (req: any, res: any, next: any) => {
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
         throw "test";
       }, handler);
 

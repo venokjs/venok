@@ -1,6 +1,6 @@
 import type { Edge, Node, Entrypoint, OrphanedEnhancerDefinition, SerializedGraphMetadata } from "~/interfaces/index.js";
 
-import { beforeEach, describe, expect, it, spyOn } from "bun:test";
+import { beforeEach, describe, expect, it } from "bun:test";
 
 import { SerializedGraph } from "~/inspector/serialized-graph.js";
 import { ApplicationConfig } from "~/application/config.js";
