@@ -15,7 +15,7 @@ describe("ExternalExceptionsHandler", () => {
   });
 
   describe("next", () => {
-    it.skip("should method returns expected stream with message when exception is unknown", () => {
+    it("should method returns expected stream with message when exception is unknown", () => {
       const error = new Error();
       expect(() => handler.next(error, null!)).toThrow(error);
     });

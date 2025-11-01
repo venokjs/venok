@@ -314,7 +314,6 @@ export class Injector {
     keyOrIndex?: symbol | string | number
   ) {
     if (isUndefined(param)) {
-      console.log(wrapper, param);
       this.logger.log(
         "Venok encountered an undefined dependency. This may be due to a circular import or a missing dependency declaration."
       );

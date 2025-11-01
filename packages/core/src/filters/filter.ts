@@ -11,9 +11,11 @@ export class VenokExceptionFilter<T = any, R = any> implements ExceptionFilter {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   catch(exception: T, host: ArgumentsHost) {
     if (exception instanceof RuntimeException) {
-      return VenokExceptionFilter.logger.error(exception.what(), exception.stack);
+      VenokExceptionFilter.logger.error(exception.what(), exception.stack);
     }
 
-    if (exception instanceof Error) return VenokExceptionFilter.logger.error(exception.message, exception.stack);
+    if (exception instanceof Error) VenokExceptionFilter.logger.error(exception.message, exception.stack);
+
+    throw exception;
   }
 }
