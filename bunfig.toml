@@ -1,0 +1,7 @@
+[test]
+coverageSkipTestFiles = true  # default false
+preload = ["./test-preload.ts"]
+coverageThreshold = 0.7
+coveragePathIgnorePatterns = [
+    "packages/core/src/interfaces/**"
+]

@@ -1,0 +1,6 @@
+[test]
+coverageSkipTestFiles = true  # default false
+preload = ["../../test-preload.ts"]
+coveragePathIgnorePatterns = [
+    "src/interfaces/**"
+]
