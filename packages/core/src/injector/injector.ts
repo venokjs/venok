@@ -36,6 +36,13 @@ import {
   PROPERTY_DEPS_METADATA,
   SELF_DECLARED_DEPS_METADATA
 } from "~/constants.js";
+import { Reflector } from "~/services/reflector.service.js";
+import { ModulesContainer } from "~/injector/module/container.js";
+import { VenokContextCreator } from "~/context/context.js";
+import { ConsoleLogger } from "~/services/console.service.js";
+import { VenokContainer } from "~/injector/container.js";
+import { LazyModuleLoader } from "~/injector/module/lazy/loader.js";
+import { SerializedGraph } from "~/inspector/serialized-graph.js";
 
 export class Injector {
   private logger: LoggerService = new Logger("InjectorLogger");
@@ -319,7 +326,20 @@ export class Injector {
       );
       throw new UndefinedDependencyException(wrapper.name, dependencyContext, moduleRef);
     }
-    const token = this.resolveParamToken(wrapper, param);
+    let token = this.resolveParamToken(wrapper, param);
+
+    /* This hack for nestjs compatibility */
+    switch ((token as any).name) {
+      case "Reflector": token = Reflector; break;
+      case "ModulesContainer": token = ModulesContainer; break;
+      case "ExternalContextCreator": token = VenokContextCreator; break;
+      case "NestContainer": token = VenokContainer; break;
+      case "LazyModuleLoader": token = LazyModuleLoader; break;
+      case "SerializedGraph": token = SerializedGraph; break;
+      case "Logger": token = Logger; break;
+      case "ConsoleLogger": token = ConsoleLogger; break;
+    }
+
     return this.resolveComponentWrapper<T>(
       moduleRef,
       token,
