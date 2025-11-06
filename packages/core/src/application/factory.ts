@@ -46,6 +46,12 @@ export class VenokFactoryStatic {
     moduleCls: IEntryVenokModule,
     options?: ApplicationContextOptions
   ): Promise<VenokApplicationContext> {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const nest: any = require("@nestjs/common");
+      if (nest) nest.Logger.overrideLogger(new ConsoleLogger());
+    } catch { /* empty */ }
+
     const applicationConfig = new ApplicationConfig();
     const container = new VenokContainer(applicationConfig);
     // @ts-expect-error Mismatch types
