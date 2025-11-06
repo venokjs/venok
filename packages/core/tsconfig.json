@@ -17,5 +17,5 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["./src/*.ts", "./src/**/*.ts"]
+  "include": ["./src/*.ts", "./src/**/*.ts", "./test/**/*.ts"]
 }

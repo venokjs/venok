@@ -15,10 +15,10 @@
     "paths": {
       //      "@venok/core": ["./packages/core/index.js"],
       //      "@venok/core/*": ["./packages/core/*"],
-      "@venok/integration": ["./packages/integration/index.js"],
-      "@venok/integration/*": ["./packages/integration/*"],
-      "@venok/http": ["./network/http/index.js"],
-      "@venok/http/*": ["./network/http/*"],
+//      "@venok/integration": ["./packages/integration/index.js"],
+//      "@venok/integration/*": ["./packages/integration/*"],
+//      "@venok/http": ["./network/http/index.js"],
+//      "@venok/http/*": ["./network/http/*"],
       "@venok/express": ["./platforms/express/index.js"],
       "@venok/express/*": ["./platforms/express/*"]
     }

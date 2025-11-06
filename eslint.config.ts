@@ -41,6 +41,15 @@ export default tseslint.config(
     },
   },
   {
+    files: ["**/*.test.ts"],
+    rules: {
+      "@typescript-eslint/require-await": "off",
+      "@typescript-eslint/unbound-method": "off",
+      "@typescript-eslint/await-thenable": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+    },
+  },
+  {
     rules: {
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
@@ -48,6 +57,7 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unsafe-function-type": "off",
+      "@typescript-eslint/no-unused-expressions": "off",
     },
   },
   {
