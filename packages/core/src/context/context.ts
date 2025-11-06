@@ -123,7 +123,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
 
     const target = async (...args: any[]) => {
       const initialArgs = this.contextUtils.createNullArray(argsLength);
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+       
       fnCanActivate && (await fnCanActivate(args));
 
       const result = await this.interceptorsConsumer.intercept(
@@ -215,7 +215,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
         return { index, extractValue: customExtractValue, type, data, pipes };
       }
 
-      const extractValue = (...args: unknown[]) => paramsFactory.exchangeKeyForValue(type, data, args);
+      const extractValue = (...args: unknown[]) => paramsFactory.exchangeKeyForValue(+type, data, args);
 
       return { index, extractValue, type, data, pipes };
     });
