@@ -51,7 +51,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
   static fromContainer(
     container: VenokContainer,
     contextClass: typeof VenokContextCreator = VenokContextCreator,
-    filtersContext: typeof VenokExceptionFilterContext = VenokExceptionFilterContext
+    filtersContextClass: typeof VenokExceptionFilterContext = VenokExceptionFilterContext
   ): VenokContextCreator {
     const guardsContextCreator = new GuardsContextCreator(container, container.applicationConfig);
     const guardsConsumer = new GuardsConsumer();
@@ -59,7 +59,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
     const interceptorsConsumer = new InterceptorsConsumer();
     const pipesContextCreator = new PipesContextCreator(container, container.applicationConfig);
     const pipesConsumer = new PipesConsumer();
-    const filtersContextCreator = new filtersContext(container, container.applicationConfig);
+    const filtersContextCreator = new filtersContextClass(container, container.applicationConfig);
 
     const venokContextCreator = new contextClass(
       guardsContextCreator,
