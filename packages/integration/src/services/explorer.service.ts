@@ -62,7 +62,7 @@ export abstract class ExplorerService<T = any> extends Reflector {
     this.withRequestScope = isRequestScopeSupported;
     this.exceptionsFilterClass = exceptionsFilterClass;
 
-    this.contextCreator = this.contextCreatorClass.fromContainer(container, VenokContextCreator, this.exceptionsFilterClass);
+    this.contextCreator = this.contextCreatorClass.fromContainer(container, this.contextCreatorClass, this.exceptionsFilterClass);
     this.exceptionsFilter = new this.exceptionsFilterClass(this.container, this.container.applicationConfig);
     this.wrappers = this.discoveryService.getProviders().filter((wrapper) => {
       const { instance } = wrapper;
