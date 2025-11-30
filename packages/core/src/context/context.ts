@@ -87,7 +87,7 @@ export class VenokContextCreator implements VenokContextCreatorInterface {
       interceptors: true,
       guards: true,
       filters: true,
-      callback: () => {},
+      callback: undefined,
     },
     contextType: TContext = "native" as TContext
   ) {

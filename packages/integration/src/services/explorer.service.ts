@@ -49,7 +49,7 @@ export abstract class ExplorerService<T = any> extends Reflector {
       contextCreatorClass = VenokContextCreator,
       exceptionsFilterClass = VenokExceptionFilterContext,
       isRequestScopeSupported = false,
-      options = { guards: true, filters: true, interceptors: true, callback: () => {} },
+      options = { guards: true, filters: true, interceptors: true, callback: undefined },
       requestContextArgIndex = 0,
       metadataKey = ROUTE_ARGS_METADATA,
     } = this.getSettings();
