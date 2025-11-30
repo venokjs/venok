@@ -347,7 +347,7 @@ describe("MiddlewareService", () => {
       await (service as any).registerMiddleware("test-route", "TestModule", config);
 
       expect(createCallbackSpy).toHaveBeenCalled();
-      expect(registerHandlerSpy).toHaveBeenCalledWith("test-route", expect.any(Function));
+      expect(registerHandlerSpy).toHaveBeenCalledWith("test-route", expect.any(Function), config);
     });
 
     it("should throw RuntimeException if middleware wrapper not found", () => {
