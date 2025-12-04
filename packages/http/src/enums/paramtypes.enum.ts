@@ -6,7 +6,7 @@ export enum HttpParamtypes {
   HEADERS,
   FILE,
   FILES,
+  MULTIPLE_FILES,
   HOST,
-  IP,
-  RAW_BODY
+  IP
 }
