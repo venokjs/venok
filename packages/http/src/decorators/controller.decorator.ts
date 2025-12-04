@@ -1,0 +1,154 @@
+import type { ScopeOptions } from "@venok/core";
+
+import type { VersionOptions, VersionValue } from "~/interfaces/index.js";
+
+import { isString, isUndefined, Reflector, SCOPE_OPTIONS_METADATA } from "@venok/core";
+
+import { HOST_METADATA, PATH_METADATA, VERSION_METADATA } from "~/constants.js";
+import { ControllerDiscovery } from "~/helpers/discovery.helper.js";
+
+
+/**
+ * Interface defining options that can be passed to `@Controller()` decorator
+ *
+ * @publicApi
+ */
+export interface ControllerOptions extends ScopeOptions, VersionOptions {
+  /**
+   * Specifies an optional `route path prefix`.  The prefix is pre-pended to the
+   * path specified in any request decorator in the class.
+   *
+   * Supported only by HTTP-based application (does not apply to non-HTTP microservices).
+   */
+  path?: string | string[];
+
+  /**
+   * Specifies an optional HTTP Request host filter. When configured, methods
+   * within the controller will only be routed if the request host matches the
+   * specified value.
+   */
+  host?: string | RegExp | Array<string | RegExp>;
+}
+
+const defaultPath = "/";
+
+const internalController = Reflector.createDecorator<
+  string | string[] | ControllerOptions,
+  ControllerDiscovery
+>({
+  type: "class",
+  transform: (options) => {
+    const [path, host, scopeOptions, versionOptions] = isUndefined(options)
+      ? [defaultPath, undefined, undefined, undefined]
+      : isString(options) || Array.isArray(options)
+        ? [options, undefined, undefined, undefined]
+        : [
+            options.path || defaultPath,
+            options.host,
+            { scope: options.scope, durable: options.durable },
+            (Array.isArray(options.version) ? Array.from(new Set(options.version)) : options.version) as VersionValue,
+          ];
+
+    return new ControllerDiscovery({
+      [PATH_METADATA]: path,
+      [HOST_METADATA]: host,
+      [SCOPE_OPTIONS_METADATA]: scopeOptions,
+      [VERSION_METADATA]: versionOptions,
+    });
+  },
+});
+
+/**
+ * Decorator that marks a class as a Venok controller that can receive inbound
+ * requests and produce responses.
+ *
+ * An HTTP Controller responds to inbound HTTP Requests and produces HTTP Responses.
+ * It defines a class that provides the context for one or more related route
+ * handlers that correspond to HTTP request methods and associated routes
+ * for example `GET /api/profile`, `POST /users/resume`.
+ *
+ * A Microservice Controller responds to requests as well as events, running over
+ * a variety of transports. It defines a class that provides a context for
+ * one or more message or event handlers.
+ *
+ * @publicApi
+ */
+export function Controller(): ClassDecorator;
+
+/**
+ * Decorator that marks a class as a Venok controller that can receive inbound
+ * requests and produce responses.
+ *
+ * An HTTP Controller responds to inbound HTTP Requests and produces HTTP Responses.
+ * It defines a class that provides the context for one or more related route
+ * handlers that correspond to HTTP request methods and associated routes
+ * for example `GET /api/profile`, `POST /users/resume`.
+ *
+ * A Microservice Controller responds to requests as well as events, running over
+ * a variety of transports. It defines a class that provides a context for
+ * one or more message or event handlers.
+ *
+ * @param {string|Array} prefix string that defines a `route path prefix`.  The prefix
+ * is pre-pended to the path specified in any request decorator in the class.
+ *
+ * @publicApi
+ */
+export function Controller(prefix: string | string[]): ClassDecorator;
+
+/**
+ * Decorator that marks a class as a Venok controller that can receive inbound
+ * requests and produce responses.
+ *
+ * An HTTP Controller responds to inbound HTTP Requests and produces HTTP Responses.
+ * It defines a class that provides the context for one or more related route
+ * handlers that correspond to HTTP request methods and associated routes
+ * for example `GET /api/profile`, `POST /users/resume`.
+ *
+ * A Microservice Controller responds to requests as well as events, running over
+ * a variety of transports. It defines a class that provides a context for
+ * one or more message or event handlers.
+ *
+ * @param {object} options configuration object specifying:
+ *
+ * - `scope` - symbol that determines the lifetime of a Controller instance.
+ * See Scope for more details.
+ * - `prefix` - string that defines a `route path prefix`.  The prefix
+ * is pre-pended to the path specified in any request decorator in the class.
+ * - `version` - string, array of strings, or Symbol that defines the version
+ * of all routes in the class. See Versioning for more details.
+ *
+ * @publicApi
+ */
+export function Controller(options: ControllerOptions): ClassDecorator;
+
+/**
+ * Decorator that marks a class as a Venok controller that can receive inbound
+ * requests and produce responses.
+ *
+ * An HTTP Controller responds to inbound HTTP Requests and produces HTTP Responses.
+ * It defines a class that provides the context for one or more related route
+ * handlers that correspond to HTTP request methods and associated routes
+ * for example `GET /api/profile`, `POST /users/resume`
+ *
+ * A Microservice Controller responds to requests as well as events, running over
+ * a variety of transports. It defines a class that provides a context for
+ * one or more message or event handlers.
+ *
+ * @param prefixOrOptions a `route path prefix` or a `ControllerOptions` object.
+ * A `route path prefix` is pre-pended to the path specified in any request decorator
+ * in the class. `ControllerOptions` is an options configuration object specifying:
+ * - `scope` - symbol that determines the lifetime of a Controller instance.
+ * See Scope for more details.
+ * - `prefix` - string that defines a `route path prefix`.  The prefix
+ * is pre-pended to the path specified in any request decorator in the class.
+ * - `version` - string, array of strings, or Symbol that defines the version
+ * of all routes in the class. See Versioning
+ * for more details.
+ *
+ * @publicApi
+ */
+export function Controller(prefixOrOptions?: string | string[] | ControllerOptions): ClassDecorator {
+  return internalController(prefixOrOptions);
+}
+
+Controller["KEY"] = internalController.KEY;
