@@ -1,45 +1,33 @@
-import type { ExcludeRouteMetadata, GlobalPrefixOptions, VersioningOptions } from "~/interfaces/index.js";
+import type {
+  ExcludeRouteMetadata,
+  GlobalPrefixOptions,
+  HttpAppOptions,
+  VersioningOptions
+} from "~/interfaces/index.js";
+import type { AbstractHttpAdapter } from "~/http/adapter.js";
 
 import { Inject, Injectable } from "@venok/core";
 
-import { HTTP_APP_OPTIONS } from "~/application/http.module-defenition.js";
-import { HttpInstanceStorage } from "~/storage/http-instance.storage.js";
-import { HttpApplication } from "~/application/application.js";
-import { AbstractHttpAdapter } from "~/adapter/adapter.js";
-
-export interface HttpAppOptions {
-  port: number;
-  callback: (app: HttpApplication) => void;
-  adapter: AbstractHttpAdapter;
-}
+import { HTTP_APP_OPTIONS } from "~/http/configurable-module.js";
 
 @Injectable()
-export class HttpConfig {
+export class HttpConfig<T extends AbstractHttpAdapter = AbstractHttpAdapter> {
   private globalPrefix = "";
   private globalPrefixOptions: GlobalPrefixOptions<ExcludeRouteMetadata> = {};
   private versioningOptions!: VersioningOptions;
 
-  private readonly httpInstanceStorage = new HttpInstanceStorage();
+  private adapter: T;
 
   constructor(@Inject(HTTP_APP_OPTIONS) private readonly options: Required<HttpAppOptions>) {
-    this.setHttpAdapter(this.options.adapter);
+    this.adapter = this.options.adapter as T;
   }
 
-  public setHttpAdapter(httpAdapter: any) {
-    this.httpInstanceStorage.httpAdapter = httpAdapter;
-
-    if (!this.httpInstanceStorage.httpAdapterHost) return;
-
-    const host = this.httpInstanceStorage.httpAdapterHost;
-    host.httpAdapter = httpAdapter;
+  public setHttpAdapter(httpAdapter: T) {
+    this.adapter = httpAdapter;
   }
 
-  public getHttpAdapterRef() {
-    return this.httpInstanceStorage.httpAdapter;
-  }
-
-  public getHttpAdapterHostRef() {
-    return this.httpInstanceStorage.httpAdapterHost;
+  public getHttpAdapterRef(): T {
+    return this.adapter;
   }
 
   public setGlobalPrefix(prefix: string) {
