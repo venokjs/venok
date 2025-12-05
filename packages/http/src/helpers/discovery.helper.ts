@@ -1,12 +1,39 @@
 import type { ScopeOptions } from "@venok/core";
 
-import type { VersionValue } from "~/interfaces/index.js";
+import type { AdapterRouteMetadata, VersionValue } from "~/interfaces/index.js";
 
 import { SCOPE_OPTIONS_METADATA } from "@venok/core";
 
-import { VenokBaseDiscovery } from "~/discovery/base.discovery.js";
-import { RouteDiscovery } from "~/discovery/route.discovery.js";
 import { HOST_METADATA, PATH_METADATA, VERSION_METADATA } from "~/constants.js";
+
+type DiscoveredItem = {
+  class: any;
+  handler?: (...args: any[]) => any;
+};
+
+export abstract class VenokBaseDiscovery<T = any> {
+  protected discovery!: DiscoveredItem;
+
+  public constructor(protected readonly meta: T) {}
+
+  public getClass() {
+    return this.discovery.class;
+  }
+
+  public getHandler() {
+    return this.discovery.handler;
+  }
+
+  public setDiscovery(discovery: DiscoveredItem) {
+    this.discovery ??= discovery;
+  }
+
+  public getMeta() {
+    return this.meta;
+  }
+}
+
+export class RouteDiscovery extends VenokBaseDiscovery<AdapterRouteMetadata & { path: string }> {}
 
 type ControllerDiscoveryMeta = {
   [PATH_METADATA]: string | string[];
@@ -18,7 +45,7 @@ type ControllerDiscoveryMeta = {
 export class ControllerDiscovery extends VenokBaseDiscovery<ControllerDiscoveryMeta> {
   protected readonly items: RouteDiscovery[] = [];
 
-  public setItem(item: RouteDiscovery) {
+  public pushItem(item: RouteDiscovery) {
     this.items.push(item);
   }
 
@@ -26,7 +53,7 @@ export class ControllerDiscovery extends VenokBaseDiscovery<ControllerDiscoveryM
     return this.items;
   }
 
-  public getPath() {
+  public getPrefixes() {
     return this.meta[PATH_METADATA];
   }
 
