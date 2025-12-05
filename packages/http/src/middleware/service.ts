@@ -10,7 +10,7 @@ import { HttpConfig } from "~/http/config.js";
 import { MiddlewareRoutesMapper } from "~/middleware/routes-mapper.js";
 import { MiddlewareBuilder } from "~/middleware/builder.js";
 import { HttpExceptionFiltersContext } from "~/filters/context.js";
-import { VENOK_ADAPTER_ADD_MIDDLEWARE } from "~/symbol.js";
+import { VENOK_ADAPTER_ADD_MIDDLEWARE } from "~/symbols.js";
 
 
 @Injectable()
