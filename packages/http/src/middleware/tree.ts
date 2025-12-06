@@ -53,11 +53,15 @@ export const getMiddlewaresForPattern = (tree: MiddlewareNode, pathPattern: stri
 
     // wildcard
     const wildcard = current.children.get("*");
-    if (wildcard) chain.push(...filterMiddlewaresByMethod(wildcard.middlewares, method));
+    if (wildcard && part !== "*") {
+      chain.push(...filterMiddlewaresByMethod(wildcard.middlewares, method));
+    }
 
     // param (:id, :prefix)
     const paramNode: MiddlewareNode | undefined = Array.from(current.children.values()).find(c => c.segment.startsWith(":"));
-    if (paramNode) chain.push(...filterMiddlewaresByMethod(paramNode.middlewares, method));
+    if (paramNode && !part.startsWith(":")) {
+      chain.push(...filterMiddlewaresByMethod(paramNode.middlewares, method));
+    }
 
     // literal
     const next = current.children.get(part);
