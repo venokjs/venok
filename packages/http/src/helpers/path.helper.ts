@@ -4,9 +4,7 @@ export const addLeadingSlash = (path?: string): string => {
 
 export const normalizePath = (path?: string): string => {
   return path
-    ? path.startsWith("/")
-      ? ("/" + path.replace(/\/+$/, "")).replace(/\/+/g, "/")
-      : "/" + path.replace(/\/+$/, "")
+    ? ("/" + path.replace(/\/+$/, "")).replace(/\/+/g, "/")
     : "/";
 };
 
