@@ -26,7 +26,8 @@ export interface ResponseDecoratorOptions {
  *
  * @publicApi
  */
-export const HttpContext: () => ParameterDecorator = (options?: { response?: ResponseDecoratorOptions }) => {
+// eslint-disable-next-line @stylistic/max-len
+export const HttpContext: (options?: { response?: ResponseDecoratorOptions }) => ParameterDecorator = (options?: { response?: ResponseDecoratorOptions }) => {
   return (target, key, index) => {
     if (options?.response && options.response?.passthrough) {
       Reflect.defineMetadata(RESPONSE_PASSTHROUGH_METADATA, options.response.passthrough, target.constructor, key as string);
