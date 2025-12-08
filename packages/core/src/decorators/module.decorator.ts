@@ -1,20 +1,19 @@
-import type { ModuleMetadata } from "~/interfaces/index.js";
+import type { ModuleMetadata, Provider } from "~/interfaces/index.js";
 
 import { MODULE_METADATA as metadataConstants } from "~/constants.js";
 
-export const INVALID_MODULE_CONFIG_MESSAGE = (text: TemplateStringsArray, property: string) =>
-  `Invalid property '${property}' passed into the @Module() decorator.`;
+const reservedMetadataKeys = [metadataConstants.IMPORTS, metadataConstants.EXPORTS, metadataConstants.PROVIDERS];
 
-const metadataKeys = [metadataConstants.IMPORTS, metadataConstants.EXPORTS, metadataConstants.PROVIDERS];
+/**
+ * Extended interface for Module decorator that allows custom keys
+ */
+interface ExtendedModuleMetadata {
+  /**
+   * Allows any additional keys (controllers, queues, processors, etc.)
+   * that will be automatically added to the providers array.
+   */
 
-function validateModuleKeys(keys: string[]) {
-  const validateKey = (key: string) => {
-    if (metadataKeys.includes(key)) return;
-
-    throw new Error(INVALID_MODULE_CONFIG_MESSAGE`${key}`);
-  };
-
-  keys.forEach(validateKey);
+  [key: string]: Provider[];
 }
 
 /**
@@ -28,15 +27,23 @@ function validateModuleKeys(keys: string[]) {
  *
  * @publicApi
  */
-export function Module(metadata: ModuleMetadata): ClassDecorator {
-  const propsKeys = Object.keys(metadata);
-  validateModuleKeys(propsKeys);
-
+export function Module(metadata: ModuleMetadata & ExtendedModuleMetadata): ClassDecorator {
   return (target: Function) => {
+    const allProviders: any[] = [...(metadata.providers || [])];
+    
     for (const property in metadata) {
       if (Object.prototype.hasOwnProperty.call(metadata, property)) {
-        Reflect.defineMetadata(property, (metadata as any)[property], target);
+        if (reservedMetadataKeys.includes(property) && property !== metadataConstants.PROVIDERS) {
+          Reflect.defineMetadata(property, (metadata as any)[property], target);
+        } else if (!reservedMetadataKeys.includes(property)) {
+          // If it's custom key, add content to providers
+          const customProviders = (metadata as any)[property];
+
+          if (Array.isArray(customProviders)) allProviders.push(...customProviders as Provider[]);
+        }
       }
     }
+
+    if (allProviders.length > 0) Reflect.defineMetadata(metadataConstants.PROVIDERS, allProviders, target);
   };
 }
