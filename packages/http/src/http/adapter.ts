@@ -201,6 +201,8 @@ export abstract class AbstractHttpAdapter<Instance = any, Context extends any[] 
 
   abstract listen(port: number, hostname: string, callback: (...args: any[]) => Promise<void>): Promise<void>;
 
+  abstract close(): Promise<void>;
+
   abstract [VENOK_APPLY_ROUTES_TO_INSTANCE](routes: Map<string, AdapterInstanceRouteMetadata>): void;
 
   [VENOK_ADAPTER_SET_EXCEPTION_FILTER](container: VenokContainer, config: ApplicationConfig) {
