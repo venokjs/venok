@@ -39,44 +39,65 @@ export const filterMiddlewaresByMethod = (middlewares: AdapterMiddlewareMetadata
     .filter(Boolean) as AdapterMiddlewareMetadata[];
 };
 
-
+/* Danger zone - maybe bugs */
 export const getMiddlewaresForPattern = (tree: MiddlewareNode, pathPattern: string, method: HttpMethod): AdapterMiddlewareMetadata[] => {
   const parts = pathPattern.split("/").filter(Boolean);
-  let current: MiddlewareNode | undefined = tree;
   const chain: AdapterMiddlewareMetadata[] = [];
+  const visited = new Set<string>(); 
 
-  for (const part of parts) {
-    if (!current) break;
-
-    // middleware
-    if (current.middlewares.length) chain.push(...filterMiddlewaresByMethod(current.middlewares, method));
-
-    // wildcard
-    const wildcard = current.children.get("*");
-    if (wildcard && part !== "*") {
-      chain.push(...filterMiddlewaresByMethod(wildcard.middlewares, method));
+  function addMiddleware(node: MiddlewareNode) {
+    if (!node.middlewares.length) return;
+    
+    const filtered = filterMiddlewaresByMethod(node.middlewares, method);
+    for (const middleware of filtered) {
+      if (!visited.has(middleware.path)) {
+        chain.push(middleware);
+        visited.add(middleware.path);
+      }
     }
-
-    // param (:id, :prefix)
-    const paramNode: MiddlewareNode | undefined = Array.from(current.children.values()).find(c => c.segment.startsWith(":"));
-    if (paramNode && !part.startsWith(":")) {
-      chain.push(...filterMiddlewaresByMethod(paramNode.middlewares, method));
-    }
-
-    // literal
-    const next = current.children.get(part);
-    if (next) { current = next; continue; }
-
-    // param
-    if (part.startsWith(":") && paramNode) { current = paramNode; continue; }
-
-    // wildcard
-    if (part === "*" && wildcard) { current = wildcard; continue; }
-
-    break;
   }
 
-  if (current?.middlewares.length) chain.push(...filterMiddlewaresByMethod(current.middlewares, method));
+  function traversePath(node: MiddlewareNode | undefined, pathIndex: number): void {
+    if (!node) return;
 
+    // Add middleware from current node
+    addMiddleware(node);
+
+    // If we've processed all parts, we're done
+    if (pathIndex >= parts.length) return;
+
+    const part = parts[pathIndex];
+
+    // Collect middleware from wildcard and param children that match this part
+    const wildcard = node.children.get("*");
+    if (wildcard && part !== "*") {
+      addMiddleware(wildcard);
+      // Continue traversing through wildcard path
+      traversePath(wildcard, pathIndex + 1);
+    }
+
+    const paramNode: MiddlewareNode | undefined = Array.from(node.children.values()).find(c => c.segment.startsWith(":"));
+    if (paramNode && !part.startsWith(":")) {
+      addMiddleware(paramNode);
+      // Continue traversing through param path
+      traversePath(paramNode, pathIndex + 1);
+    }
+
+    // Try literal match
+    const literalNode = node.children.get(part);
+    if (literalNode) {
+      traversePath(literalNode, pathIndex + 1);
+      return; // Literal has priority, so if found, don't try fallbacks
+    }
+
+    // Try explicit param/wildcard patterns if no literal match
+    if (part.startsWith(":") && paramNode) {
+      traversePath(paramNode, pathIndex + 1);
+    } else if (part === "*" && wildcard) {
+      traversePath(wildcard, pathIndex + 1);
+    }
+  }
+
+  traversePath(tree, 0);
   return chain;
 };
