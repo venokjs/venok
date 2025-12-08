@@ -52,6 +52,10 @@ export * from "./errors/messages.js";
 /* Filters */
 export * from "./filters/context.js";
 
+/* Guards */
+export * from "./guards/consumer.js";
+export * from "./guards/context-creator.js";
+
 /* Helpers */
 export * from "./helpers/color.helper.js";
 export * from "./helpers/context.helper.js";
@@ -92,8 +96,16 @@ export * from "./inspector/initialize-on-preview.allowlist.js";
 export * from "./inspector/partial-graph.host.js";
 export * from "./inspector/serialized-graph.js";
 
+/* Interceptors */
+export * from "./interceptors/consumer.js";
+export * from "./interceptors/context-creator.js";
+
 /* Interfaces */
 export * from "./interfaces/index.js";
+
+/* Pipes */
+export * from "./pipes/consumer.js";
+export * from "./pipes/context-creator.js";
 
 /* Services */
 export * from "./services/console.service.js";
