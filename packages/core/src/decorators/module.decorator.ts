@@ -2,9 +2,6 @@ import type { ModuleMetadata, Provider } from "~/interfaces/index.js";
 
 import { MODULE_METADATA as metadataConstants } from "~/constants.js";
 
-export const INVALID_MODULE_CONFIG_MESSAGE = (text: TemplateStringsArray, property: string) =>
-  `Invalid property '${property}' passed into the @Module() decorator.`;
-
 const reservedMetadataKeys = [metadataConstants.IMPORTS, metadataConstants.EXPORTS, metadataConstants.PROVIDERS];
 
 /**
