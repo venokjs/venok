@@ -71,6 +71,8 @@ export class ApplicationContext<TOptions extends ApplicationContextOptions = App
     super();
     this.injector = new Injector();
 
+    if (!this.contextModule) this.selectContextModule();
+
     if (this.appOptions.preview) this.printInPreviewModeWarning();
   }
 

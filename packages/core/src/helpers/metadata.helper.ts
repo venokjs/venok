@@ -1,4 +1,4 @@
-import type { CustomParamFactory, ParamData, PipeTransform, Type } from "~/interfaces/index.js";
+import type { CustomParamFactory, ParamData, ParamMetadata, PipeTransform, Type } from "~/interfaces/index.js";
 
 import { CUSTOM_ROUTE_ARGS_METADATA } from "~/constants.js";
 
@@ -8,8 +8,8 @@ export function extendArrayMetadata<T extends Array<unknown>>(key: string, metad
   Reflect.defineMetadata(key, value, target);
 }
 
-export function assignMetadata<TParamtype extends string | number = string, TArgs = any>(
-  args: TArgs,
+export function assignMetadata<TParamtype extends string | number = string>(
+  args: Record<string, ParamMetadata>,
   paramtype: TParamtype,
   index: number,
   data?: ParamData,
@@ -26,7 +26,7 @@ export function assignMetadata<TParamtype extends string | number = string, TArg
 }
 
 export function assignCustomParameterMetadata(
-  args: Record<number, any>,
+  args: Record<string, ParamMetadata>,
   paramtype: number | string,
   index: number,
   factory: CustomParamFactory,

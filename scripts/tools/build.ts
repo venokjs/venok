@@ -79,7 +79,7 @@ export const normalizePath = (str: string) => str.split("\\").join("/");
 
 const main = async () => {
   // const entries = Object.keys(BunLock.workspaces).slice(1);
-  const entries = ["packages/core", "packages/integration", "network/http", "platforms/express"];
+  const entries = ["packages/core", "packages/integration", "packages/http"];
 
   if (entries.length === 0) throw new Error(`Workspaces not found.`);
 
@@ -102,7 +102,7 @@ const main = async () => {
 
     try {
       await Bun.$`rm -rf ${dist}`;
-    } catch {}
+    } catch { /* empty */ }
 
     const base: Partial<TsupOptions> = {
       outDir: dist,

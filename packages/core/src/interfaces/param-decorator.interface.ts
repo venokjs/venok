@@ -2,4 +2,4 @@ export type ParamDecoratorEnhancer = ParameterDecorator;
 /**
  * @publicApi
  */
-export type CustomParamFactory<TData = any, TInput = any, TOutput = any> = (data: TData, input: TInput) => TOutput;
+export type CustomParamFactory<TData = any, TContext = any, TOutput = any> = (data: TData, context: TContext) => TOutput;

@@ -89,7 +89,7 @@ export abstract class MiddlewareService<MiddlewareConfiguration extends BaseMidd
     for (const info of to) await this.registerMiddleware(info, moduleKey, config);
   }
 
-  private async registerMiddleware(to: MiddlewareConfiguration["to"][number], moduleKey: string, config: any) {
+  private async registerMiddleware(to: MiddlewareConfiguration["to"][number], moduleKey: string, config: MiddlewareConfiguration) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const middlewareCollection = [].concat(config.middleware);
     const collection = this.middlewareContainer.getMiddlewareCollection(moduleKey);
@@ -104,13 +104,14 @@ export abstract class MiddlewareService<MiddlewareConfiguration extends BaseMidd
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const proxy = await this.createCallback(instanceWrapper, moduleRef, collection);
 
-      await this.registerHandler(to, proxy);
+      await this.registerHandler(to, proxy, config);
     }
   }
 
   protected abstract registerHandler(
     info: MiddlewareConfiguration["to"][number],
     proxy: (...args: any[]) => any,
+    config: MiddlewareConfiguration,
   ): Promise<void> | void;
 
   protected async createCallback(
