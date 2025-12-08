@@ -3,7 +3,7 @@ import type { PipeTransform } from "~/interfaces/index.js";
 
 import { beforeEach, describe, expect, it } from "bun:test";
 
-import { createParamDecorator } from "~/decorators/create-param.decorator.js";
+import { createParamDecorator } from "~/helpers/create-param-decorator.helper.js";
 import { ROUTE_ARGS_METADATA } from "~/constants.js";
 import { Injectable } from "~/decorators/injectable.decorator.js";
 

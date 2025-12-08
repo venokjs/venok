@@ -1,19 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unused-vars */
-import {
-  CoreModule,
-  ExecutionContextHost,
-  Injectable,
-  InstanceWrapper,
-  Injector,
-  MetadataScanner,
-  Reflector,
-  ROUTE_ARGS_METADATA,
-  SetMetadata,
-  STATIC_CONTEXT,
-  VenokContainer,
-  VenokContextCreator,
-  VenokExceptionFilterContext
-} from "@venok/core";
+import type { ExplorerSettings } from "~/interfaces/services/explorer.interface.js";
+
+import { CoreModule, ExecutionContextHost, Injectable, Injector, InstanceWrapper, MetadataScanner, Reflector, ROUTE_ARGS_METADATA, SetMetadata, STATIC_CONTEXT, VenokContainer, VenokContextCreator, VenokExceptionFilterContext } from "@venok/core";
 import { beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 
 import { DiscoveryService } from "~/services/discovery.service.js";
@@ -62,8 +50,13 @@ class RequestScopedController {
 // Concrete implementation of ExplorerService for testing
 class TestExplorerService extends ExplorerService<{ method: string; callback: Function }> {
   protected readonly paramsFactory = mockParamsFactory;
-  protected readonly type = "test";
-  protected readonly withRequestScope = false;
+
+  protected getSettings(): ExplorerSettings {
+    return {
+      contextType: "test",
+      isRequestScopeSupported: false,
+    };
+  }
 
   protected filterProperties(wrapper: InstanceWrapper, metadataKey: string) {
     const { instance } = wrapper;
@@ -97,9 +90,14 @@ class TestExplorerService extends ExplorerService<{ method: string; callback: Fu
 // Request-scoped implementation
 class RequestScopedExplorerService extends ExplorerService<{ method: string; callback: Function }> {
   protected readonly paramsFactory = mockParamsFactory;
-  protected readonly type = "request";
-  protected readonly withRequestScope = true;
-  protected readonly requestArgIndex = 0;
+
+  protected getSettings(): ExplorerSettings {
+    return {
+      contextType: "request",
+      isRequestScopeSupported: true,
+      requestContextArgIndex: 0,
+    };
+  }
 
   protected filterProperties(wrapper: InstanceWrapper, metadataKey: string) {
     const { instance } = wrapper;
@@ -198,25 +196,25 @@ describe("ExplorerService", () => {
     explorerService = new TestExplorerService(
       container,
       discoveryService,
-      contextCreator,
       metadataScanner
     );
 
     requestScopedExplorerService = new RequestScopedExplorerService(
       container,
       discoveryService,
-      contextCreator,
       metadataScanner
     );
+
+    (explorerService as any).contextCreator = contextCreator;
+    (requestScopedExplorerService as any).contextCreator = contextCreator;
   });
 
   describe("constructor", () => {
-    it("should initialize properly", () => {
+    it("should getSettings properly", () => {
       expect(explorerService).toBeDefined();
       expect((explorerService as any).container).toBe(container);
       expect((explorerService as any).discoveryService).toBe(discoveryService);
       expect((explorerService as any).metadataScanner).toBe(metadataScanner);
-      expect((explorerService as any).contextCreator).toBe(contextCreator);
     });
 
     it("should filter wrappers properly based on withRequestScope", () => {
@@ -242,12 +240,12 @@ describe("ExplorerService", () => {
       });
     });
 
-    it("should initialize exception filter", () => {
+    it("should getSettings exception filter", () => {
       expect((explorerService as any).exceptionsFilter).toBeDefined();
       expect((explorerService as any).exceptionsFilter).toBeInstanceOf(VenokExceptionFilterContext);
     });
 
-    it("should initialize properties with correct defaults", () => {
+    it("should getSettings properties with correct defaults", () => {
       expect((explorerService as any).type).toBe("test");
       expect((explorerService as any).withRequestScope).toBe(false);
       expect((explorerService as any).requestArgIndex).toBe(0);
@@ -550,6 +548,8 @@ describe("ExplorerService", () => {
       // We test that the method exists and is properly called during exploration
       class MockExplorerService extends ExplorerService {
         protected readonly paramsFactory = mockParamsFactory;
+
+        protected getSettings() { return {}; }
         
         protected filterProperties() {
           return undefined; // Mock implementation
@@ -559,7 +559,6 @@ describe("ExplorerService", () => {
       const mockService = new MockExplorerService(
         container,
         discoveryService,
-        contextCreator,
         metadataScanner
       );
 
@@ -578,7 +577,6 @@ describe("ExplorerService", () => {
       const emptyExplorerService = new TestExplorerService(
         container,
         discoveryService,
-        contextCreator,
         metadataScanner
       );
 
@@ -598,7 +596,6 @@ describe("ExplorerService", () => {
       const emptyExplorerService = new TestExplorerService(
         container,
         discoveryService,
-        contextCreator,
         metadataScanner
       );
 
@@ -617,7 +614,6 @@ describe("ExplorerService", () => {
       const emptyExplorerService = new TestExplorerService(
         container,
         discoveryService,
-        contextCreator,
         metadataScanner
       );
 
@@ -633,7 +629,6 @@ describe("ExplorerService", () => {
       const emptyExplorerService = new TestExplorerService(
         container,
         discoveryService,
-        contextCreator,
         mockMetadataScanner as any
       );
 
@@ -651,6 +646,8 @@ describe("ExplorerService", () => {
         callback: Function 
       }> {
         protected readonly paramsFactory = mockParamsFactory;
+
+        protected getSettings() { return {}; }
 
         protected filterProperties(wrapper: InstanceWrapper, metadataKey: string) {
           const { instance } = wrapper;
@@ -682,7 +679,6 @@ describe("ExplorerService", () => {
       const realExplorerService = new RealExplorerService(
         container,
         discoveryService,
-        contextCreator,
         metadataScanner
       );
 
@@ -707,7 +703,6 @@ describe("ExplorerService", () => {
       const performanceExplorerService = new TestExplorerService(
         container,
         discoveryService,
-        contextCreator,
         metadataScanner
       );
 

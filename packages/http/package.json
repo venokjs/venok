@@ -1,0 +1,41 @@
+{
+  "name": "@venok/http",
+  "version": "2.0.0",
+  "description": "",
+  "author": "shiz-ceo",
+  "homepage": "",
+  "main": "index.js",
+  "types": "./index.d.ts",
+  "type": "module",
+  "files": ["package.json", "dist"],
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      },
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/venokjs/venok.git",
+    "directory": "packages/http"
+  },
+  "scripts": {},
+  "peerDependencies": {
+    "@venok/core": "workspace:*",
+    "@venok/integration": "workspace:*",
+    "reflect-metadata": "catalog:",
+    "rxjs": "catalog:"
+  },
+  "dependencies": {
+    "path-to-regexp": "^6.2.1"
+  }
+}
