@@ -8,6 +8,18 @@ export const INVALID_MODULE_CONFIG_MESSAGE = (text: TemplateStringsArray, proper
 const reservedMetadataKeys = [metadataConstants.IMPORTS, metadataConstants.EXPORTS, metadataConstants.PROVIDERS];
 
 /**
+ * Extended interface for Module decorator that allows custom keys
+ */
+interface ExtendedModuleMetadata {
+  /**
+   * Allows any additional keys (controllers, queues, processors, etc.)
+   * that will be automatically added to the providers array.
+   */
+
+  [key: string]: Provider[];
+}
+
+/**
  * Decorator that marks a class as a module.
  *
  * Modules are used by Venok to organize the application structure into scopes.
@@ -18,7 +30,7 @@ const reservedMetadataKeys = [metadataConstants.IMPORTS, metadataConstants.EXPOR
  *
  * @publicApi
  */
-export function Module(metadata: ModuleMetadata): ClassDecorator {
+export function Module(metadata: ModuleMetadata & ExtendedModuleMetadata): ClassDecorator {
   return (target: Function) => {
     const allProviders: any[] = [...(metadata.providers || [])];
     

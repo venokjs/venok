@@ -23,9 +23,4 @@ export interface ModuleMetadata {
   exports?: Array<
     DynamicModule | Promise<DynamicModule> | string | symbol | Provider | ForwardReference | Abstract<any> | Function
   >;
-  /**
-   * Allows any additional keys (controllers, queues, processors, etc.)
-   * that will be automatically added to the providers array.
-   */
-  [key: string]: Provider[];
 }
