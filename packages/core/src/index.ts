@@ -49,8 +49,12 @@ export * from "./errors/exceptions/unknown-export.exception.js";
 export * from "./errors/exceptions/unknown-module.exception.js";
 export * from "./errors/messages.js";
 
+/* Exceptions */
+export * from "./exceptions/handler.js";
+
 /* Filters */
 export * from "./filters/context.js";
+export * from "./filters/context-creator.js";
 
 /* Guards */
 export * from "./guards/consumer.js";
