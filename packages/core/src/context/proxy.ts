@@ -36,22 +36,4 @@ export class VenokProxy {
     exceptionsHandler.next(error, host);
     return args;
   }
-
-  public createExceptionLayerProxy<TContext extends string = ContextType>(
-    targetCallback: <TError>(err: TError, ...args: any[]) => void | Promise<void>,
-    exceptionsHandler: VenokExceptionsHandler,
-    type?: TContext
-  ) {
-    return async <TError>(err: TError, req: any, res: any, next: any) => {
-      try {
-        await targetCallback(err, req, res, next);
-      } catch (e) {
-        const host = new ExecutionContextHost([req, res, next]);
-        // @ts-expect-error Mismatch types
-        host.setType<TContext>(type);
-        exceptionsHandler.next(e, host);
-        return res;
-      }
-    };
-  }
 }
