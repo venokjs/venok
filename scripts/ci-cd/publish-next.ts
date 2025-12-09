@@ -145,7 +145,7 @@ async function main() {
     console.log(`Publishing ${pkg.name}@${nextCanaryVersion} --tag next`);
     try {
       // bun publish automatically uses bun.lock and .npmrc
-      await Bun.$`cd ${pkg.path} && bun publish --tag next --dry-run`.quiet();
+      await Bun.$`cd ${pkg.path} && bun publish --tag next`.quiet();
       console.log(`Published ${pkg.name}`);
     } catch (e) {
       console.error(`Failed ${pkg.name}:`, e);
