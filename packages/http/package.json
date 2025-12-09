@@ -7,7 +7,10 @@
   "main": "index.js",
   "types": "./index.d.ts",
   "type": "module",
-  "files": ["package.json", "dist"],
+  "files": [
+    "package.json",
+    "dist"
+  ],
   "exports": {
     ".": {
       "require": {
@@ -28,7 +31,9 @@
     "url": "git+https://github.com/venokjs/venok.git",
     "directory": "packages/http"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "bun test ./test/"
+  },
   "peerDependencies": {
     "@venok/core": "workspace:*",
     "@venok/integration": "workspace:*",
