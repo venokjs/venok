@@ -25,7 +25,7 @@ export class VenokProxy {
     };
   }
 
-  private handleError<T>(
+  protected handleError<T>(
     exceptionsHandler: VenokExceptionsHandler,
     args: any[],
     error: T,
