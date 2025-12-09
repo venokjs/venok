@@ -136,15 +136,16 @@ async function main() {
     console.log(`Updated ${pkg.name} → ${nextCanaryVersion}`);
   }
 
-  // // Publishing
-  // if (!process.env.NPM_TOKEN) throw new Error("NPM_TOKEN not set");
-  //
-  // await Bun.write(".npmrc", `//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`);
+  // Publishing
+  if (!process.env.NPM_TOKEN) throw new Error("NPM_TOKEN not set");
+
+  await Bun.write(".npmrc", `//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`);
 
   for (const pkg of workspace) {
     console.log(`Publishing ${pkg.name}@${nextCanaryVersion} --tag next`);
     try {
       // bun publish automatically uses bun.lock and .npmrc
+      await Bun.write(`${pkg.path}/.npmrc`, `//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`);
       await Bun.$`cd ${pkg.path} && bun publish --tag next`.quiet();
       console.log(`Published ${pkg.name}`);
     } catch (e) {
