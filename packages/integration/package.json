@@ -6,7 +6,10 @@
   "type": "module",
   "homepage": "",
   "main": "index.js",
-  "files": ["package.json", "dist"],
+  "files": [
+    "package.json",
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -28,8 +31,7 @@
     "directory": "packages/integration"
   },
   "scripts": {
-    "build": "venok build",
-    "test": "mocha test/**/*.spec.ts"
+    "test": "bun test ./test/"
   },
   "peerDependencies": {
     "@venok/core": "workspace:*",
