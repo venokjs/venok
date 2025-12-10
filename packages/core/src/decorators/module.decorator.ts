@@ -4,17 +4,20 @@ import { MODULE_METADATA as metadataConstants } from "~/constants.js";
 
 const reservedMetadataKeys = [metadataConstants.IMPORTS, metadataConstants.EXPORTS, metadataConstants.PROVIDERS];
 
-/**
- * Extended interface for Module decorator that allows custom keys
- */
-interface ExtendedModuleMetadata {
-  /**
-   * Allows any additional keys (controllers, queues, processors, etc.)
-   * that will be automatically added to the providers array.
-   */
+type KnownModuleKeys = keyof ModuleMetadata;
 
-  [key: string]: Provider[];
-}
+type DisjointRecord<T> =
+  keyof T extends infer K
+    ? K extends KnownModuleKeys
+      ? never
+      : K extends string
+        ? Record<K, Provider[]>
+        : never
+    : never;
+
+export type ModuleOptions =
+  | ModuleMetadata
+  | (Record<string, Provider[]> & DisjointRecord<Record<string, Provider[]>>);
 
 /**
  * Decorator that marks a class as a module.
@@ -27,7 +30,7 @@ interface ExtendedModuleMetadata {
  *
  * @publicApi
  */
-export function Module(metadata: ModuleMetadata & ExtendedModuleMetadata): ClassDecorator {
+export function Module(metadata: ModuleOptions): ClassDecorator {
   return (target: Function) => {
     const allProviders: any[] = [...(metadata.providers || [])];
     
