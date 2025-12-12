@@ -1,0 +1,145 @@
+name: CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main
+      - next
+  push:
+    branches:
+      - main
+      - next
+
+jobs:
+  setup:
+    name: Setup and Install Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Bun
+        id: cache-bun
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun
+          key: ${{ runner.os }}-bun-${{ hashFiles('.bun-version') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Setup Bun
+        if: steps.cache-bun.outputs.cache-hit != 'true'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache dependencies
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ~/.bun/install/cache
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+      - name: Install dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: bun install
+
+  get-packages:
+    name: Get Packages Matrix
+    runs-on: ubuntu-latest
+    needs: setup
+    outputs:
+      packages: ${{ steps.get-matrix.outputs.packages }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Restore Bun cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun
+          key: ${{ runner.os }}-bun-${{ hashFiles('.bun-version') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ~/.bun/install/cache
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+      - name: Get packages for matrix
+        id: get-matrix
+        run: |
+          PACKAGES=$(bun run scripts/ci-cd/get-packages-for-matrix.ts)
+          echo "packages=$PACKAGES" >> $GITHUB_OUTPUT
+
+  test:
+    name: Test ${{ matrix.package }}
+    runs-on: ubuntu-latest
+    needs: get-packages
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.get-packages.outputs.packages) }}
+      fail-fast: false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Restore Bun cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun
+          key: ${{ runner.os }}-bun-${{ hashFiles('.bun-version') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ~/.bun/install/cache
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+      - name: Run tests for ${{ matrix.package }}
+        run: bun test ${{ matrix.package }}/test/ --coverage
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Restore Bun cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun
+          key: ${{ runner.os }}-bun-${{ hashFiles('.bun-version') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ~/.bun/install/cache
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+      - name: Build project
+        run: bun run ./scripts/tools/build.ts
