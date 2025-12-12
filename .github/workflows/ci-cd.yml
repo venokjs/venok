@@ -18,15 +18,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cache Bun
-        id: cache-bun
-        uses: actions/cache@v4
-        with:
-          path: ~/.bun
-          key: ${{ runner.os }}-bun-${{ hashFiles('.bun-version') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
-
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -72,6 +63,12 @@ jobs:
 
       - name: Build project
         run: bun run ./scripts/tools/build.ts
+
+      - name: Cache build output
+        uses: actions/cache@v4
+        with:
+          path: packages/*/dist
+          key: ${{ runner.os }}-build-${{ github.sha }}
 
   get-packages:
     name: Get Packages Matrix
@@ -130,6 +127,12 @@ jobs:
           key: ${{ runner.os }}-deps-${{ hashFiles('**/bun.lock') }}
           restore-keys: |
             ${{ runner.os }}-deps-
+
+      - name: Restore build cache
+        uses: actions/cache@v4
+        with:
+          path: packages/*/dist
+          key: ${{ runner.os }}-build-${{ github.sha }}
 
       - name: Run tests for ${{ matrix.package }}
         run: bun test ${{ matrix.package }}/test/ --coverage
