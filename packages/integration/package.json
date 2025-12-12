@@ -1,12 +1,15 @@
 {
   "name": "@venok/integration",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "",
   "author": "shiz-ceo",
   "type": "module",
   "homepage": "",
   "main": "index.js",
-  "files": ["package.json", "dist"],
+  "files": [
+    "package.json",
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -28,8 +31,7 @@
     "directory": "packages/integration"
   },
   "scripts": {
-    "build": "venok build",
-    "test": "mocha test/**/*.spec.ts"
+    "test": "bun test ./test/"
   },
   "peerDependencies": {
     "@venok/core": "workspace:*",

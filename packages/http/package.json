@@ -1,13 +1,16 @@
 {
   "name": "@venok/http",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "",
   "author": "shiz-ceo",
   "homepage": "",
   "main": "index.js",
   "types": "./index.d.ts",
   "type": "module",
-  "files": ["package.json", "dist"],
+  "files": [
+    "package.json",
+    "dist"
+  ],
   "exports": {
     ".": {
       "require": {
@@ -28,7 +31,9 @@
     "url": "git+https://github.com/venokjs/venok.git",
     "directory": "packages/http"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "bun test ./test/"
+  },
   "peerDependencies": {
     "@venok/core": "workspace:*",
     "@venok/integration": "workspace:*",

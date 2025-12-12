@@ -10,7 +10,7 @@ import type {
 import { uid } from "uid";
 
 import { assignCustomParameterMetadata, assignMetadata } from "~/helpers/metadata.helper.js";
-import { isFunction, isNull, isString } from "~/helpers/shared.helper.js";
+import { isFunction, isNull } from "~/helpers/shared.helper.js";
 import { ROUTE_ARGS_METADATA } from "~/constants.js";
 
 type DefaultParamTypes = { [key: string]: string | number };
@@ -108,14 +108,15 @@ export const createNativeParamDecorator = <Paramtypes extends DefaultParamTypes>
     return (target, key, index) => {
       const args = getHandlerArgsMetadata(target, key as string);
 
-      const hasParamData = isNull(data) || isString(data);
+      const hasParamData = isNull(data) || !isPipe(data);
       const paramData = hasParamData ? data : undefined;
       const paramPipes: Type<PipeTransform> | PipeTransform[] = hasParamData ? pipes : [data, ...pipes];
 
       setHandlerArgsMetadata(
         target,
         key as string,
-        assignMetadata<Paramtypes[string]>(args, paramtype, index, paramData!, ...paramPipes)
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        assignMetadata<Paramtypes[string]>(args, paramtype, index, paramData, ...paramPipes)
       );
     };
   };
