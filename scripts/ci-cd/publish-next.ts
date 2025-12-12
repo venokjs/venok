@@ -2,6 +2,7 @@
 
 import rootPackageJson from "../../package.json" with { type: "json" };
 import { getWorkspaceInfo } from "../helpers/get-workspace-info.js";
+import { publishPkgToNpm } from "../helpers/publish-pkg-to-npm.js";
 
 /** File name that contains the latest stable version */
 const LATEST_FILE = "LATEST";
@@ -141,18 +142,7 @@ async function main() {
 
   await Bun.write(".npmrc", `//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`);
 
-  for (const pkg of workspace) {
-    console.log(`Publishing ${pkg.name}@${nextCanaryVersion} --tag next`);
-    try {
-      // bun publish automatically uses bun.lock and .npmrc
-      await Bun.write(`${pkg.path}/.npmrc`, `//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`);
-      await Bun.$`cd ${pkg.path} && bun publish --tag next`.quiet();
-      console.log(`Published ${pkg.name}`);
-    } catch (e) {
-      console.error(`Failed ${pkg.name}:`, e);
-      throw e;
-    }
-  }
+  for (const pkg of workspace) await publishPkgToNpm(pkg, nextCanaryVersion, "next");
 
   console.log("All next versions published!");
 }
