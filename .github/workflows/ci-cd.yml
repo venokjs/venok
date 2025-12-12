@@ -28,7 +28,6 @@ jobs:
             ${{ runner.os }}-bun-
 
       - name: Setup Bun
-        if: steps.cache-bun.outputs.cache-hit != 'true'
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -58,13 +57,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Restore Bun cache
-        uses: actions/cache@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          path: ~/.bun
-          key: ${{ runner.os }}-bun-${{ hashFiles('.bun-version') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
+          bun-version: latest
 
       - name: Restore dependencies cache
         uses: actions/cache@v4
@@ -94,13 +90,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Restore Bun cache
-        uses: actions/cache@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          path: ~/.bun
-          key: ${{ runner.os }}-bun-${{ hashFiles('.bun-version') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
+          bun-version: latest
 
       - name: Restore dependencies cache
         uses: actions/cache@v4
@@ -123,13 +116,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Restore Bun cache
-        uses: actions/cache@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          path: ~/.bun
-          key: ${{ runner.os }}-bun-${{ hashFiles('.bun-version') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
+          bun-version: latest
 
       - name: Restore dependencies cache
         uses: actions/cache@v4
