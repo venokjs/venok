@@ -15,6 +15,7 @@ describe("WebsocketExceptionFilter", () => {
   let mockClient: { emit: jest.Mock };
   let mockHost: ArgumentsHost;
   let mockWebsocketContext: WebsocketArgumentsHost;
+  let spies: any[] = [];
 
   beforeEach(() => {
     filter = new WebsocketExceptionFilter();
@@ -28,11 +29,19 @@ describe("WebsocketExceptionFilter", () => {
 
     // Mock the static logger to avoid console output during tests
     // @ts-expect-error Try to access to protected field
-    spyOn(WebsocketExceptionFilter.logger, "error").mockImplementation(() => {});
+    const loggerSpy = spyOn(WebsocketExceptionFilter.logger, "error").mockImplementation(() => {});
+    spies.push(loggerSpy);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+    // Restore all spies after each test
+    spies.forEach(spy => {
+      if (spy && typeof spy.mockRestore === "function") {
+        spy.mockRestore();
+      }
+    });
+    spies = [];
   });
 
   describe("constructor", () => {
@@ -67,8 +76,9 @@ describe("WebsocketExceptionFilter", () => {
 
   describe("catch", () => {
     beforeEach(() => {
-      spyOn(WebsocketArgumentsHost, "create").mockReturnValue(mockWebsocketContext);
-      spyOn(filter, "handleError").mockImplementation(() => {});
+      const createSpy = spyOn(WebsocketArgumentsHost, "create").mockReturnValue(mockWebsocketContext);
+      const handleErrorSpy = spyOn(filter, "handleError").mockImplementation(() => {});
+      spies.push(createSpy, handleErrorSpy);
     });
 
     it("should create WebsocketArgumentsHost and call handleError", () => {
@@ -174,7 +184,8 @@ describe("WebsocketExceptionFilter", () => {
     it("should call handleUnknownError for non-WsException", () => {
       const exception = new Error("regular error");
       const cause = { pattern: "test-pattern", data: { test: "data" } };
-      spyOn(filter, "handleUnknownError").mockImplementation(() => {});
+      const handleUnknownSpy = spyOn(filter, "handleUnknownError").mockImplementation(() => {});
+      spies.push(handleUnknownSpy);
 
       filter.handleError(mockClient, exception, cause);
 
