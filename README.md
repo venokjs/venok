@@ -1,6 +1,6 @@
 <div align="center">
 
-![Venok Logo](./.github/assets/logo.png)
+<a href="https://github.com/venokjs/venok"><img src="https://github.com/venokjs/venok/blob/next/.github/assets/logo.png?raw=true" height=200px></a>
 
 **Blazing-fast framework for building highly efficient, infinitely scalable, and battle-tested enterprise-grade full-stack applications with TypeScript.**
 
@@ -16,6 +16,8 @@
 
 Venok is a cutting-edge TypeScript framework that combines the best of modern development practices with enterprise-grade performance. Built from the ground up for scale, Venok delivers unparalleled developer experience while maintaining lightning-fast runtime performance.
 
+Venok's architecture is built around a powerful dependency injection container that manages the entire application lifecycle:
+
 ### 🔥 Key Features
 
 - **⚡ Lightning Fast**: Optimized for performance with minimal overhead
@@ -27,17 +29,6 @@ Venok is a cutting-edge TypeScript framework that combines the best of modern de
 - **🔄 RxJS Integration**: Reactive programming with Observable streams
 - **🛡️ Battle-Tested**: Production-ready with comprehensive error handling
 - **📊 Advanced DI**: Request-scoped providers, circular dependency resolution, and more
-
-## 🏗️ Architecture
-
-Venok's architecture is built around a powerful dependency injection container that manages the entire application lifecycle:
-
-```
-                    ┌──────────────────────────┐
-                    │     Venok Core DI        │
-                    │    Container System      │
-                    └──────────────────────────┘
-```
 
 ## 🚀 Quick Start
 
@@ -227,11 +218,6 @@ We welcome contributions from the community! Please read our [Contributing Guide
 3. Commit your changes: `git commit -m 'Add amazing feature'`
 4. Push to the branch: `git push origin feature/amazing-feature`
 5. Open a Pull Request
-
-## 📄 License
-
-Venok is [Apache 2.0 licensed](LICENSE).
-
 
 ## 🌟 Support
 
