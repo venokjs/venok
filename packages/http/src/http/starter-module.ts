@@ -1,4 +1,4 @@
-import type { OnModuleInit } from "@venok/core";
+import type { OnApplicationBootstrap, OnModuleInit } from "@venok/core";
 
 import type { ControllerDiscovery } from "~/helpers/discovery.helper.js";
 import type { AbstractHttpAdapter } from "~/http/adapter.js";
@@ -24,7 +24,7 @@ import { Controller } from "~/decorators/controller.decorator.js";
 import { VENOK_HTTP_SERVER_START } from "~/helpers/messages.helper.js";
 
 @Injectable()
-export class HttpStarterModule<T extends HttpAppOptions = any> implements OnModuleInit {
+export class HttpStarterModule<T extends HttpAppOptions = any> implements OnApplicationBootstrap, OnModuleInit {
   private readonly logger = new Logger(HttpStarterModule.name, { timestamp: true });
   private adapter!: AbstractHttpAdapter;
 
@@ -36,7 +36,28 @@ export class HttpStarterModule<T extends HttpAppOptions = any> implements OnModu
     private readonly httpConfig: HttpConfig
   ) {}
 
-  async onModuleInit() {
+  public async onApplicationBootstrap() {
+    const routes = this.adapter[VENOK_ADAPTER_BUILD]();
+
+    this.adapter[VENOK_APPLY_ROUTES_TO_INSTANCE](routes);
+
+    this.adapter.registerNotFoundHandler();
+    this.adapter.registerExceptionHandler();
+
+    const listenCallback = async (...args: any[]) => {
+      this.logger.log(VENOK_HTTP_SERVER_START(this.options.port));
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      if (this.options.listenCallback) await this.options.listenCallback(...args);
+    };
+
+    await this.adapter.listen(
+      this.options.port,
+      this.options.hostname || "",
+      listenCallback
+    );
+  }
+
+  public async onModuleInit() {
     this.adapter = this.httpConfig.getHttpAdapterRef();
     this.adapter[VENOK_ADAPTER_SET_EXCEPTION_FILTER](this.container, new ApplicationConfig());
 
@@ -48,25 +69,6 @@ export class HttpStarterModule<T extends HttpAppOptions = any> implements OnModu
     this.httpExplorerService
       .explore(Controller.KEY)
       .forEach((item) => this.registerRoutes(item));
-
-    const routes = this.adapter[VENOK_ADAPTER_BUILD]();
-
-    this.adapter[VENOK_APPLY_ROUTES_TO_INSTANCE](routes);
-
-    this.adapter.registerNotFoundHandler();
-    this.adapter.registerExceptionHandler();
-
-    const listenCallback = async (...args: any[]) => {
-      this.logger.log(VENOK_HTTP_SERVER_START(this.options.port));
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      if (this.options.listenCallback) await this.options.listenCallback(...args);
-    };
-
-    await this.adapter.listen(
-      this.options.port,
-      this.options.hostname || "",
-      listenCallback
-    );
   }
 
   private registerRoutes(controllerDiscovery: ControllerDiscovery) {
