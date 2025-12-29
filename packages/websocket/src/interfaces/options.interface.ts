@@ -1,5 +1,7 @@
 import type { AbstractWebsocketAdapter } from "~/websocket/adapter.js";
 
-export type WebsocektAppOptions = {
-  adapter: AbstractWebsocketAdapter
+export type WebsocketAppOptions = {
+  adapter: AbstractWebsocketAdapter;
+  httpPort?: number;
+  attachMainWebsocketServerToHttpServerCallback?: (...args: any[]) => void
 };
