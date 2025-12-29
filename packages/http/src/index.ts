@@ -58,6 +58,7 @@ export * from "./helpers/route.helper.js";
 
 /* Http */
 export * from "./http/adapter.js";
+export * from "./http/argument-host.js";
 export * from "./http/config.js";
 export * from "./http/module.js";
 
