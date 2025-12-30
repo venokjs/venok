@@ -1,18 +1,16 @@
 {
-  "name": "@venok/integration",
+  "name": "@venok/websocket",
   "version": "2.1.0",
   "description": "",
   "author": "shiz-ceo",
-  "type": "module",
   "homepage": "",
   "main": "index.js",
+  "types": "./index.d.ts",
+  "type": "module",
   "files": [
     "package.json",
     "dist"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "exports": {
     ".": {
       "require": {
@@ -25,18 +23,27 @@
       }
     }
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/venokjs/venok.git",
-    "directory": "packages/integration"
+    "directory": "packages/websocket"
   },
   "scripts": {
     "test": "bun test ./test/"
   },
   "peerDependencies": {
     "@venok/core": "workspace:*",
-    "uuid": "catalog:",
+    "@venok/integration": "workspace:*",
     "reflect-metadata": "catalog:",
     "rxjs": "catalog:"
+  },
+  "dependencies": {
+    "object-hash": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/object-hash": "^3.0.6"
   }
 }
