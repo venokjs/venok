@@ -2,7 +2,7 @@ import type { LoggerService, LogLevel } from "~/interfaces/index.js";
 
 import { ConsoleLogger } from "~/services/console.service.js";
 import { Injectable } from "~/decorators/injectable.decorator.js";
-import { isLogLevelEnabled } from "~/helpers/is-log-level-enabled.util.js";
+import { isLogLevelEnabled } from "~/helpers/is-log-level-enabled.helper.js";
 import { isObject } from "~/helpers/shared.helper.js";
 
 export const LOG_LEVELS = ["verbose", "debug", "log", "warn", "error", "fatal"] as const satisfies string[];

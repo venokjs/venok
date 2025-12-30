@@ -1,7 +1,7 @@
 import type { LogLevel } from "~/interfaces/index.js";
 
 import { LOG_LEVELS } from "~/services/logger.service.js";
-import { isLogLevel } from "~/helpers/is-log-level.util.js";
+import { isLogLevel } from "~/helpers/is-log-level.helper.js";
 
 /**
  * @publicApi

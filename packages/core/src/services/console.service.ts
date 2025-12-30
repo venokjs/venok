@@ -7,7 +7,7 @@ import { inspect } from "util";
 import { colors, isColorAllowed, yellow } from "~/helpers/color.helper.js";
 import { isFunction, isPlainObject, isString, isUndefined } from "~/helpers/shared.helper.js";
 import { Injectable } from "~/decorators/injectable.decorator.js";
-import { isLogLevelEnabled } from "~/helpers/is-log-level-enabled.util.js";
+import { isLogLevelEnabled } from "~/helpers/is-log-level-enabled.helper.js";
 import { Optional } from "~/decorators/optional.decorator.js";
 
 const DEFAULT_DEPTH = 5;
