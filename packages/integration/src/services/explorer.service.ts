@@ -117,7 +117,7 @@ export abstract class ExplorerService<T = any> extends Reflector {
     return this.paramsFactory.exchangeKeyForValue(this.requestArgIndex, undefined, args);
   }
 
-  private createRequestScopeContextCallback(wrapper: InstanceWrapper, methodName: string) {
+  protected createRequestScopeContextCallback(wrapper: InstanceWrapper, methodName: string) {
     const { instance } = wrapper;
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
