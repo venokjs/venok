@@ -27,6 +27,7 @@ export abstract class ExplorerService<T = any> extends Reflector {
   protected readonly requestArgIndex: number;
   protected readonly options: Omit<ExternalContextOptions, "callback">;
   protected readonly metadataKey: string;
+  protected readonly returnProxyValueFromRequestScope: boolean;
 
   protected readonly exceptionsFilterClass: typeof VenokExceptionFilterContext;
   protected readonly contextCreatorClass: typeof VenokContextCreator;
@@ -52,6 +53,7 @@ export abstract class ExplorerService<T = any> extends Reflector {
       options = { guards: true, filters: true, interceptors: true, callback: undefined },
       requestContextArgIndex = 0,
       metadataKey = ROUTE_ARGS_METADATA,
+      returnProxyValueFromRequestScope = false,
     } = this.getSettings();
 
     this.options = options;
@@ -61,6 +63,7 @@ export abstract class ExplorerService<T = any> extends Reflector {
     this.contextCreatorClass = contextCreatorClass;
     this.withRequestScope = isRequestScopeSupported;
     this.exceptionsFilterClass = exceptionsFilterClass;
+    this.returnProxyValueFromRequestScope = returnProxyValueFromRequestScope;
 
     this.contextCreator = this.contextCreatorClass.fromContainer(container, this.contextCreatorClass, this.exceptionsFilterClass);
     this.exceptionsFilter = new this.exceptionsFilterClass(this.container, this.container.applicationConfig);
@@ -144,7 +147,8 @@ export abstract class ExplorerService<T = any> extends Reflector {
         );
         const originalArgs = this.getOriginalArgsForHandler(args);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        await proxy(...originalArgs);
+        const result = await proxy(...originalArgs);
+        if (this.returnProxyValueFromRequestScope) return result;
       } catch (err) {
         let exceptionFilter = this.exceptionFiltersCache.get(instance[methodName]);
         if (!exceptionFilter) {
