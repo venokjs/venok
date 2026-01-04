@@ -637,6 +637,38 @@ describe("ExplorerService", () => {
     });
   });
 
+  describe("getOriginalArgsForHandler", () => {
+    it("should return arguments unchanged by default", () => {
+      const args = ["arg1", "arg2", { test: "value" }];
+      const result = (explorerService as any).getOriginalArgsForHandler(args);
+      
+      expect(result).toBe(args);
+      expect(result).toEqual(["arg1", "arg2", { test: "value" }]);
+    });
+
+    it("should allow overriding in subclasses", () => {
+      // Test that the method can be overridden by creating a custom explorer service
+      class CustomArgsExplorerService extends TestExplorerService {
+        protected getOriginalArgsForHandler(args: any[]): any[] {
+          // Example: exclude the first argument (e.g., contextId)
+          return args.slice(1);
+        }
+      }
+
+      const customExplorer = new CustomArgsExplorerService(
+        container,
+        discoveryService,
+        metadataScanner
+      );
+
+      const args = ["contextId", "actualArg1", "actualArg2"];
+      const result = (customExplorer as any).getOriginalArgsForHandler(args);
+      
+      expect(result).toEqual(["actualArg1", "actualArg2"]);
+      expect(result).not.toBe(args);
+    });
+  });
+
   describe("integration scenarios", () => {
     it("should work end-to-end with real metadata scanning", () => {
       // Create a real explorer service with actual metadata scanning

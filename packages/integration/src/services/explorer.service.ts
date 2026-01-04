@@ -117,6 +117,10 @@ export abstract class ExplorerService<T = any> extends Reflector {
     return this.paramsFactory.exchangeKeyForValue(this.requestArgIndex, undefined, args);
   }
 
+  protected getOriginalArgsForHandler(args: any[]) {
+    return args;
+  }
+
   protected createRequestScopeContextCallback(wrapper: InstanceWrapper, methodName: string) {
     const instance: Record<string, (...args: any[]) => any> = wrapper.instance;
 
@@ -131,14 +135,16 @@ export abstract class ExplorerService<T = any> extends Reflector {
         const contextArg = this.getContextArgForRequest(args);
         const contextId = this.container.getContextId(contextArg, isTreeDurable);
         const contextInstance = await new Injector().loadPerContext(instance, moduleRef, collection, contextId);
-        await this.createContextCallback(
+        const proxy = this.createContextCallback(
           contextInstance,
           contextInstance[methodName],
           methodName,
           contextId,
           wrapper.id
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        )(...args);
+        );
+        const originalArgs = this.getOriginalArgsForHandler(args);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        await proxy(...originalArgs);
       } catch (err) {
         let exceptionFilter = this.exceptionFiltersCache.get(instance[methodName]);
         if (!exceptionFilter) {
