@@ -118,9 +118,8 @@ export abstract class ExplorerService<T = any> extends Reflector {
   }
 
   protected createRequestScopeContextCallback(wrapper: InstanceWrapper, methodName: string) {
-    const { instance } = wrapper;
+    const instance: Record<string, (...args: any[]) => any> = wrapper.instance;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const moduleKey: string = this.contextCreator.getContextModuleKey(instance.constructor);
     const moduleRef = this.container.getModuleByKey(moduleKey);
     const collection = moduleRef.injectables;
@@ -133,9 +132,7 @@ export abstract class ExplorerService<T = any> extends Reflector {
         const contextId = this.container.getContextId(contextArg, isTreeDurable);
         const contextInstance = await new Injector().loadPerContext(instance, moduleRef, collection, contextId);
         await this.createContextCallback(
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           contextInstance,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           contextInstance[methodName],
           methodName,
           contextId,
@@ -143,12 +140,9 @@ export abstract class ExplorerService<T = any> extends Reflector {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         )(...args);
       } catch (err) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         let exceptionFilter = this.exceptionFiltersCache.get(instance[methodName]);
         if (!exceptionFilter) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           exceptionFilter = this.exceptionsFilter.create(instance, instance[methodName], moduleKey);
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           this.exceptionFiltersCache.set(instance[methodName], exceptionFilter);
         }
         const host = new ExecutionContextHost(args);
