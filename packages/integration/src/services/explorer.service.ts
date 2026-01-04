@@ -146,6 +146,7 @@ export abstract class ExplorerService<T = any> extends Reflector {
           this.exceptionFiltersCache.set(instance[methodName], exceptionFilter);
         }
         const host = new ExecutionContextHost(args);
+        host.setType(this.type);
         exceptionFilter.next(err, host);
       }
     };
