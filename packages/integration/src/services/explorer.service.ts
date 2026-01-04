@@ -155,7 +155,8 @@ export abstract class ExplorerService<T = any> extends Reflector {
           exceptionFilter = this.exceptionsFilter.create(instance, instance[methodName], moduleKey);
           this.exceptionFiltersCache.set(instance[methodName], exceptionFilter);
         }
-        const host = new ExecutionContextHost(args);
+        const originalArgs = this.getOriginalArgsForHandler(args);
+        const host = new ExecutionContextHost(originalArgs);
         host.setType(this.type);
         exceptionFilter.next(err, host);
       }
