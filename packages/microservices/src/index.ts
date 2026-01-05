@@ -2,9 +2,8 @@
 import "reflect-metadata"
 
 export * from "~/decorators/context.decorator.js";
-export * from "~/decorators/event-pattern.decorator.js";
-export * from "~/decorators/message-pattern.decorator.js";
 export * from "~/decorators/microservice.decorator.js";
+export * from "~/decorators/pattern.decorator.js";
 export * from "~/decorators/payload.decorator.js";
 
 export * from "~/enums/microservice-paramtype.js";
