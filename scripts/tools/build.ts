@@ -78,8 +78,8 @@ function resolveTsConfigPaths(dir: string): BunPlugin {
 export const normalizePath = (str: string) => str.split("\\").join("/");
 
 const main = async () => {
-  // const entries = Object.keys(BunLock.workspaces).slice(1);
-  const entries = ["packages/core", "packages/integration", "packages/http", "packages/websocket"];
+  const entries = Object.keys(BunLock.workspaces).slice(1);
+  // const entries = ["packages/core", "packages/integration", "packages/http", "packages/microservices", "packages/websocket"];
 
   if (entries.length === 0) throw new Error(`Workspaces not found.`);
 
