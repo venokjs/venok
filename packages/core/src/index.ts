@@ -84,6 +84,7 @@ export * from "./helpers/validate-each.helper.js";
 export * from "./injector/injector.js";
 export * from "./injector/constants.js";
 export * from "./injector/container.js";
+export * from "./injector/instance/loader.js";
 export * from "./injector/instance/wrapper.js";
 export * from "./injector/internal-core-module/core-providers.js";
 export * from "./injector/module/lazy/loader.js";
