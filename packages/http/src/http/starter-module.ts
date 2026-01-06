@@ -1,4 +1,4 @@
-import type { OnApplicationBootstrap, OnModuleInit } from "@venok/core";
+import type { OnApplicationBootstrap, OnApplicationShutdown, OnModuleInit } from "@venok/core";
 
 import type { ControllerDiscovery } from "~/helpers/discovery.helper.js";
 import type { AbstractHttpAdapter } from "~/http/adapter.js";
@@ -24,7 +24,7 @@ import { Controller } from "~/decorators/controller.decorator.js";
 import { VENOK_HTTP_SERVER_START } from "~/helpers/messages.helper.js";
 
 @Injectable()
-export class HttpStarterModule<T extends HttpAppOptions = any> implements OnApplicationBootstrap, OnModuleInit {
+export class HttpStarterModule<T extends HttpAppOptions = any> implements OnApplicationShutdown, OnApplicationBootstrap, OnModuleInit {
   private readonly logger = new Logger(HttpStarterModule.name, { timestamp: true });
   private adapter!: AbstractHttpAdapter;
 
@@ -35,6 +35,10 @@ export class HttpStarterModule<T extends HttpAppOptions = any> implements OnAppl
     private readonly container: VenokContainer,
     private readonly httpConfig: HttpConfig
   ) {}
+
+  public async onApplicationShutdown() {
+    await this.adapter.close();
+  }
 
   public async onApplicationBootstrap() {
     const routes = this.adapter[VENOK_ADAPTER_BUILD]();
