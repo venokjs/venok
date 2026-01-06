@@ -260,7 +260,7 @@ describe("WebsocketExplorerService", () => {
 
       expect(settings).toEqual({
         contextType: "websocket",
-        isRequestScopeSupported: true,
+        isRequestScopeSupported: false,
         exceptionsFilterClass: WebsocketExceptionFiltersContext,
         contextCreatorClass: WebsocketContextCreator,
         options: { guards: true, interceptors: true, filters: false },
