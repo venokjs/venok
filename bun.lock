@@ -71,6 +71,15 @@
         "rxjs": "catalog:",
       },
     },
+    "packages/testing": {
+      "name": "@venok/testing",
+      "version": "2.1.0",
+      "peerDependencies": {
+        "@venok/core": "workspace:*",
+        "reflect-metadata": "catalog:",
+        "rxjs": "catalog:",
+      },
+    },
     "packages/websocket": {
       "name": "@venok/websocket",
       "version": "2.1.0",
@@ -360,6 +369,8 @@
     "@venok/integration": ["@venok/integration@workspace:packages/integration"],
 
     "@venok/microservices": ["@venok/microservices@workspace:packages/microservices"],
+
+    "@venok/testing": ["@venok/testing@workspace:packages/testing"],
 
     "@venok/websocket": ["@venok/websocket@workspace:packages/websocket"],
 
