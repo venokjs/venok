@@ -1,10 +1,10 @@
-import type { ScopeOptions } from "@venok/core";
+import type { Scope, ScopeOptions } from "@venok/core";
 
 import type { VersionOptions, VersionValue } from "~/interfaces/index.js";
 
 import { isString, isUndefined, Reflector, SCOPE_OPTIONS_METADATA } from "@venok/core";
 
-import { HOST_METADATA, PATH_METADATA, VERSION_METADATA } from "~/constants.js";
+import { CONTROLLER_METADATA, HOST_METADATA, PATH_METADATA, VERSION_METADATA } from "~/constants.js";
 import { ControllerDiscovery } from "~/helpers/discovery.helper.js";
 
 
@@ -32,9 +32,14 @@ export interface ControllerOptions extends ScopeOptions, VersionOptions {
 
 const defaultPath = "/";
 
-const internalController = Reflector.createDecorator<
+type ControllerDecorator = {
+  [CONTROLLER_METADATA]: ControllerDiscovery,
+  [SCOPE_OPTIONS_METADATA]: { scope: Scope | undefined; durable: boolean | undefined; } | undefined,
+};
+
+const internalController = Reflector.createMetadataDecorator<
   string | string[] | ControllerOptions,
-  ControllerDiscovery
+  ControllerDecorator
 >({
   type: "class",
   transform: (options) => {
@@ -49,12 +54,14 @@ const internalController = Reflector.createDecorator<
             (Array.isArray(options.version) ? Array.from(new Set(options.version)) : options.version) as VersionValue,
           ];
 
-    return new ControllerDiscovery({
-      [PATH_METADATA]: path,
-      [HOST_METADATA]: host,
+    return {
+      [CONTROLLER_METADATA]: new ControllerDiscovery({
+        [PATH_METADATA]: path,
+        [HOST_METADATA]: host,
+        [VERSION_METADATA]: versionOptions,
+      }),
       [SCOPE_OPTIONS_METADATA]: scopeOptions,
-      [VERSION_METADATA]: versionOptions,
-    });
+    };
   },
 });
 

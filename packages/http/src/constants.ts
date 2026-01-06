@@ -5,3 +5,4 @@ export const REDIRECT_METADATA = "__redirect__";
 export const RESPONSE_PASSTHROUGH_METADATA = "__responsePassthrough__";
 export const VERSION_METADATA = "__version__";
 export const METHOD_METADATA = "method";
+export const CONTROLLER_METADATA = "controller";

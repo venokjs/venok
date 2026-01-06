@@ -3,18 +3,18 @@ import { describe, expect, it } from "bun:test";
 import { Scope } from "@venok/core";
 import { Controller } from "~/decorators/controller.decorator.js";
 import { ControllerDiscovery } from "~/helpers/discovery.helper.js";
+import { CONTROLLER_METADATA } from "~/constants.js";
 
 describe("@Controller", () => {
   it("should enhance class with expected controller metadata when no options provided", () => {
     @Controller()
     class TestController {}
 
-    const discovery = Reflect.getMetadata(Controller.KEY, TestController) as ControllerDiscovery;
+    const discovery = Reflect.getMetadata(CONTROLLER_METADATA, TestController) as ControllerDiscovery;
     
     expect(discovery).toBeInstanceOf(ControllerDiscovery);
     expect(discovery.getPrefixes()).toBe("/");
     expect(discovery.getHost()).toBeUndefined();
-    expect(discovery.getScope()).toBeUndefined();
     expect(discovery.getVersion()).toBeUndefined();
   });
 
@@ -22,12 +22,11 @@ describe("@Controller", () => {
     @Controller("api")
     class TestController {}
 
-    const discovery = Reflect.getMetadata(Controller.KEY, TestController) as ControllerDiscovery;
+    const discovery = Reflect.getMetadata(CONTROLLER_METADATA, TestController) as ControllerDiscovery;
     
     expect(discovery).toBeInstanceOf(ControllerDiscovery);
     expect(discovery.getPrefixes()).toBe("api");
     expect(discovery.getHost()).toBeUndefined();
-    expect(discovery.getScope()).toBeUndefined();
     expect(discovery.getVersion()).toBeUndefined();
   });
 
@@ -35,12 +34,11 @@ describe("@Controller", () => {
     @Controller(["api", "v1"])
     class TestController {}
 
-    const discovery = Reflect.getMetadata(Controller.KEY, TestController) as ControllerDiscovery;
+    const discovery = Reflect.getMetadata(CONTROLLER_METADATA, TestController) as ControllerDiscovery;
     
     expect(discovery).toBeInstanceOf(ControllerDiscovery);
     expect(discovery.getPrefixes()).toEqual(["api", "v1"]);
     expect(discovery.getHost()).toBeUndefined();
-    expect(discovery.getScope()).toBeUndefined();
     expect(discovery.getVersion()).toBeUndefined();
   });
 
@@ -54,12 +52,11 @@ describe("@Controller", () => {
     })
     class TestController {}
 
-    const discovery = Reflect.getMetadata(Controller.KEY, TestController) as ControllerDiscovery;
+    const discovery = Reflect.getMetadata(CONTROLLER_METADATA, TestController) as ControllerDiscovery;
     
     expect(discovery).toBeInstanceOf(ControllerDiscovery);
     expect(discovery.getPrefixes()).toBe("api/users");
     expect(discovery.getHost()).toBe("example.com");
-    expect(discovery.getScope()).toEqual({ scope: Scope.REQUEST, durable: true });
     expect(discovery.getVersion()).toBe("1");
   });
 
@@ -69,7 +66,7 @@ describe("@Controller", () => {
     })
     class TestController {}
 
-    const discovery = Reflect.getMetadata(Controller.KEY, TestController) as ControllerDiscovery;
+    const discovery = Reflect.getMetadata(CONTROLLER_METADATA, TestController) as ControllerDiscovery;
     
     expect(discovery.getPrefixes()).toBe("/");
     expect(discovery.getHost()).toBe("example.com");
@@ -82,7 +79,7 @@ describe("@Controller", () => {
     })
     class TestController {}
 
-    const discovery = Reflect.getMetadata(Controller.KEY, TestController) as ControllerDiscovery;
+    const discovery = Reflect.getMetadata(CONTROLLER_METADATA, TestController) as ControllerDiscovery;
     
     expect(discovery.getHost()).toBe("api.example.com");
   });
@@ -96,7 +93,7 @@ describe("@Controller", () => {
     })
     class TestController {}
 
-    const discovery = Reflect.getMetadata(Controller.KEY, TestController) as ControllerDiscovery;
+    const discovery = Reflect.getMetadata(CONTROLLER_METADATA, TestController) as ControllerDiscovery;
     
     expect(discovery.getHost()).toBe(hostRegex);
   });
@@ -110,7 +107,7 @@ describe("@Controller", () => {
     })
     class TestController {}
 
-    const discovery = Reflect.getMetadata(Controller.KEY, TestController) as ControllerDiscovery;
+    const discovery = Reflect.getMetadata(CONTROLLER_METADATA, TestController) as ControllerDiscovery;
     
     expect(discovery.getHost()).toEqual(hostArray);
   });
@@ -122,7 +119,7 @@ describe("@Controller", () => {
     })
     class TestController {}
 
-    const discovery = Reflect.getMetadata(Controller.KEY, TestController) as ControllerDiscovery;
+    const discovery = Reflect.getMetadata(CONTROLLER_METADATA, TestController) as ControllerDiscovery;
     
     expect(discovery.getVersion()).toEqual(["1", "2", "3"]);
   });
@@ -134,7 +131,7 @@ describe("@Controller", () => {
     })
     class TestController {}
 
-    const discovery = Reflect.getMetadata(Controller.KEY, TestController) as ControllerDiscovery;
+    const discovery = Reflect.getMetadata(CONTROLLER_METADATA, TestController) as ControllerDiscovery;
     
     expect(discovery.getVersion()).toBe("1.0");
   });
@@ -149,22 +146,9 @@ describe("@Controller", () => {
     })
     class TestController {}
 
-    const discovery = Reflect.getMetadata(Controller.KEY, TestController) as ControllerDiscovery;
+    const discovery = Reflect.getMetadata(CONTROLLER_METADATA, TestController) as ControllerDiscovery;
     // @ts-expect-error Mismatch types
     expect(discovery.getVersion()).toBe(versionSymbol);
-  });
-
-  it("should handle all scope options", () => {
-    @Controller({
-      path: "api",
-      scope: Scope.TRANSIENT,
-      durable: false,
-    })
-    class TestController {}
-
-    const discovery = Reflect.getMetadata(Controller.KEY, TestController) as ControllerDiscovery;
-    
-    expect(discovery.getScope()).toEqual({ scope: Scope.TRANSIENT, durable: false });
   });
 
   it("should handle mixed options", () => {
@@ -176,11 +160,10 @@ describe("@Controller", () => {
     })
     class TestController {}
 
-    const discovery = Reflect.getMetadata(Controller.KEY, TestController) as ControllerDiscovery;
+    const discovery = Reflect.getMetadata(CONTROLLER_METADATA, TestController) as ControllerDiscovery;
     
     expect(discovery.getPrefixes()).toEqual(["api", "v2"]);
     expect(discovery.getHost()).toEqual(/.*\.staging\.com$/);
-    expect(discovery.getScope()).toEqual({ scope: Scope.REQUEST, durable: undefined });
     expect(discovery.getVersion()).toEqual(["2", "3"]);
   });
 

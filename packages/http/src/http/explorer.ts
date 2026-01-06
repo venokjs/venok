@@ -18,6 +18,7 @@ import { HttpExceptionFiltersContext } from "~/filters/context.js";
 import { HttpContextCreator } from "~/http/context.js";
 import { HttpConfig } from "~/http/config.js";
 import { CONTROLLER_MAPPING_MESSAGE, ROUTE_MAPPED_MESSAGE, VERSIONED_CONTROLLER_MAPPING_MESSAGE, VERSIONED_ROUTE_MAPPED_MESSAGE } from "~/helpers/messages.helper.js";
+import { CONTROLLER_METADATA } from "~/constants.js";
 
 export class HttpExplorerService extends ExplorerService<ControllerDiscovery> implements OnModuleInit {
   /* Abstract */
@@ -49,7 +50,9 @@ export class HttpExplorerService extends ExplorerService<ControllerDiscovery> im
   protected filterProperties(wrapper: InstanceWrapper, metadataKey: string) {
     if (!wrapper.metatype) return;
 
-    const controllerDiscovery = this.get<ControllerDiscovery>(metadataKey, wrapper.metatype);
+    if (this.get<boolean>(metadataKey, wrapper.metatype)) return;
+
+    const controllerDiscovery = this.get<ControllerDiscovery>(CONTROLLER_METADATA, wrapper.metatype);
     if (!controllerDiscovery) return;
 
     const info = this.routeFinder.getControllerInfo(controllerDiscovery, this.httpConfig);

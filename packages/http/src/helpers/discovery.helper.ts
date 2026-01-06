@@ -1,8 +1,4 @@
-import type { ScopeOptions } from "@venok/core";
-
 import type { AdapterRouteMetadata, VersionValue } from "~/interfaces/index.js";
-
-import { SCOPE_OPTIONS_METADATA } from "@venok/core";
 
 import { HOST_METADATA, PATH_METADATA, VERSION_METADATA } from "~/constants.js";
 
@@ -38,7 +34,6 @@ export class RouteDiscovery extends VenokBaseDiscovery<AdapterRouteMetadata & { 
 type ControllerDiscoveryMeta = {
   [PATH_METADATA]: string | string[];
   [HOST_METADATA]: string | RegExp | (string | RegExp)[] | undefined;
-  [SCOPE_OPTIONS_METADATA]: ScopeOptions | undefined;
   [VERSION_METADATA]: VersionValue | undefined;
 };
 
@@ -59,10 +54,6 @@ export class ControllerDiscovery extends VenokBaseDiscovery<ControllerDiscoveryM
 
   public getHost() {
     return this.meta[HOST_METADATA];
-  }
-
-  public getScope() {
-    return this.meta[SCOPE_OPTIONS_METADATA];
   }
 
   public getVersion() {
