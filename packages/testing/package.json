@@ -1,0 +1,41 @@
+{
+  "name": "@venok/testing",
+  "version": "2.1.0",
+  "description": "",
+  "author": "shiz-ceo",
+  "type": "module",
+  "homepage": "",
+  "main": "index.js",
+  "files": [
+    "package.json",
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      },
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/venokjs/venok.git",
+    "directory": "packages/testing"
+  },
+  "scripts": {
+    "test": "bun test ./test/"
+  },
+  "peerDependencies": {
+    "@venok/core": "workspace:*",
+    "reflect-metadata": "catalog:",
+    "rxjs": "catalog:"
+  }
+}
