@@ -3,6 +3,7 @@ import type { ExternalContextOptions, VenokContextCreator, VenokExceptionFilterC
 export type ExplorerSettings = Partial<{
   contextType: string;
   isRequestScopeSupported: boolean;
+  returnProxyValueFromRequestScope: boolean;
   requestContextArgIndex: number;
   options: ExternalContextOptions;
   exceptionsFilterClass: typeof VenokExceptionFilterContext;

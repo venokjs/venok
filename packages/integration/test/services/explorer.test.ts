@@ -124,6 +124,44 @@ class RequestScopedExplorerService extends ExplorerService<{ method: string; cal
   }
 }
 
+// Request-scoped implementation with return value
+class RequestScopedWithReturnExplorerService extends ExplorerService<{ method: string; callback: Function }> {
+  protected readonly paramsFactory = mockParamsFactory;
+
+  protected getSettings(): ExplorerSettings {
+    return {
+      contextType: "request",
+      isRequestScopeSupported: true,
+      requestContextArgIndex: 0,
+      returnProxyValueFromRequestScope: true,
+    };
+  }
+
+  protected filterProperties(wrapper: InstanceWrapper, metadataKey: string) {
+    const { instance } = wrapper;
+    if (!instance) return undefined;
+
+    const prototype = Object.getPrototypeOf(instance);
+    const hasMetadata = this.get(metadataKey, instance.constructor);
+    
+    if (!hasMetadata) return undefined;
+
+    const methodNames = this.metadataScanner.getAllMethodNames(prototype);
+    
+    for (const methodName of methodNames) {
+      const targetCallback = prototype[methodName];
+      if (!targetCallback) continue;
+
+      return {
+        method: methodName,
+        callback: this.createCallback(wrapper, methodName),
+      };
+    }
+
+    return undefined;
+  }
+}
+
 describe("ExplorerService", () => {
   let explorerService: TestExplorerService;
   let requestScopedExplorerService: RequestScopedExplorerService;
@@ -634,6 +672,76 @@ describe("ExplorerService", () => {
 
       const results = emptyExplorerService.explore(TEST_CONTROLLER_METADATA);
       expect(results).toHaveLength(0);
+    });
+  });
+
+  describe("getOriginalArgsForHandler", () => {
+    it("should return arguments unchanged by default", () => {
+      const args = ["arg1", "arg2", { test: "value" }];
+      const result = (explorerService as any).getOriginalArgsForHandler(args);
+      
+      expect(result).toBe(args);
+      expect(result).toEqual(["arg1", "arg2", { test: "value" }]);
+    });
+
+    it("should allow overriding in subclasses", () => {
+      // Test that the method can be overridden by creating a custom explorer service
+      class CustomArgsExplorerService extends TestExplorerService {
+        protected getOriginalArgsForHandler(args: any[]): any[] {
+          // Example: exclude the first argument (e.g., contextId)
+          return args.slice(1);
+        }
+      }
+
+      const customExplorer = new CustomArgsExplorerService(
+        container,
+        discoveryService,
+        metadataScanner
+      );
+
+      const args = ["contextId", "actualArg1", "actualArg2"];
+      const result = (customExplorer as any).getOriginalArgsForHandler(args);
+      
+      expect(result).toEqual(["actualArg1", "actualArg2"]);
+      expect(result).not.toBe(args);
+    });
+  });
+
+  describe("returnProxyValueFromRequestScope", () => {
+    it("should have returnProxyValueFromRequestScope set to true in settings", () => {
+      const serviceWithReturn = new RequestScopedWithReturnExplorerService(
+        container,
+        discoveryService,
+        metadataScanner
+      );
+      
+      expect((serviceWithReturn as any).returnProxyValueFromRequestScope).toBe(true);
+    });
+
+    it("should have returnProxyValueFromRequestScope set to false by default", () => {
+      expect((requestScopedExplorerService as any).returnProxyValueFromRequestScope).toBe(false);
+    });
+
+    it("should test getOriginalArgsForHandler integration with returnProxyValueFromRequestScope", () => {
+      // Create a custom service that filters out first argument and returns values
+      class CustomReturnExplorerService extends RequestScopedWithReturnExplorerService {
+        protected getOriginalArgsForHandler(args: any[]): any[] {
+          return args.slice(1); // Remove first argument
+        }
+      }
+
+      const customService = new CustomReturnExplorerService(
+        container,
+        discoveryService,
+        metadataScanner
+      );
+
+      const args = ["contextId", "actualArg1", "actualArg2"];
+      const result = (customService as any).getOriginalArgsForHandler(args);
+      
+      expect(result).toEqual(["actualArg1", "actualArg2"]);
+      expect(result).not.toBe(args);
+      expect((customService as any).returnProxyValueFromRequestScope).toBe(true);
     });
   });
 

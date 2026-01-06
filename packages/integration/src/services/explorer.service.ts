@@ -27,6 +27,7 @@ export abstract class ExplorerService<T = any> extends Reflector {
   protected readonly requestArgIndex: number;
   protected readonly options: Omit<ExternalContextOptions, "callback">;
   protected readonly metadataKey: string;
+  protected readonly returnProxyValueFromRequestScope: boolean;
 
   protected readonly exceptionsFilterClass: typeof VenokExceptionFilterContext;
   protected readonly contextCreatorClass: typeof VenokContextCreator;
@@ -52,6 +53,7 @@ export abstract class ExplorerService<T = any> extends Reflector {
       options = { guards: true, filters: true, interceptors: true, callback: undefined },
       requestContextArgIndex = 0,
       metadataKey = ROUTE_ARGS_METADATA,
+      returnProxyValueFromRequestScope = false,
     } = this.getSettings();
 
     this.options = options;
@@ -61,6 +63,7 @@ export abstract class ExplorerService<T = any> extends Reflector {
     this.contextCreatorClass = contextCreatorClass;
     this.withRequestScope = isRequestScopeSupported;
     this.exceptionsFilterClass = exceptionsFilterClass;
+    this.returnProxyValueFromRequestScope = returnProxyValueFromRequestScope;
 
     this.contextCreator = this.contextCreatorClass.fromContainer(container, this.contextCreatorClass, this.exceptionsFilterClass);
     this.exceptionsFilter = new this.exceptionsFilterClass(this.container, this.container.applicationConfig);
@@ -117,10 +120,13 @@ export abstract class ExplorerService<T = any> extends Reflector {
     return this.paramsFactory.exchangeKeyForValue(this.requestArgIndex, undefined, args);
   }
 
-  private createRequestScopeContextCallback(wrapper: InstanceWrapper, methodName: string) {
-    const { instance } = wrapper;
+  protected getOriginalArgsForHandler(args: any[]) {
+    return args;
+  }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  protected createRequestScopeContextCallback(wrapper: InstanceWrapper, methodName: string) {
+    const instance: Record<string, (...args: any[]) => any> = wrapper.instance;
+
     const moduleKey: string = this.contextCreator.getContextModuleKey(instance.constructor);
     const moduleRef = this.container.getModuleByKey(moduleKey);
     const collection = moduleRef.injectables;
@@ -132,26 +138,26 @@ export abstract class ExplorerService<T = any> extends Reflector {
         const contextArg = this.getContextArgForRequest(args);
         const contextId = this.container.getContextId(contextArg, isTreeDurable);
         const contextInstance = await new Injector().loadPerContext(instance, moduleRef, collection, contextId);
-        await this.createContextCallback(
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        const proxy = this.createContextCallback(
           contextInstance,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           contextInstance[methodName],
           methodName,
           contextId,
           wrapper.id
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        )(...args);
-      } catch (err) {
+        );
+        const originalArgs = this.getOriginalArgsForHandler(args);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        const result = await proxy(...originalArgs);
+        if (this.returnProxyValueFromRequestScope) return result;
+      } catch (err) {
         let exceptionFilter = this.exceptionFiltersCache.get(instance[methodName]);
         if (!exceptionFilter) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           exceptionFilter = this.exceptionsFilter.create(instance, instance[methodName], moduleKey);
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           this.exceptionFiltersCache.set(instance[methodName], exceptionFilter);
         }
-        const host = new ExecutionContextHost(args);
+        const originalArgs = this.getOriginalArgsForHandler(args);
+        const host = new ExecutionContextHost(originalArgs);
+        host.setType(this.type);
         exceptionFilter.next(err, host);
       }
     };
