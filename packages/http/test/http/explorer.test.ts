@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unused-vars */
-import type { InstanceWrapper, Type, VenokContainer, VenokParamsFactoryInterface } from "@venok/core";
+import type { InstanceWrapper, VenokContainer, VenokParamsFactoryInterface } from "@venok/core";
 
-import type { VersioningOptions, VersionValue } from "~/interfaces/index.js";
+import type { VersioningOptions } from "~/interfaces/index.js";
 
-import { Inject, Logger, MetadataScanner, MODULE_PATH, Reflector } from "@venok/core";
+import { Logger, MetadataScanner, MODULE_PATH, Reflector } from "@venok/core";
 import { DiscoveryService, ExplorerService } from "@venok/integration";
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
-import { pathToRegexp } from "path-to-regexp";
 
 import { VERSION_NEUTRAL } from "~/interfaces/index.js";
 import { HttpExplorerService } from "~/http/explorer.js";
@@ -206,9 +205,10 @@ describe("HttpExplorerService", () => {
 
       controllerDiscovery = new ControllerDiscovery({} as any);
 
-      // Mock the get method to return controller discovery
+      // Mock the get method to handle both metadata key check and CONTROLLER_METADATA
       spyOn(explorerService as any, "get").mockImplementation((metadataKey: any, metatype: typeof TestController) => {
-        if (metatype === TestController) return controllerDiscovery;
+        if (metadataKey === "test-key" && metatype === TestController) return false; // Not already processed
+        if (metadataKey === "controller" && metatype === TestController) return controllerDiscovery;
         return undefined;
       });
 
@@ -247,7 +247,23 @@ describe("HttpExplorerService", () => {
     });
 
     it("should return undefined when no controller discovery found", () => {
-      spyOn(explorerService as any, "get").mockReturnValue(undefined);
+      spyOn(explorerService as any, "get").mockImplementation((metadataKey: any) => {
+        if (metadataKey === "test-key") return false;
+        if (metadataKey === "controller") return undefined;
+        return undefined;
+      });
+      
+      const result = (explorerService as any).filterProperties(testWrapper, "test-key");
+      
+      expect(result).toBeUndefined();
+    });
+
+    it("should return undefined when already processed", () => {
+      spyOn(explorerService as any, "get").mockImplementation((metadataKey: any) => {
+        if (metadataKey === "test-key") return true; // Already processed
+        if (metadataKey === "controller") return controllerDiscovery;
+        return undefined;
+      });
       
       const result = (explorerService as any).filterProperties(testWrapper, "test-key");
       
@@ -589,7 +605,11 @@ describe("HttpExplorerService", () => {
       const controllerDiscovery = new ControllerDiscovery({} as any);
 
       // Setup complete mocks
-      spyOn(explorerService as any, "get").mockReturnValue(controllerDiscovery);
+      spyOn(explorerService as any, "get").mockImplementation((metadataKey: any) => {
+        if (metadataKey === "test-key") return false;
+        if (metadataKey === "controller") return controllerDiscovery;
+        return undefined;
+      });
       spyOn(routeFinder, "getControllerInfo").mockReturnValue({
         prefixes: ["/api/test"],
         version: "1.0",
@@ -658,7 +678,11 @@ describe("HttpExplorerService", () => {
       } as any;
 
       const controllerDiscovery = new ControllerDiscovery({} as any);
-      spyOn(explorerService as any, "get").mockReturnValue(controllerDiscovery);
+      spyOn(explorerService as any, "get").mockImplementation((metadataKey: any) => {
+        if (metadataKey === "test-key") return false;
+        if (metadataKey === "controller") return controllerDiscovery;
+        return undefined;
+      });
       spyOn(routeFinder, "getControllerInfo").mockImplementation(() => {
         throw new Error("Route finder error");
       });
@@ -676,7 +700,11 @@ describe("HttpExplorerService", () => {
       } as any;
 
       const controllerDiscovery = new ControllerDiscovery({} as any);
-      spyOn(explorerService as any, "get").mockReturnValue(controllerDiscovery);
+      spyOn(explorerService as any, "get").mockImplementation((metadataKey: any) => {
+        if (metadataKey === "test-key") return false;
+        if (metadataKey === "controller") return controllerDiscovery;
+        return undefined;
+      });
       spyOn(routeFinder, "getControllerInfo").mockReturnValue({
         prefixes: ["/test"],
         version: undefined,
@@ -710,7 +738,11 @@ describe("HttpExplorerService", () => {
       } as any;
 
       const controllerDiscovery = new ControllerDiscovery({} as any);
-      spyOn(explorerService as any, "get").mockReturnValue(controllerDiscovery);
+      spyOn(explorerService as any, "get").mockImplementation((metadataKey: any) => {
+        if (metadataKey === "test-key") return false;
+        if (metadataKey === "controller") return controllerDiscovery;
+        return undefined;
+      });
       spyOn(routeFinder, "getControllerInfo").mockReturnValue({
         prefixes: ["/test"],
         version: undefined,
@@ -732,7 +764,11 @@ describe("HttpExplorerService", () => {
       } as any;
 
       const controllerDiscovery = new ControllerDiscovery({} as any);
-      spyOn(explorerService as any, "get").mockReturnValue(controllerDiscovery);
+      spyOn(explorerService as any, "get").mockImplementation((metadataKey: any) => {
+        if (metadataKey === "test-key") return false;
+        if (metadataKey === "controller") return controllerDiscovery;
+        return undefined;
+      });
       spyOn(routeFinder, "getControllerInfo").mockReturnValue({
         prefixes: ["/test"],
         version: undefined,
@@ -783,7 +819,11 @@ describe("HttpExplorerService", () => {
       } as any;
 
       const controllerDiscovery = new ControllerDiscovery({} as any);
-      spyOn(explorerService as any, "get").mockReturnValue(controllerDiscovery);
+      spyOn(explorerService as any, "get").mockImplementation((metadataKey: any) => {
+        if (metadataKey === "test-key") return false;
+        if (metadataKey === "controller") return controllerDiscovery;
+        return undefined;
+      });
       spyOn(routeFinder, "getControllerInfo").mockReturnValue({
         prefixes: ["/test"],
         version: undefined,

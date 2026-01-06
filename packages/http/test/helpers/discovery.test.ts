@@ -1,7 +1,6 @@
 import type { AdapterRouteMetadata } from "~/interfaces/index.js";
 
 import { beforeEach, describe, expect, it } from "bun:test";
-import { Scope, SCOPE_OPTIONS_METADATA } from "@venok/core";
 
 import { ControllerDiscovery, RouteDiscovery, VenokBaseDiscovery } from "~/helpers/discovery.helper.js";
 import { HOST_METADATA, PATH_METADATA, VERSION_METADATA } from "~/constants.js";
@@ -141,7 +140,6 @@ describe("Discovery Helper", () => {
       mockMeta = {
         [PATH_METADATA]: "/users",
         [HOST_METADATA]: "api.example.com",
-        [SCOPE_OPTIONS_METADATA]: { scope: Scope.REQUEST, durable: true },
         [VERSION_METADATA]: "1",
       };
 
@@ -162,9 +160,6 @@ describe("Discovery Helper", () => {
       expect(controllerDiscovery.getHost()).toBe("api.example.com");
     });
 
-    it("should get scope", () => {
-      expect(controllerDiscovery.getScope()).toEqual({ scope: Scope.REQUEST, durable: true });
-    });
 
     it("should get version", () => {
       expect(controllerDiscovery.getVersion()).toBe("1");
@@ -174,7 +169,6 @@ describe("Discovery Helper", () => {
       const arrayMeta = {
         [PATH_METADATA]: ["/users", "/api/users"],
         [HOST_METADATA]: undefined,
-        [SCOPE_OPTIONS_METADATA]: undefined,
         [VERSION_METADATA]: undefined,
       };
 
@@ -187,7 +181,6 @@ describe("Discovery Helper", () => {
       const regexMeta = {
         [PATH_METADATA]: "/users",
         [HOST_METADATA]: hostRegex,
-        [SCOPE_OPTIONS_METADATA]: undefined,
         [VERSION_METADATA]: undefined,
       };
 
@@ -200,7 +193,6 @@ describe("Discovery Helper", () => {
       const arrayHostMeta = {
         [PATH_METADATA]: "/users",
         [HOST_METADATA]: hostArray,
-        [SCOPE_OPTIONS_METADATA]: undefined,
         [VERSION_METADATA]: undefined,
       };
 
@@ -212,7 +204,6 @@ describe("Discovery Helper", () => {
       const versionMeta = {
         [PATH_METADATA]: "/users",
         [HOST_METADATA]: undefined,
-        [SCOPE_OPTIONS_METADATA]: undefined,
         [VERSION_METADATA]: ["1", "2", "3"],
       };
 
@@ -225,7 +216,6 @@ describe("Discovery Helper", () => {
       const symbolMeta = {
         [PATH_METADATA]: "/users",
         [HOST_METADATA]: undefined,
-        [SCOPE_OPTIONS_METADATA]: undefined,
         [VERSION_METADATA]: symbolVersion,
       };
 
@@ -239,7 +229,6 @@ describe("Discovery Helper", () => {
       const undefinedMeta = {
         [PATH_METADATA]: undefined,
         [HOST_METADATA]: undefined,
-        [SCOPE_OPTIONS_METADATA]: undefined,
         [VERSION_METADATA]: undefined,
       };
 
@@ -247,21 +236,9 @@ describe("Discovery Helper", () => {
       const discovery = new ControllerDiscovery(undefinedMeta);
       expect(discovery.getPrefixes()).toBeUndefined();
       expect(discovery.getHost()).toBeUndefined();
-      expect(discovery.getScope()).toBeUndefined();
       expect(discovery.getVersion()).toBeUndefined();
     });
 
-    it("should handle different scope options", () => {
-      const transientMeta = {
-        [PATH_METADATA]: "/users",
-        [HOST_METADATA]: undefined,
-        [SCOPE_OPTIONS_METADATA]: { scope: Scope.TRANSIENT, durable: false },
-        [VERSION_METADATA]: undefined,
-      };
-
-      const discovery = new ControllerDiscovery(transientMeta);
-      expect(discovery.getScope()).toEqual({ scope: Scope.TRANSIENT, durable: false });
-    });
 
     describe("Route Items Management", () => {
       it("should start with empty items", () => {
@@ -346,7 +323,6 @@ describe("Discovery Helper", () => {
       const controllerMeta = {
         [PATH_METADATA]: "/api/users",
         [HOST_METADATA]: "api.example.com",
-        [SCOPE_OPTIONS_METADATA]: { scope: Scope.REQUEST },
         [VERSION_METADATA]: ["1", "2"],
       };
 
@@ -393,7 +369,6 @@ describe("Discovery Helper", () => {
       const minimalMeta = {
         [PATH_METADATA]: "/",
         [HOST_METADATA]: undefined,
-        [SCOPE_OPTIONS_METADATA]: undefined,
         [VERSION_METADATA]: undefined,
       };
 
@@ -401,7 +376,6 @@ describe("Discovery Helper", () => {
 
       expect(controller.getPrefixes()).toBe("/");
       expect(controller.getHost()).toBeUndefined();
-      expect(controller.getScope()).toBeUndefined();
       expect(controller.getVersion()).toBeUndefined();
       expect(controller.getItems()).toEqual([]);
     });
