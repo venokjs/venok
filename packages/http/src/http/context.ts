@@ -65,7 +65,7 @@ export class HttpContextCreator extends VenokContextCreator {
       filters: false,
       callback: undefined,
     },
-    contextType: TContext = "native" as TContext
+    contextType: TContext = "http" as TContext
   ): (...args: any[]) => Promise<any> {
     const moduleKey = this.getContextModuleKey(instance.constructor);
     const { getParamsMetadata } = super.getMetadata(
@@ -106,7 +106,7 @@ export class HttpContextCreator extends VenokContextCreator {
     );
 
     const exceptionFilter = this.filtersContextCreator.create(instance, callback, moduleKey, contextId, inquirerId);
-    return this.venokProxy.createProxy(result, exceptionFilter);
+    return this.venokProxy.createProxy(result, exceptionFilter, contextType);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

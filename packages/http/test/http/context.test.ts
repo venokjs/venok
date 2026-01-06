@@ -84,18 +84,18 @@ describe("HttpContextCreator", () => {
     } as any;
 
     contextCreator = new HttpContextCreator(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+       
       mockGuardsContextCreator,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+       
       mockGuardsConsumer,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+       
       mockInterceptorsContextCreator,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+       
       mockInterceptorsConsumer,
       mockModulesContainer,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+       
       mockPipesContextCreator,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+       
       mockPipesConsumer,
       mockFiltersContextCreator
     );
@@ -173,7 +173,7 @@ describe("HttpContextCreator", () => {
           filters: false,
           callback: expect.any(Function),
         }),
-        "native"
+        "http"
       );
     });
 
