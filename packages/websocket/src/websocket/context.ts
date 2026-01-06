@@ -46,7 +46,7 @@ export class WebsocketContextCreator extends VenokContextCreator {
     return async (...args: any[]) => {
       args.push(targetPattern);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      return await this.venokProxy.createProxy(result, exceptionFilter)(...args);
+      return await this.venokProxy.createProxy(result, exceptionFilter, contextType)(...args);
     };
   }
 
