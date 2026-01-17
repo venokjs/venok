@@ -25,7 +25,7 @@ jobs:
 
       - name: Cache dependencies
         id: cache-deps
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             node_modules
@@ -52,7 +52,7 @@ jobs:
           bun-version: latest
 
       - name: Restore dependencies cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             node_modules
@@ -65,7 +65,7 @@ jobs:
         run: bun run ./scripts/tools/build.ts
 
       - name: Cache build output
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: packages/*/dist
           key: ${{ runner.os }}-build-${{ github.sha }}
@@ -86,7 +86,7 @@ jobs:
           bun-version: latest
 
       - name: Restore dependencies cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             node_modules
@@ -119,7 +119,7 @@ jobs:
           bun-version: latest
 
       - name: Restore dependencies cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             node_modules
@@ -129,7 +129,7 @@ jobs:
             ${{ runner.os }}-deps-
 
       - name: Restore build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: packages/*/dist
           key: ${{ runner.os }}-build-${{ github.sha }}
